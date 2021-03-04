@@ -4,8 +4,11 @@
   "description": "Crudapi Admin Web",
   "productName": "Crudapi Admin Web App",
   "author": "admin@crudapi.cn",
-  "private": true,
+  "private": false,
+  "license": "MIT",
   "scripts": {
+    "dev": "quasar dev",
+    "build": "quasar build",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
