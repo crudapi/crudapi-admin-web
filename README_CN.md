@@ -1,46 +1,46 @@
 # Crudapi Admin Web (crudapi-admin-web)
 
-Crudapi Admin Web for [https://crudapi.cn](https://crudapi.cn)
+[https://crudapi.cn](https://crudapi.cn)的后台管理页面
 
-## Language
-[中文](README_CN.md)
+## 语言
+[English](README.md)
 
-## GIT URL
-github repo
+## GIT地址
+github仓库
 [https://github.com/crudapi/crudapi-admin-web](https://github.com/crudapi/crudapi-admin-web)
 
-gitee repo
+gitee仓库
 [https://gitee.com/crudapi/crudapi-admin-web](https://gitee.com/crudapi/crudapi-admin-web)
 
-## Install the dependencies
+## 安装npm依赖包
 ```bash
 npm install
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
+### 调试模式运行（代码热加载，错误提示等）
 ```bash
 npm run dev
 ```
 
-### Lint the files
+### 代码静态检查
 ```bash
 npm run lint
 ```
 
-### Build the app for production
+### 编译发布
 ```bash
 npm run build
 ```
 
-### Documentation
+### 文档
 
 [https://help.crudapi.cn](https://help.crudapi.cn)
 
-[1. helloworld](https://help.crudapi.cn/crudapi-admin-web/helloworld.html)
+[1. 环境搭建](https://help.crudapi.cn/crudapi-admin-web/helloworld.html)
 
-It is updated 2-4 times a month
+每个月更新2-4次
 
-### License
+### 授权
 
 Copyright (c) 2021-present crudapi
 
