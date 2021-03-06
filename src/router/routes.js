@@ -1,5 +1,14 @@
-
 const routes = [
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("pages/Login.vue")
+  },
+  {
+    path: "/403",
+    name: "403",
+    component: () => import("pages/Error403")
+  },
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),

@@ -3,6 +3,11 @@ import Vuex from 'vuex'
 
 // import example from './module-example'
 
+import user from "./user";
+
+import { plugin as userPlugin } from "./user";
+
+
 Vue.use(Vuex)
 
 /*
@@ -14,16 +19,16 @@ Vue.use(Vuex)
  * with the Store instance.
  */
 
-export default function (/* { ssrContext } */) {
-  const Store = new Vuex.Store({
-    modules: {
-      // example
-    },
+const Store = new Vuex.Store({
+  modules: {
+    user
+  },
 
-    // enable strict mode (adds overhead!)
-    // for dev mode only
-    strict: process.env.DEBUGGING
-  })
+  plugins: [userPlugin],
 
-  return Store
-}
+  // enable strict mode (adds overhead!)
+  // for dev mode only
+  strict: process.env.DEBUGGING
+});
+
+export default Store;

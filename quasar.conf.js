@@ -19,7 +19,7 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      
+
       'i18n',
       'axios',
     ],
@@ -65,7 +65,7 @@ module.exports = function (/* ctx */) {
 
       // https://quasar.dev/quasar-cli/handling-webpack
       extendWebpack (cfg) {
-cfg.module.rules.push({
+        cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
@@ -78,13 +78,19 @@ cfg.module.rules.push({
     devServer: {
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
+      proxy: {
+        "/api/*": {
+          target: "https://demo.crudapi.cn",
+          changeOrigin: true
+        }
+      }
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       iconSet: 'material-icons', // Quasar icon set
-      lang: 'en-us', // Quasar language pack
+      lang: 'zh-hans', // Quasar language pack
       config: {},
 
       // Possible values for "importStrategy":
@@ -100,7 +106,10 @@ cfg.module.rules.push({
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'LocalStorage',
+        'Notify'
+      ]
     },
 
     // animations: 'all', // --- includes all animations
