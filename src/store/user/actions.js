@@ -6,7 +6,9 @@ export const login = ({ commit }, userInfo) => {
     userService
       .login(userInfo)
       .then(data => {
-          commit("updateToken", data.principal.token);
+          //session方式登录，其实不需要token，这里为了JWT登录预留，用username代替。
+          //通过Token是否为空判断本地有没有登录过，方便后续处理。
+          commit("updateToken", data.principal.username);
 
           const newUserInfo = {
             username: data.principal.username,
