@@ -1,1 +1,82 @@
 // app global css in Stylus form
+// app global css in Stylus form
+.q-field
+  &__control
+    height 32px
+  &__marginal
+    height 32px
+  &--auto-height
+    .q-field__control
+      height auto
+    .q-field__control, .q-field__native
+      min-height 32px
+
+.bg-drawcolor
+  background $drawcolor !important
+
+.bg-layoutcolor
+  background $layoutcolor !important
+
+.bg-listcolor
+  background $listactioncolor !important
+
+.bg-page
+  background $pagecolor !important
+
+.q-tree__node-header-content
+  height:22px;
+  font-size:14px;
+  font-family:PingFangSC-Regular,PingFang SC;
+  font-weight:400;
+  color:rgba(51,51,51,1);
+  line-height:22px;
+
+.query-cond
+  font-size:14px;
+  font-family:PingFangSC-Regular,PingFang SC;
+  font-weight:400;
+  color:rgba(0,0,0,0.65);
+
+.query-input
+  height:32px;
+  background:rgba(255,255,255,1);
+  border-radius:4px;
+  border:1px solid rgba(238,238,238,1);
+
+.bg-table-list
+  background:rgba(255,255,255,1);
+  border-radius:2px;
+  border:1px solid rgba(238,238,238,1);
+
+.q-table
+  thead
+    height: 22px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium,PingFang SC;
+    font-weight: 500;
+    color: rgba(161,161,161,1);
+    line-height: 22px;
+  tbody
+    height:22px;
+    font-size:14px;
+    font-family:PingFangSC-Regular,PingFang SC;
+    font-weight:400;
+    color:rgba(0,0,0,1);
+    line-height:22px;
+
+.home
+  .q-table
+    thead
+      height:20px;
+      font-size:13px;
+      font-family:PingFangSC-Regular,PingFang SC;
+      font-weight:400;
+      color:rgba(102,102,102,1);
+      line-height:20px;
+    tbody
+      height:20px;
+      font-size:13px;
+      font-family:PingFangSC-Regular,PingFang SC;
+      font-weight:400;
+      color:rgba(161,161,161,1);
+      line-height:20px;

@@ -5,7 +5,7 @@
     </div>
     <div class="row justify-center login">
       <div class="left">
-        <div class="title">crudapi</div>
+        <div class="title">crudapi管理员后台</div>
         <div class="sub-title"></div>
         <div class="logo"><img src="crudapi.png" /></div>
       </div>
@@ -69,7 +69,6 @@
 <style lang="stylus" scoped>
 .body
   height: 100%;
-  // border: 1px red solid;
 
 .logo-icon
   height:145px;
@@ -212,24 +211,22 @@ export default {
         return;
       }
 
+      this.$q.loading.show({
+        message: "登录中"
+      });
+
       this.$store
         .dispatch("user/login", {
           username: this.username,
           password: this.password,
         })
         .then(async (data) => {
-          console.log(data);
           this.$router.push("/");
-          // const authorities = data.authorities || [];
-          // if (authorities.findIndex(t => t.authority === "ROLE_SUPER_ADMIN") >= 0) {
-          //   this.$router.push("/");
-          // } else {
-          //   this.$q.notify("无SUPER_ADMIN权限！");
-          // }
+          this.$q.loading.hide();
         })
         .catch(e => {
+          this.$q.loading.hide();
           console.error(e);
-          //this.$q.notify(e);
         });
     }
   }
