@@ -6,10 +6,10 @@ Crudapi Admin Web for [https://crudapi.cn](https://crudapi.cn)
 [中文](README_CN.md)
 
 ## GIT URL
-github repo
+### GitHub repo
 [https://github.com/crudapi/crudapi-admin-web](https://github.com/crudapi/crudapi-admin-web)
 
-gitee repo
+### Gitee repo
 [https://gitee.com/crudapi/crudapi-admin-web](https://gitee.com/crudapi/crudapi-admin-web)
 
 ## Install the dependencies
@@ -17,30 +17,31 @@ gitee repo
 npm install
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
+## Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
 npm run dev
 ```
 
-### Lint the files
+## Lint the files
 ```bash
 npm run lint
 ```
 
-### Build the app for production
+## Build the app for production
 ```bash
 npm run build
 ```
 
-### Documentation
+## Documentation
 
 [https://help.crudapi.cn](https://help.crudapi.cn)
 
 [1. helloworld](https://help.crudapi.cn/crudapi-admin-web/helloworld.html)
+[2. login](https://help.crudapi.cn/crudapi-admin-web/login.html)
 
-It is updated 2-4 times a month
+It is updated 4-6 times a month
 
-### License
+## License
 
 Copyright (c) 2021-present crudapi
 

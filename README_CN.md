@@ -6,10 +6,10 @@
 [English](README.md)
 
 ## GIT地址
-github仓库
+### GitHub仓库
 [https://github.com/crudapi/crudapi-admin-web](https://github.com/crudapi/crudapi-admin-web)
 
-gitee仓库
+### Gitee仓库
 [https://gitee.com/crudapi/crudapi-admin-web](https://gitee.com/crudapi/crudapi-admin-web)
 
 ## 安装npm依赖包
@@ -37,8 +37,9 @@ npm run build
 [https://help.crudapi.cn](https://help.crudapi.cn)
 
 [1. 环境搭建](https://help.crudapi.cn/crudapi-admin-web/helloworld.html)
+[2. 用户登录](https://help.crudapi.cn/crudapi-admin-web/login.html)
 
-每个月更新2-4次
+每个月更新4-6次
 
 ### 授权
 
