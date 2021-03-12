@@ -13,7 +13,19 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      { path: '', component: () => import('pages/Index.vue') },
+      {
+        name: "about",
+        path: "about",
+        meta: { isAllowBack: true },
+        component: () => import("pages/About.vue")
+      },
+      {
+        name: "setting",
+        path: "setting",
+        meta: { isAllowBack: true },
+        component: () => import("pages/Setting.vue")
+      }
     ]
   },
 

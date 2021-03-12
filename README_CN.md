@@ -17,22 +17,22 @@
 npm install
 ```
 
-### 调试模式运行（代码热加载，错误提示等）
+## 调试模式运行（代码热加载，错误提示等）
 ```bash
 npm run dev
 ```
 
-### 代码静态检查
+## 代码静态检查
 ```bash
 npm run lint
 ```
 
-### 编译发布
+## 编译发布
 ```bash
 npm run build
 ```
 
-### 文档
+## 文档
 
 [https://help.crudapi.cn](https://help.crudapi.cn)
 
@@ -41,7 +41,7 @@ npm run build
 
 每个月更新4-6次
 
-### 授权
+## 授权
 
 Copyright (c) 2021-present crudapi
 

@@ -78,8 +78,6 @@
     margin-left: 54px;
     width:165px;
     height:48px;
-    //background:rgba(61,63,75,1);
-    //border: 1px rgba(61,63,75,1) solid;
     img
       width:64px;
       height:64px;
@@ -95,7 +93,6 @@
 .login
   height: 490px;
   min-width: 1030px;
-  //border 1px solid rgba(215, 215, 215, 1)
   .left
     width: 400px;
     height: 490px;
@@ -123,16 +120,13 @@
       line-height:34px;
     .logo
       img
-        //margin-top: 26px;
         margin-left: 31px;
-        // border: 1px red solid;
         width:320px;
         height:320px;
 
   .right
     width: 560px;
     height: 490px;
-    //background: red;
     background:rgba(255,255,255,1);
     box-shadow:0px 4px 24px 0px rgba(172,178,192,0.15);
     border-radius:0px 12px 12px 0px;

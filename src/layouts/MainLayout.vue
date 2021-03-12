@@ -1,8 +1,9 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
+    <q-header class="bg-layoutcolor">
+      <q-toolbar class="text-white">
         <q-btn
+          unelevated
           flat
           dense
           round
@@ -11,33 +12,75 @@
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <q-btn
+          v-show="isAllowBack === true"
+          flat
+          dense
+          round
+          @click="goBack"
+          icon="arrow_back_ios"
+          aria-label="Back"
+        >
+        </q-btn>
+        <q-btn
+          flat
+          dense
+          round
+          @click="refresh"
+          icon="refresh"
+          aria-label="Refresh"
+        >
+        </q-btn>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-space />
+         <q-btn
+          unelevated
+          :label="userInfo.realname"
+          flat
+          icon-right="arrow_drop_down"
+          class="q-mx-xs"
+        >
+          <q-menu transition-show="scale" transition-hide="scale">
+            <div class="column bg-layoutcolor text-white profile-menu">
+              <q-item
+                clickable
+                @click="logout"
+                class="row items-center q-px-lg"
+              >
+                <q-icon name="exit_to_app" />
+                <q-item-label class="q-pl-md menu-label">退出登录</q-item-label>
+              </q-item>
+            </div>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      bordered
-      content-class="bg-grey-1"
+      :width="200"
+      :breakpoint="600"
+      content-class="bg-white"
     >
-      <q-list>
-        <q-item-label
-          header
-          class="text-grey-8"
+      <div clickable v-ripple @click="goHome"
+          class="bg-layoutcolor text-white"
+          style="height: 50px;border: 1px #25272A solid;cursor:pointer"
         >
-          Essential Links
-        </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
+        <div class="text-center logo">
+          <div class="text-center">crudapi</div>
+        </div>
+      </div>
+      <q-tree
+        selected-color="primary"
+        :nodes="allMenu"
+        :selected.sync="selected"
+        @update:selected="onMenuClickAction()"
+        ref="qTreeProxy"
+        node-key="labelKey"
+        default-expand-all
+        no-connectors
+      />
     </q-drawer>
 
     <q-page-container>
@@ -46,61 +89,231 @@
   </q-layout>
 </template>
 
-<script>
-import EssentialLink from 'components/EssentialLink.vue'
+<style lang="stylus">
+.profile-menu
+  font-size:16px;
+  font-family:PingFangSC-Regular,PingFang SC;
+  font-weight:400;
+  color:rgba(255,255,255,1);
+  line-height:22px;
 
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+.icon-xiala
+  font-size: 6px !important;
+.tree-title
+  margin-top: 12px;
+  font-size:18px;
+  font-family:PingFangSC-Regular,PingFang SC;
+  font-weight:400;
+  line-height:22px;
+
+.logo
+  font-size:30px;
+  font-family:PingFangSC-Regular,PingFang SC;
+  font-weight:500;
+  img
+    height:46px;
+</style>
+
+<script>
+import { tableDesignService, sequenceDesignService } from "../service";
+import { userService } from "../service";
 
 export default {
   name: 'MainLayout',
-  components: { EssentialLink },
+
+  computed: {
+    userInfo: {
+      get() {
+        return this.$store.state.user.userInfo;
+      }
+    },
+    isAllowBack: {
+      get() {
+        return this.$store.state.config.isAllowBack;
+      }
+    }
+  },
   data () {
     return {
-      leftDrawerOpen: false,
-      essentialLinks: linksData
+      leftDrawerOpen: true,
+
+      selected: null,
+
+      metadataMenu: {
+        label: "元数据",
+        labelKey: "metadata",
+        icon: "work_outline",
+        children: [
+          {
+            label: "序列号",
+            labelKey: "/metadata/sequences",
+            icon: "format_list_numbered",
+            children: [
+            ]
+          }, {
+            label: "表",
+            labelKey: "/metadata/tables",
+            icon: "o_table_rows",
+            children: [
+            ]
+          }, {
+            label: "关系",
+            labelKey: "/metadata/relations",
+            icon: "content_copy",
+            children: [
+            ]
+          }
+        ]
+      },
+
+      businessMenu: {
+        label: "业务数据",
+        labelKey: "business",
+        icon: "business",
+        children: [
+        ]
+      },
+
+      systemMenu: {
+        label: "系统",
+        labelKey: "system",
+        icon: "o_build",
+        children: [
+          {
+            label: "设置",
+            labelKey: "/setting",
+            icon: "o_settings"
+          },
+          {
+            label: "关于",
+            labelKey: "/about",
+            icon: "o_info"
+          }
+        ]
+      },
+
+      allMenu: [
+      ]
+    }
+  },
+
+  created() {
+    this.$root.$on("updateMenuTree", this.updateMenuTreeCb);
+    this.init();
+  },
+
+  mounted: function() {
+
+  },
+
+  activated: function() {
+
+  },
+
+  deactivated: function() {
+
+  },
+
+  updated: function() {
+
+  },
+
+  destroyed: function() {
+    this.$root.$off("updateMenuTree", this.updateMenuTreeCb);
+  },
+
+  methods: {
+    async init() {
+      console.log("init");
+      try {
+        const tables = await tableDesignService.list(1, 9999);
+        for (let i = 0; i < tables.length; i++) {
+          let table = tables[i];
+          this.businessMenu.children.push({
+              label: table.caption,
+              labelKey: this.getBussinessPath(table.name),
+              icon: "insert_chart_outlined"
+          });
+        }
+
+        this.allMenu.push(this.businessMenu);
+        this.allMenu.push(this.metadataMenu);
+        this.allMenu.push(this.systemMenu);
+
+        this.$refs.qTreeProxy.setExpanded("business", true);
+        this.$refs.qTreeProxy.setExpanded("metadata", true);
+        this.$refs.qTreeProxy.setExpanded("system", true);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async updateMenu() {
+      console.log("updateMenu");
+      try {
+        this.businessMenu.children.splice(0, this.businessMenu.children.length);
+        const tables = await tableDesignService.list(1, 9999);
+        for (let i = 0; i < tables.length; i++) {
+          let table = tables[i];
+          this.businessMenu.children.push({
+              label: table.caption,
+              labelKey: this.getBussinessPath(table.name),
+              icon: "insert_chart_outlined"
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        this.$q.notify(error);
+      }
+    },
+
+    updateMenuTreeCb: function() {
+      this.updateMenu();
+    },
+
+    getBussinessPath: function(tableName) {
+      return "/business/" + tableName
+    },
+
+    getTablePath: function(id) {
+      return "/metadata/tables/" + id
+    },
+
+    getSequencePath: function(id) {
+      return "/metadata/sequences/" + id
+    },
+
+    onMenuClickAction() {
+      console.log("onMenuClickAction");
+      if (this.selected) {
+        if (this.selected && this.selected.indexOf("/") === 0) {
+          if (this.$router.currentRoute.fullPath !== this.selected) {
+            console.log("onMenuClickAction push" + this.selected);
+            this.$router.push(this.selected)
+          } else {
+            console.log("onMenuClickAction skip");
+          }
+        }
+      }
+    },
+    refresh() {
+      window.location.reload(true);
+    },
+    goBack() {
+      this.$router.go(-1);
+    },
+    goHome() {
+      this.$router.push("/");
+    },
+    logout() {
+       this.$store
+        .dispatch("user/logout")
+        .then(async () => {
+          this.$router.push("/login");
+        })
+        .catch(e => {
+          console.error(e);
+        });
     }
   }
 }
