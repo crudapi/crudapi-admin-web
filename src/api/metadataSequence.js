@@ -1,6 +1,6 @@
 import { axiosInstance } from "boot/axios";
 
-const sequenceDesign = {
+const metadataSequence = {
   create: function(data) {
     return axiosInstance.post("/api/metadata/sequences",
        data
@@ -59,4 +59,4 @@ const sequenceDesign = {
   }
 };
 
-export { sequenceDesign };
+export { metadataSequence };

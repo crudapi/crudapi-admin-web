@@ -1,6 +1,6 @@
 import { axiosInstance } from "boot/axios";
 
-const tableDesign = {
+const metadataTable = {
   create: function(data) {
     return axiosInstance.post("/api/metadata/tables",
        data
@@ -81,4 +81,4 @@ const tableDesign = {
   }
 };
 
-export { tableDesign };
+export { metadataTable };

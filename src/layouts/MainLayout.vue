@@ -115,7 +115,7 @@
 </style>
 
 <script>
-import { tableDesignService, sequenceDesignService } from "../service";
+import { metadataTableService, metadataSequenceService } from "../service";
 import { userService } from "../service";
 
 export default {
@@ -226,7 +226,7 @@ export default {
     async init() {
       console.log("init");
       try {
-        const tables = await tableDesignService.list(1, 9999);
+        const tables = await metadataTableService.list(1, 9999);
         for (let i = 0; i < tables.length; i++) {
           let table = tables[i];
           this.businessMenu.children.push({
@@ -252,7 +252,7 @@ export default {
       console.log("updateMenu");
       try {
         this.businessMenu.children.splice(0, this.businessMenu.children.length);
-        const tables = await tableDesignService.list(1, 9999);
+        const tables = await metadataTableService.list(1, 9999);
         for (let i = 0; i < tables.length; i++) {
           let table = tables[i];
           this.businessMenu.children.push({
