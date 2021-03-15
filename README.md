@@ -36,8 +36,9 @@ npm run build
 
 [https://help.crudapi.cn](https://help.crudapi.cn)
 
-[1. helloworld](https://help.crudapi.cn/crudapi-admin-web/helloworld.html)
-[2. login](https://help.crudapi.cn/crudapi-admin-web/login.html)
+1. [ 基于Vue和Quasar的前端SPA项目实战之环境搭建（一）](https://help.crudapi.cn/crudapi-admin-web/helloworld.html)
+2. [ 基于Vue和Quasar的前端SPA项目实战之用户登录（二）](https://help.crudapi.cn/crudapi-admin-web/login.html)
+3. [ 基于Vue和Quasar的前端SPA项目实战之布局菜单（三）](https://help.crudapi.cn/crudapi-admin-web/layout.html)
 
 It is updated 4-6 times a month
 
