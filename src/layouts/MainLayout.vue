@@ -224,7 +224,7 @@ export default {
 
   methods: {
     async init() {
-      console.log("init");
+      console.info("init");
       try {
         const tables = await metadataTableService.list(1, 9999);
         for (let i = 0; i < tables.length; i++) {
@@ -249,7 +249,7 @@ export default {
     },
 
     async updateMenu() {
-      console.log("updateMenu");
+      console.info("updateMenu");
       try {
         this.businessMenu.children.splice(0, this.businessMenu.children.length);
         const tables = await metadataTableService.list(1, 9999);
@@ -284,14 +284,14 @@ export default {
     },
 
     onMenuClickAction() {
-      console.log("onMenuClickAction");
+      console.info("onMenuClickAction");
       if (this.selected) {
         if (this.selected && this.selected.indexOf("/") === 0) {
           if (this.$router.currentRoute.fullPath !== this.selected) {
-            console.log("onMenuClickAction push" + this.selected);
+            console.info("onMenuClickAction push" + this.selected);
             this.$router.push(this.selected)
           } else {
-            console.log("onMenuClickAction skip");
+            console.info("onMenuClickAction skip");
           }
         }
       }

@@ -25,6 +25,24 @@ const routes = [
         path: "setting",
         meta: { isAllowBack: true },
         component: () => import("pages/Setting.vue")
+      },
+      {
+        name: "sequenceList",
+        path: "metadata/sequences",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/sequence/list.vue")
+      },
+      {
+        name: "sequenceNew",
+        path: "metadata/sequences/new",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/sequence/new.vue")
+      },
+      {
+        name: "sequenceEdit",
+        path: "metadata/sequences/:id",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/sequence/edit.vue")
       }
     ]
   },
