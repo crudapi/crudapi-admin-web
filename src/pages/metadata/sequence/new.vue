@@ -120,6 +120,7 @@
 <script>
 import { metadataSequenceService } from "../../../service";
 import { date } from "../../../utils";
+import { extend } from 'quasar'
 
 export default {
   data () {
@@ -195,11 +196,24 @@ export default {
     },
 
     async onSubmit() {
+      this.$q.loading.show({
+        message: "提交中"
+      });
       try {
-        await metadataSequenceService.create(this.sequence);
+        let sequence = extend(true, {}, this.sequence);
+        if (sequence.currentTime) {
+          delete sequence.minValue;
+          delete sequence.maxValue;
+          delete sequence.nextValue;
+          delete sequence.incrementBy;
+        }
+
+        await metadataSequenceService.create(sequence);
+        this.$q.loading.hide();
         this.$q.notify("添加成功");
         this.$router.go(-1);
       } catch (error) {
+        this.$q.loading.hide();
         console.info(error);
       }
     }

@@ -219,11 +219,24 @@ export default {
     },
 
     async onSubmit() {
+      this.$q.loading.show({
+        message: "提交中"
+      });
       try {
-        await metadataSequenceService.update(this.$route.params.id, this.sequence);
+        let sequence = extend(true, {}, this.sequence);
+        if (sequence.currentTime) {
+          delete sequence.minValue;
+          delete sequence.maxValue;
+          delete sequence.nextValue;
+          delete sequence.incrementBy;
+        }
+
+        await metadataSequenceService.update(this.$route.params.id, sequence);
+        this.$q.loading.hide();
         this.$q.notify("修改成功");
         this.loadData();
       } catch (error) {
+        this.$q.loading.hide();
         console.info(error);
       }
     }

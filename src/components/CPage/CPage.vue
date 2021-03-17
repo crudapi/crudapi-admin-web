@@ -13,6 +13,7 @@
     <div>
       <div class="flex flex-center page-border">
         <q-pagination
+          unelevated
           v-model="pagination.page"
           :max="Math.ceil(pagination.count / pagination.rowsPerPage)"
           :max-pages="10"
@@ -69,7 +70,7 @@
     margin-right:2px;
     .q-btn__content
       width:32px;
-      height:32px;
+      //height:32px;
       font-size:14px;
       font-family:HelveticaNeue;
       color: rgba(0,0,0,0.65);
