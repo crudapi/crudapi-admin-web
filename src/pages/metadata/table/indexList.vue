@@ -54,9 +54,6 @@
                 dense
               ></q-btn>
             </q-td>
-            <!-- <q-td key="id" :props="props">
-              {{ props.row.id }}
-            </q-td> -->
             <q-td key="caption" :props="props">
               <q-input style="width: 80px;" v-model="props.row.caption" />
             </q-td>
