@@ -1,7 +1,5 @@
 # Crudapi Admin Web (crudapi-admin-web)
 
-[https://crudapi.cn](https://crudapi.cn)的后台管理页面
-
 ## 语言
 [English](README.md)
 
@@ -43,6 +41,21 @@ npm run build
 5. [ 基于Vue和Quasar的前端SPA项目实战之动态表单（五）](https://help.crudapi.cn/crudapi-admin-web/metadatatable.html)
 
 每个月更新4-6次
+
+## 演示
+演示地址：[https://demo.crudapi.cn/crudapi/](https://demo.crudapi.cn/crudapi/)
+
+![table](./img/table.png)
+表单对应不同的对象
+
+![relation](./img/relation.png)
+表关系图显示不同对象之间的关系
+
+![customer](./img/customer.png)
+业务数据操作
+
+## 微信
+![undefinedneqnull](./img/crudapiweixin.jpeg)
 
 ## 授权
 

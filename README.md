@@ -1,7 +1,5 @@
 # Crudapi Admin Web (crudapi-admin-web)
 
-Crudapi Admin Web for [https://crudapi.cn](https://crudapi.cn)
-
 ## Language
 [中文](README_CN.md)
 
@@ -43,6 +41,21 @@ npm run build
 5. [ 基于Vue和Quasar的前端SPA项目实战之动态表单（五）](https://help.crudapi.cn/crudapi-admin-web/metadatatable.html)
 
 It is updated 4-6 times a month
+
+## Demo
+Demo url：[https://demo.crudapi.cn/crudapi/](https://demo.crudapi.cn/crudapi/)
+
+![table](./img/table.png)
+Metadata table
+
+![table](./img/relation.png)
+Table relation
+
+![customer](./img/customer.png)
+Bussiness Data
+
+## Weixin
+![undefinedneqnull](./img/crudapiweixin.jpeg)
 
 ## License
 
