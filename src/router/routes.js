@@ -43,7 +43,31 @@ const routes = [
         path: "metadata/sequences/:id",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/sequence/edit.vue")
-      }
+      },
+      {
+        name: "tables",
+        path: "metadata/tables",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/table/list.vue")
+      },
+      {
+        name: "tableNew",
+        path: "metadata/tables/new",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/table/new.vue")
+      },
+      {
+        name: "tableEdit",
+        path: "metadata/tables/:id",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/table/edit.vue")
+      },
+      {
+        name: "tableIndexs",
+        path: "metadata/tables/:id/indexs",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/table/indexList.vue")
+      },
     ]
   },
 
