@@ -1,4 +1,4 @@
-# Crudapi Admin Web (crudapi-admin-web)
+# crudapi后台管理WEB (crudapi-admin-web)
 
 ## 语言
 [English](README.md)
@@ -61,7 +61,7 @@ admin@crudapi.cn
 #### QQ
 1440737304
 
-#### 客服微信
+#### 微信
 undefinedneqnull
 
 ![undefinedneqnull](./img/crudapiweixin.jpeg)
