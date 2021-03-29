@@ -54,8 +54,19 @@ npm run build
 ![customer](./img/customer.png)
 业务数据操作
 
-## 微信
+## 联系方式
+#### 邮箱
+admin@crudapi.cn
+
+#### QQ
+1440737304
+
+#### 客服微信
+undefinedneqnull
+
 ![undefinedneqnull](./img/crudapiweixin.jpeg)
+
+如有任何问题，欢迎咨询和交流！
 
 ## 授权
 
