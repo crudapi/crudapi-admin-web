@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "@antv/g6": "^3.3.6",
     "axios": "^0.18.1",
     "core-js": "^3.6.5",
     "quasar": "^1.0.0",

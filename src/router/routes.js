@@ -68,6 +68,28 @@ const routes = [
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/table/indexList.vue")
       },
+      {
+        name: "relationGraph",
+        path: "metadata/relations/graph",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/relation/graph.vue")
+      },
+      {
+        name: "relations",
+        path: "metadata/relations",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/relation/list.vue")
+      },{
+        name: "relationNew",
+        path: "metadata/relations/new",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/relation/new.vue")
+      },{
+        name: "relationEdit",
+        path: "metadata/relations/:id",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/relation/edit.vue")
+      }
     ]
   },
 
