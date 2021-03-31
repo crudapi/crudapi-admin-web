@@ -104,16 +104,6 @@
           />
       </div>
 
-      <div class="row items-baseline content-center justify-start">
-        <div class="col-3 text-right text-subtitle2 q-pr-md">备注:</div>
-        <q-input
-            class="col-7"
-            placeholder="请输入备注"
-            ref="metadataRelation.description"
-            v-model="metadataRelation.description"
-          />
-      </div>
-
       <div class="row items-baseline content-center justify-start q-py-md">
         <div class="col-3 text-right text-subtitle2 q-pr-md">创建时间:</div>
         <div class="col-7 text-subtitle2">{{ metadataRelation.createdDate | dateTimeFormat }}</div>
@@ -309,7 +299,6 @@ export default {
           relationType: this.metadataRelation.relationType,
           name: this.metadataRelation.name,
           caption: this.metadataRelation.caption,
-          description: this.metadataRelation.description,
           fromTable: {
             id: this.metadataRelation.fromTable.id
           },

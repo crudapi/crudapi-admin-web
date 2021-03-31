@@ -98,16 +98,6 @@
           />
       </div>
 
-      <div class="row items-baseline content-center justify-start q-py-md">
-        <div class="col-3 text-right text-subtitle2 q-pr-md">备注:</div>
-        <q-input
-            class="col-7"
-            placeholder="请输入备注"
-            ref="metadataRelation.description"
-            v-model="metadataRelation.description"
-          />
-      </div>
-
       <div class="row justify-center">
         <q-btn unelevated type="submit" color="primary" label="保存" />
       </div>

@@ -160,9 +160,6 @@
             <q-td key="toColumn" :props="props">
               <span>{{ props.row.toColumn.caption }}</span>
             </q-td>
-            <q-td key="description" :props="props">
-              <span>{{ props.row.description }}</span>
-            </q-td>
             <q-td key="createdDate" :props="props">
               <span>{{ props.row.createdDate | dateFormat }}</span>
             </q-td>
@@ -287,15 +284,6 @@ export default {
           label: "目标列",
           align: "left",
           field: row => row.toColumn,
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
-          name: "description",
-          required: true,
-          label: "备注",
-          align: "left",
-          field: row => row.description,
           format: val => `${val}`,
           sortable: true
         },
