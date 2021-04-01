@@ -89,7 +89,25 @@ const routes = [
         path: "metadata/relations/:id",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/relation/edit.vue")
-      }
+      },
+      {
+        name: "business",
+        path: "business/:tableName",
+        meta: { isAllowBack: true },
+        component: () => import("pages/business/table/list.vue")
+      },
+      {
+        name: "businessNew",
+        path: "business/:tableName/new",
+        meta: { isAllowBack: true },
+        component: () => import("pages/business/table/new.vue")
+      },
+      {
+        name: "businessEdit",
+        path: "business/:tableName/:recId",
+        meta: { isAllowBack: true },
+        component: () => import("pages/business/table/edit.vue")
+      },
     ]
   },
 

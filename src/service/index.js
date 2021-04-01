@@ -5,3 +5,5 @@ export { authService } from "./authService";
 export { metadataTableService } from "./metadataTableService";
 export { metadataSequenceService } from "./metadataSequenceService";
 export { metadataRelationService } from "./metadataRelationService";
+export { tableService } from "./tableService";
+export { fileService } from "./fileService";
