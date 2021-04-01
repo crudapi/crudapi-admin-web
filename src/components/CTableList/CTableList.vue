@@ -107,11 +107,6 @@
                 v-model="props.row[colKey]">
               </q-toggle>
 
-              <!-- <a v-else-if="isAttachmentTypeByKey(colKey, props.cols)"
-                target="_blank" :href="props.row[colKey]">
-                查看
-              </a> -->
-
               <q-input
                 v-else style="min-width: 80px;"
                 :placeholder="getPlaceHolderByKey(colKey, props.cols)"
@@ -156,10 +151,9 @@
 </template>
 
 <style lang="stylus">
-.required:before {
+.required:before
   content: "* ";
   color: red;
-}
 </style>
 
 <script>
@@ -240,8 +234,6 @@ export default {
     },
 
     filterRow(row) {
-      //console.dir(row);
-
       let newRow = {};
       for (let key in row) {
         if (key != 'id') {
@@ -249,12 +241,10 @@ export default {
         }
       }
 
-      //console.dir(newRow);
       return newRow;
     },
 
     isOptionsByKey: function(key, cols) {
-      //console.info("isOptionsByKey");
       const find = cols.find(t => t.name === key);
       if (find.options) {
         return true;
@@ -263,7 +253,6 @@ export default {
     },
 
     getOptionsByKey: function(key, cols) {
-      //console.info("getOptionsByKey");
       const find = cols.find(t => t.name === key);
       if (find.options) {
         console.info(find.options);
@@ -273,7 +262,6 @@ export default {
     },
 
     getFilterFnByKey: function(key, cols, val, update, abort) {
-      console.info("getFilterFnByKey");
       const find = cols.find(t => t.name === key);
       if (find.options) {
         find.filterFn(val, update, abort);
@@ -281,7 +269,6 @@ export default {
     },
 
     getAbortFilterFnByKey: function(key, cols) {
-      console.info("getAbortFilterFnByKey");
       const find = cols.find(t => t.name === key);
       if (find.options) {
         find.abortFilterFn();
@@ -335,9 +322,6 @@ export default {
     },
 
     togglePwd(colKey, key) {
-      console.info("togglePwd:" + colKey + "," + key);
-      //Vue.set(this.passwordMap[key], 'isPwd', !old.isPwd);
-
       let newPasswordMaps =  extend(true, {}, this.passwordMaps);
 
       let newPasswordMap = newPasswordMaps[key];
@@ -348,7 +332,6 @@ export default {
 
     getPlaceHolderByKey: function(key, cols) {
       const find = cols.find(t => t.name === key);
-      //console.dir(find);
       if (find) {
         return find.placeHolder;
       }
@@ -393,7 +376,7 @@ export default {
       this.selected.forEach((row) => {
         ids.push(row.id);
       });
-      console.info(JSON.stringify(ids));
+
       if (id) {
         this.removeRow(id);
       } else {
@@ -403,13 +386,10 @@ export default {
     },
 
     getData() {
-      console.info("CTableList getData");
       let newData = [];
       let index = 0;
       let that = this;
       this.qTableData.forEach((t) => {
-          //const newDataItem = extend(false, t);
-
           let newDataItem = {};
           for (let columnName in t) {
             const value = t[columnName];
@@ -425,27 +405,14 @@ export default {
             }
           }
 
-          console.info(newDataItem);
-          // const relation = this.relationMap[columnName];
-          // if (relation) {
-          //   data[relation.relation.name] = insertColumn.value;
-          // } else {
-          //   if (insertColumn.value && insertColumn.value.trim() !== "") {
-          //     data[columnName] = insertColumn.value;
-          //   }
-          // }
-
-
           that.oneToOneMainToSubTables.forEach((oneToOneMainToSubTable) => {
             const ref = that.$refs['rTableNewRef' + oneToOneMainToSubTable.relationName + newDataItem.id];
-            console.dir(ref);
             const subData = ref[0].getData();
             newDataItem[oneToOneMainToSubTable.relationName] = subData;
           });
 
           that.oneToManySubTables.forEach((oneToManySubTable) => {
             const ref = that.$refs['rTableListRef' + oneToManySubTable.relationName + newDataItem.id];
-            console.dir(ref);
             const subData = ref[0].getData();
             newDataItem[oneToManySubTable.relationName] = subData;
           });
@@ -460,7 +427,6 @@ export default {
     },
 
     hideRefPopProxyAction(ref) {
-      console.info("hideRefPopProxyAction:" + this.$refs[ref]);
       const proxys = this.$refs[ref];
       for (let i = 0; i < proxys.length; i++) {
         proxys[i].hide();
@@ -501,10 +467,7 @@ export default {
         await Promise.all(tableRelations.map(async (tableRelation) => {
            if (tableRelation.relationType === "ManyToOne"
             || tableRelation.relationType === "OneToOneSubToMain") {
-             console.info("tableRelation:" + JSON.stringify(tableRelation));
-
              const toTableData = await tableService.list(tableRelation.toTable.name);
-             console.info("toTableData:" + JSON.stringify(toTableData));
 
              const fromColumnName = tableRelation.fromColumn.name;
 
@@ -516,8 +479,6 @@ export default {
         }));
 
         this.relationMap = relationMap;
-
-        console.info("relationMap:" + JSON.stringify(this.relationMap));
 
         let insertColumns = [];
         for (let i = 0; i < table.columns.length; i++) {
@@ -555,7 +516,6 @@ export default {
               }
 
               column.filterFn = (val, update, abort) => {
-                // call abort() at any time if you can't retrieve data somehow
                 console.info('filterFn:' + val)
                 tableService.list(relation.relation.toTable.name, 0, 10, val)
                 .then((data) => {
@@ -582,8 +542,6 @@ export default {
         }
 
         this.insertColumns = insertColumns;
-        console.info(this.insertColumns);
-
         let qTableColums = [];
         qTableColums.push({
           name: "dataClickAction",
@@ -616,7 +574,6 @@ export default {
         });
 
         this.qTableColums = qTableColums;
-        //this.addRow();
 
         this.loading = false;
       } catch (error) {

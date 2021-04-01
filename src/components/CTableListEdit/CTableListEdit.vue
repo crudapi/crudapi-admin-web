@@ -171,10 +171,10 @@
 </template>
 
 <style lang="stylus">
-.required:before {
+.required:before
   content: "* ";
   color: red;
-}
+
 </style>
 
 <script>

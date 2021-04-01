@@ -166,10 +166,9 @@
 </template>
 
 <style lang="stylus">
-.required:before {
+.required:before
   content: "* ";
   color: red;
-}
 </style>
 
 <script>
@@ -256,7 +255,6 @@ export default {
     },
 
     isStringType: function(dataType) {
-      //console.info("isStringType:" + row.dataType);
       if (dataType === "CHAR"
         || dataType === "VARCHAR" ) {
         return true;
@@ -266,7 +264,6 @@ export default {
     },
 
     isNumberType: function(dataType) {
-      //console.info("isNumberType:" + row.dataType);
       if (dataType === "TINYINT"
         || dataType === "SMALLINT"
         || dataType === "MEDIUMINT"
@@ -279,7 +276,6 @@ export default {
     },
 
     isDateType: function(dataType) {
-      //console.info("isNumberType:" + row.dataType);
       if (dataType === "DATE") {
         return true;
       } else {
@@ -288,7 +284,6 @@ export default {
     },
 
     isTimeType: function(dataType) {
-      //console.info("isNumberType:" + row.dataType);
       if (dataType === "TIME") {
         return true;
       } else {
@@ -342,19 +337,15 @@ export default {
           }
         }
       }
-      console.info(data);
-      console.dir(this.$refs);
 
       this.oneToOneMainToSubTables.forEach((oneToOneMainToSubTable) => {
         const ref = this.$refs['rTableNewOrEditRef' + oneToOneMainToSubTable.relationName];
-        console.dir(ref);
         const subData = ref[0].getData();
         data[oneToOneMainToSubTable.relationName] = subData;
       });
 
       this.oneToManySubTables.forEach((oneToManySubTable) => {
         const ref = this.$refs['rTableListRef' + oneToManySubTable.relationName];
-        console.dir(ref);
         const subData = ref[0].getData();
         data[oneToManySubTable.relationName] = subData;
       });
@@ -362,7 +353,6 @@ export default {
     },
 
     hideRefPopProxyAction(ref) {
-      console.info("hideRefPopProxyAction:" + this.$refs[ref]);
       const proxys = this.$refs[ref];
       for (let i = 0; i < proxys.length; i++) {
         proxys[i].hide();
@@ -401,8 +391,6 @@ export default {
                 recIds.push(item.id);
               });
             }
-            console.info(recIds);
-
             oneToManySubTables.push({
               "relationName": tableRelation.name,
               "tableName": tableRelation.toTable.name,
@@ -421,10 +409,8 @@ export default {
         await Promise.all(tableRelations.map(async (tableRelation) => {
            if (tableRelation.relationType === "ManyToOne"
             || tableRelation.relationType === "OneToOneSubToMain") {
-             console.info("tableRelation:" + JSON.stringify(tableRelation));
 
              const toTableData = await tableService.list(tableRelation.toTable.name);
-             console.info("toTableData:" + JSON.stringify(toTableData));
 
              const fromColumnName = tableRelation.fromColumn.name;
 
@@ -436,8 +422,6 @@ export default {
         }));
 
         this.relationMap = relationMap;
-
-        console.info("relationMap:" + JSON.stringify(this.relationMap));
 
         let insertColumns = [];
         for (let i = 0; i < table.columns.length; i++) {
@@ -465,14 +449,9 @@ export default {
             column.value = date.dateFormat(columnValue);
           } else if (column.dataType === 'DATETIME' && columnValue) {
             column.value = date.dateTimeFormat(columnValue);
-          }
-          // else if (column.dataType === 'TIME' && columnValue) {
-          //   column.value = date.timeFormat(columnValue);
-          // }
-          else {
+          } else {
             column.value = columnValue;
           }
-          //column.value = columnValue;
 
           const relation = this.relationMap[columnName];
           if (relation) {
@@ -484,8 +463,6 @@ export default {
             }
 
             column.filterFn = (val, update, abort) => {
-              // call abort() at any time if you can't retrieve data somehow
-              console.info('filterFn:' + val)
               tableService.list(relation.relation.toTable.name, 0, 10, val)
               .then((data) => {
                 update(() => {
@@ -510,7 +487,6 @@ export default {
         }
 
         this.insertColumns = insertColumns;
-        console.info("CTableEdit" + JSON.stringify(this.insertColumns));
 
         this.loading = false;
       } catch (error) {
