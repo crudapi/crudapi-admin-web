@@ -1,0 +1,11 @@
+.DS_Store
+.git
+.gitignore
+node_modules
+dist
+.quasar
+.vscode
+.dockerignore
+package-lock.json
+Dockerfile
+*.md

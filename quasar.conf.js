@@ -7,7 +7,7 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-module.exports = function (/* ctx */) {
+module.exports = function ( ctx ) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -79,6 +79,8 @@ module.exports = function (/* ctx */) {
           exclude: /node_modules/
         })
       },
+      publicPath: '/crudapi/',
+      distDir: `dist/${ctx.modeName}/crudapi`
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
