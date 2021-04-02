@@ -40,8 +40,8 @@ npm run build
 4. [ 基于Vue和Quasar的前端SPA项目实战之序列号（四）](https://help.crudapi.cn/crudapi-admin-web/sequence.html)
 5. [ 基于Vue和Quasar的前端SPA项目实战之动态表单（五）](https://help.crudapi.cn/crudapi-admin-web/metadatatable.html)
 6. [ 基于Vue和Quasar的前端SPA项目实战之表关系（六）](https://help.crudapi.cn/crudapi-admin-web/metadatarelation.html)
+7. [ 基于Vue和Quasar的前端SPA项目实战之业务数据（七）](https://help.crudapi.cn/crudapi-admin-web/business.html)
 
-It is updated 4-6 times a month
 
 ## Demo
 Demo url：[https://demo.crudapi.cn/crudapi/](https://demo.crudapi.cn/crudapi/)
