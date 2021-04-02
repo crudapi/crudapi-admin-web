@@ -23,12 +23,9 @@ const table = {
     let filterStrEncode;
     if (filter) {
       let filterStr = JSON.stringify(filter);
-      console.log(filterStr);
-
       filterStrEncode = encodeURIComponent(filterStr);
-      console.log(filterStrEncode);
     }
-    
+
     return axiosInstance.get("/api/business/" + tableName,
       {
         params: {

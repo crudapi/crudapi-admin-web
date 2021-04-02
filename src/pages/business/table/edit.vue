@@ -20,10 +20,7 @@
 </template>
 
 <style>
-.required:before {
-  content: "* ";
-  color: red;
-}
+
 </style>
 
 <script>
