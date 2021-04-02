@@ -30,6 +30,15 @@ npm run lint
 npm run build
 ```
 
+## Docker部署
+```bash
+docker build -t crudapi-admin-web:latest .
+docker rm -f crudapi-admin-web
+docker run -d -p 80:80 --name crudapi-admin-web crudapi-admin-web:latest
+```
+访问[ http://127.0.0.1/crudapi ](http://127.0.0.1/crudapi)
+
+
 ## 文档
 
 [https://help.crudapi.cn](https://help.crudapi.cn)
@@ -42,7 +51,7 @@ npm run build
 6. [ 基于Vue和Quasar的前端SPA项目实战之表关系（六）](https://help.crudapi.cn/crudapi-admin-web/metadatarelation.html)
 7. [ 基于Vue和Quasar的前端SPA项目实战之业务数据（七）](https://help.crudapi.cn/crudapi-admin-web/business.html)
 
-Ongoing updates...
+持续更新中。。。
 
 ## 演示
 演示地址：[https://demo.crudapi.cn/crudapi/](https://demo.crudapi.cn/crudapi/)
