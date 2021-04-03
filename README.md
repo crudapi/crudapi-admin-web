@@ -49,6 +49,7 @@ Visit [ http://127.0.0.1/crudapi ](http://127.0.0.1/crudapi)
 5. [ 基于Vue和Quasar的前端SPA项目实战之动态表单（五）](https://help.crudapi.cn/crudapi-admin-web/metadatatable.html)
 6. [ 基于Vue和Quasar的前端SPA项目实战之表关系（六）](https://help.crudapi.cn/crudapi-admin-web/metadatarelation.html)
 7. [ 基于Vue和Quasar的前端SPA项目实战之业务数据（七）](https://help.crudapi.cn/crudapi-admin-web/business.html)
+8. [ 基于Vue和Quasar的前端SPA项目实战之docker部署（八）](https://help.crudapi.cn/crudapi-admin-web/docker.html)
 
 Ongoing updates...
 
