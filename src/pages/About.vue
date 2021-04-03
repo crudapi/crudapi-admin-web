@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-item-label>
-      <div>crudapi v0.0.1</div>
+      <div>crudapi v1.0.0</div>
       <div>Quasar v{{ $q.version }}</div>
     </q-item-label>
   </div>
