@@ -12,7 +12,7 @@ export const login = ({ commit }, userInfo) => {
 
           const newUserInfo = {
             username: data.principal.username,
-            realname: data.principal.realname,
+            realname: data.principal.realname || data.principal.username,
             avatar: "",
             authorities: data.principal.authorities || [],
             roles: data.principal.roles || []

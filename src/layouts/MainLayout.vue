@@ -37,6 +37,7 @@
           unelevated
           :label="userInfo.realname"
           flat
+          no-caps
           icon-right="arrow_drop_down"
           class="q-mx-xs"
         >
