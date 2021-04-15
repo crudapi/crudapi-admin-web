@@ -65,6 +65,13 @@ Table relation
 ![customer](./img/customer.png)
 Bussiness Data
 
+## Java SDK development
+### GitHub repo
+[https://github.com/crudapi/crudapi-example](https://github.com/crudapi/crudapi-example)
+
+### Gitee repo
+[https://gitee.com/crudapi/crudapi-example](https://gitee.com/crudapi/crudapi-example)
+
 ## Contact
 #### Email
 admin@crudapi.cn

@@ -66,6 +66,14 @@ docker run -d -p 80:80 --name crudapi-admin-web crudapi-admin-web:latest
 ![customer](./img/customer.png)
 业务数据操作
 
+## Java SDK 二次开发
+### GitHub仓库
+[https://github.com/crudapi/crudapi-example](https://github.com/crudapi/crudapi-example)
+
+### Gitee仓库
+[https://gitee.com/crudapi/crudapi-example](https://gitee.com/crudapi/crudapi-example)
+
+
 ## 联系方式
 #### 邮箱
 admin@crudapi.cn

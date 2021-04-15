@@ -46,7 +46,8 @@ export const logout = ({ commit }) => {
         resolve();
       })
       .catch(error => {
-        reject(error);
+        console.error(error);
+        resolve();
       })
       .finally(() => {
         commit("updateToken", "");
