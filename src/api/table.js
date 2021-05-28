@@ -1,5 +1,11 @@
 import { axiosInstance } from "boot/axios";
 
+
+const HEADERS = {
+  "Content-Type": "multipart/form-data"
+};
+
+
 const table = {
   create: function(tableName, data) {
     return axiosInstance.post("/api/business/" + tableName,
@@ -63,6 +69,19 @@ const table = {
     return axiosInstance.delete("/api/business/" + tableName,
       {data: ids}
     );
+  },
+  import: async function(tableName, data, progressCallback) {
+    console.log("table->import")
+    console.log(data)
+    return axiosInstance.post("/api/business/" + tableName + "/import", data,
+      {
+        headers: HEADERS,
+        onUploadProgress:  (progressEvent) => {
+          if (progressCallback) {
+            progressCallback(progressEvent)
+          }
+        }
+    });
   }
 };
 

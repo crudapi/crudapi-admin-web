@@ -103,11 +103,17 @@ const routes = [
         component: () => import("pages/business/table/new.vue")
       },
       {
+        name: "businessImport",
+        path: "business/:tableName/import",
+        meta: { isAllowBack: true },
+        component: () => import("pages/business/table/import.vue")
+      },
+      {
         name: "businessEdit",
         path: "business/:tableName/:recId",
         meta: { isAllowBack: true },
         component: () => import("pages/business/table/edit.vue")
-      },
+      }
     ]
   },
 

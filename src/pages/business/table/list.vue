@@ -62,6 +62,13 @@
           <template v-slot:action>
             <q-btn
               unelevated
+              @click="onImportClickAction()"
+              color="purple"
+              label="批量导入"
+            />
+            <p class="q-px-sm"/>
+            <q-btn
+              unelevated
               @click="onDeleteClickAction()"
               color="negative"
               label="批量删除"
@@ -267,6 +274,10 @@ export default {
 
     onEditClickAction(recId) {
       this.$router.push("/business/" + this.tableName + "/" + recId);
+    },
+
+    onImportClickAction() {
+      this.$router.push("/business/" + this.tableName + "/import");
     },
 
     async onDeleteClickAction(id) {
