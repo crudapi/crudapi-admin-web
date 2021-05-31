@@ -82,7 +82,15 @@ const table = {
           }
         }
     });
-  }
+  },
+  getImportTemplate: function(tableName) {
+    return axiosInstance.get("/api/business/" + tableName + "/import/template",
+      {
+        params: {
+        }
+      }
+    );
+  },
 };
 
 export { table };

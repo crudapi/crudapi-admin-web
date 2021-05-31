@@ -18,6 +18,8 @@
 
       <div class="row justify-center q-py-md">
         <q-btn unelevated @click="onSubmitClick" color="primary" label="提交" />
+         <p class="q-px-sm"/>
+        <q-btn unelevated @click="onDownloadClick" color="purple" label="下载模板" />
       </div>
     </div>
   </div>
@@ -108,6 +110,29 @@ export default {
         });
         this.$q.notify("导入成功");
         this.$router.go(-1);
+        this.$q.loading.hide();
+      } catch (error) {
+        this.$q.loading.hide();
+        console.error(error);
+      }
+    },
+
+    async onDownloadClick() {
+      console.info("import->onDownloadClick");
+
+      this.$q.loading.show({
+        message: "生成中"
+      });
+
+      try {
+        let form = new FormData()
+        form.append('file', this.localFile);
+
+        const url = await tableService.getImportTemplate(this.tableName);
+        this.$q.notify("模板生成成功，请等待下载完成后查看！");
+
+        window.open(url, "_blank");
+
         this.$q.loading.hide();
       } catch (error) {
         this.$q.loading.hide();
