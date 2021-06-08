@@ -17,6 +17,19 @@ const file = {
           }
         }
     });
+  },
+  bigUpload: async function(data, progressCallback) {
+    console.log("file->login")
+    console.log(data)
+    return axiosInstance.post(`/api/file/big` , data,
+      {
+        headers: HEADERS,
+        onUploadProgress:  (progressEvent) => {
+          if (progressCallback) {
+            progressCallback(progressEvent)
+          }
+        }
+    });
   }
 };
 

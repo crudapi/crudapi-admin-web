@@ -6,6 +6,12 @@ const fileService = {
       console.log(res);
       return res.data;
     })
+  },
+  bigUpload: async function (fileObj, progressCallback) {
+    return file.bigUpload(fileObj, progressCallback).then((res) => {
+      console.log(res);
+      return res.data;
+    })
   }
 };
 
