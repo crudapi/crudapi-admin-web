@@ -114,6 +114,11 @@ export default {
         message: "文件准备中"
       });
 
+      if (!f) {
+        console.info("CFile->cancel");
+        return;
+      }
+
       console.info("CFile->fileAdded");
       console.log(this.bigFile);
 
@@ -134,11 +139,18 @@ export default {
     },
 
     uploadWithBlock(chunk) {
-      let chunks = this.getChunks();
+      const size = this.bigFile.size;
+      const chunkSize = this.chunkSize;
+      const chunks = this.getChunks();
+
+      const start = chunk * chunkSize;
+      const end = ((start + chunkSize) >= size) ? size : start + chunkSize;
+
+      //切割文件
+      const chunkFile = this.bigFile.slice(start,end);
 
       let form = new FormData();
-      form.append('file', this.bigFile);
-
+      form.append('file', chunkFile);
       form.append('name', this.bigFile.name);
       form.append('md5', this.md5);
       form.append('size', this.bigFile.size);
