@@ -37,6 +37,11 @@ function hasPermission(router) {
 }
 
 Router.beforeEach(async (to, from, next) => {
+  if (window.location.hostname === "demo.crudapi.cn" && _hmt && to.path) {
+      _hmt.push(["_trackPageview", to.fullPath]);
+      console.log("上报百度统计", to.fullPath);
+  }
+
   let token = authService.getToken();
   if (token) {
     let userInfo = store.state.user.userInfo;
