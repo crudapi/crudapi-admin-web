@@ -1,7 +1,9 @@
 <template>
   <div>
-      <div class="q-py-md">
-        <q-file v-model="localFile">
+      <q-toggle v-model="enableBigFile" label="开启大文件上传模式" />
+
+      <div v-show="!enableBigFile" class="q-py-md">
+        <q-file v-model="normalFile" label="请选择文件（普通上传）">
           <template v-slot:prepend>
             <q-icon name="attach_file" />
           </template>
@@ -11,8 +13,8 @@
         </q-file>
       </div>
 
-      <div class="q-py-md">
-        <q-file v-model="bigFile" @input="fileAdded">
+      <div v-show="enableBigFile" class="q-py-md">
+        <q-file v-model="bigFile" @input="bigFileAdded" label="请选择文件（大文件上传）">
           <template v-slot:prepend>
             <q-icon name="attach_file" />
           </template>
@@ -22,13 +24,24 @@
         </q-file>
       </div>
 
-      <div class="q-py-md">
+      <div v-if="fileInfo.url" class="q-py-md">
+        <a target="_blank" :href="fileInfo.url">查看文件</a>
+      </div>
+<!--
+      <div v-if="fileInfo.url" class="q-py-md">
         <q-img
           :src="fileInfo.url"
           spinner-color="white"
-          style="height: 140px; max-width: 150px;border: 1px solid gray"
+          style="height: 144px; width: 144px;border: 1px solid gray"
         />
       </div>
+
+      <div v-if="fileInfo.url" class="q-py-md">
+        <q-video
+          :src="fileInfo.url"
+          style="height: 256px; width: 144px; border: 1px solid gray"
+        />
+      </div> -->
   </div>
 </template>
 
@@ -52,7 +65,8 @@ export default {
 
   data() {
     return {
-      localFile: null,
+      enableBigFile: false,
+      normalFile: null,
       bigFile: null,
       chunkSize: 20971520, //20MB
       md5: null,
@@ -90,13 +104,21 @@ export default {
     async onSubmitClick() {
       console.info("CFile->onSubmitClick");
 
+      if (!this.normalFile) {
+        this.$q.notify({
+          message: '请选择文件！',
+          type: 'warning'
+        });
+        return;
+      }
+
       this.$q.loading.show({
         message: "上传中"
       });
 
       try {
         let form = new FormData()
-        form.append('file', this.localFile);
+        form.append('file', this.normalFile);
 
         this.fileInfo = await fileService.upload(form, (e)=> {
           console.info(e);
@@ -109,23 +131,23 @@ export default {
       }
     },
 
-    fileAdded(f) {
-      this.$q.loading.show({
-        message: "文件准备中"
-      });
-
+    bigFileAdded(f) {
       if (!f) {
         console.info("CFile->cancel");
         return;
       }
 
+      this.$q.loading.show({
+        message: "文件准备中"
+      });
+
       console.info("CFile->fileAdded");
-      console.log(this.bigFile);
+      console.info(this.bigFile);
 
       FileMd5(f, this.chunkSize, (e, md5) => {
         this.md5 = md5;
-        console.log(e);
-        console.log(md5);
+        console.info(e);
+        console.info(md5);
         this.$q.loading.hide();
       });
     },
@@ -167,6 +189,7 @@ export default {
          let data = datas[i];
          if (data.isFinished) {
             console.info("CFile->checkFinished");
+            this.fileInfo = data;
             this.$emit("input", this.fileInfo);
             this.$q.loading.hide();
          }
@@ -175,6 +198,15 @@ export default {
 
     async onBigSubmitClick() {
       console.info("CFile->onBigSubmitClick");
+
+      if (!this.bigFile) {
+        this.$q.notify({
+          message: '请选择文件！',
+          type: 'warning'
+        });
+        return;
+      }
+
 
       this.$q.loading.show({
         message: "上传中"
