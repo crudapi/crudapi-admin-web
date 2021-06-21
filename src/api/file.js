@@ -7,7 +7,6 @@ const HEADERS = {
 const file = {
   upload: async function(data, progressCallback) {
     console.log("file->upload")
-    console.log(data)
     return axiosInstance.post(`/api/file` , data,
       {
         headers: HEADERS,
@@ -19,8 +18,7 @@ const file = {
     });
   },
   bigUpload: async function(data, progressCallback) {
-    console.log("file->login")
-    console.log(data)
+    console.log("file->bigUpload")
     return axiosInstance.post(`/api/file/big` , data,
       {
         headers: HEADERS,

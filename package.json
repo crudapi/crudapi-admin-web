@@ -2,7 +2,7 @@
   "name": "crudapi-admin-web",
   "version": "1.0.0",
   "description": "Crudapi Admin Web",
-  "productName": "Crudapi Admin Web App",
+  "productName": "crudapi增删改查接口后台管理系统",
   "author": "admin@crudapi.cn",
   "private": false,
   "license": "MIT",

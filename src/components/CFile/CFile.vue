@@ -132,6 +132,8 @@ export default {
     },
 
     bigFileAdded(f) {
+      console.info("CFile->fileAdded");
+
       if (!f) {
         console.info("CFile->cancel");
         return;
@@ -140,9 +142,6 @@ export default {
       this.$q.loading.show({
         message: "文件准备中"
       });
-
-      console.info("CFile->fileAdded");
-      console.info(this.bigFile);
 
       FileMd5(f, this.chunkSize, (e, md5) => {
         this.md5 = md5;

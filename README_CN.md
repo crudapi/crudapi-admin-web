@@ -52,6 +52,7 @@ docker run -d -p 80:80 --name crudapi-admin-web crudapi-admin-web:latest
 7. [ 基于Vue和Quasar的前端SPA项目实战之业务数据（七）](https://help.crudapi.cn/crudapi-admin-web/business.html)
 8. [ 基于Vue和Quasar的前端SPA项目实战之docker部署（八）](https://help.crudapi.cn/crudapi-admin-web/docker.html)
 9. [ 基于Vue和Quasar的前端SPA项目实战之数据导入（九）](https://help.crudapi.cn/crudapi-admin-web/import.html)
+10. [ 基于Vue和Quasar的前端SPA项目实战之文件上传（九）](https://help.crudapi.cn/crudapi-admin-web/fileupload.html)
 
 持续更新中。。。
 
