@@ -175,6 +175,14 @@ export default {
         ]
       },
 
+      systemBusinessMenu: {
+        label: "内置数据",
+        labelKey: "systemBusiness",
+        icon: "tab",
+        children: [
+        ]
+      },
+
       systemMenu: {
         label: "系统",
         labelKey: "system",
@@ -230,18 +238,28 @@ export default {
         const tables = await metadataTableService.list(1, 9999);
         for (let i = 0; i < tables.length; i++) {
           let table = tables[i];
-          this.businessMenu.children.push({
-              label: table.caption,
-              labelKey: this.getBussinessPath(table.name),
-              icon: "insert_chart_outlined"
-          });
+          if (table.systemable) {
+            this.systemBusinessMenu.children.push({
+                label: table.caption,
+                labelKey: this.getBussinessPath(table.name),
+                icon: "insert_chart_outlined"
+            });
+          } else {
+            this.businessMenu.children.push({
+                label: table.caption,
+                labelKey: this.getBussinessPath(table.name),
+                icon: "insert_chart_outlined"
+            });
+          }
         }
 
         this.allMenu.push(this.businessMenu);
+        this.allMenu.push(this.systemBusinessMenu);
         this.allMenu.push(this.metadataMenu);
         this.allMenu.push(this.systemMenu);
 
         this.$refs.qTreeProxy.setExpanded("business", true);
+        this.$refs.qTreeProxy.setExpanded("systemBusiness", true);
         this.$refs.qTreeProxy.setExpanded("metadata", true);
         this.$refs.qTreeProxy.setExpanded("system", true);
       } catch (error) {

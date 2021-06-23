@@ -102,7 +102,7 @@
               <q-checkbox v-model="props.selected" />
             </q-td>
             <q-td key="dataClickAction" :props="props">
-              <q-btn
+              <q-btn v-if="!props.row.systemable"
                 unelevated
                 @click="onDeleteClickAction(props.row.id)"
                 color="negative"
