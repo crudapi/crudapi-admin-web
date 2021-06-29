@@ -574,7 +574,7 @@ export default {
     }
   },
   computed: {
-    indexLength: function(value) {
+    indexLength: function() {
       if (this.table.indexs) {
         return this.table.indexs.length;
       } else {

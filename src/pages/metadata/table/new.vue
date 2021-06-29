@@ -85,9 +85,16 @@
             <p class="q-px-sm" v-show="reverse"/>
             <q-btn v-show="reverse"
               unelevated
-              @click="onLoadMetadataClickAction()"
+              @click="onLoadMetadata2ClickAction()"
               color="purple"
               label="加载元数据"
+            />
+            <p class="q-px-sm"  v-show="!reverse"/>
+            <q-btn v-show="!reverse"
+              unelevated
+              @click="onIndexClickAction()"
+              color="purple"
+              :label="`联合索引（${indexLength}）`"
             />
             <p class="q-px-sm"  v-show="!reverse"/>
             <q-btn v-show="!reverse"
@@ -255,6 +262,28 @@
         </div>
       </div>
     </div>
+
+    <q-dialog v-model="showIndexDialog" full-width full-height  persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">联合索引</div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="scroll">
+          <CIndexList
+            ref="cIndexListRef"
+            v-model="table">
+          </CIndexList>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn label="取消" unelevated color="negative" v-close-popup />
+          <q-btn @click="onConfirmIndexClick" label="确定" unelevated color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -281,6 +310,7 @@ export default {
       tablePagination: {
         rowsPerPage: 9999
       },
+      showIndexDialog: false,
       visibleColumns: [
         "dataClickAction",
         "displayOrder",
@@ -575,6 +605,15 @@ export default {
       return date.dateTimeFormat(value);
     }
   },
+  computed: {
+    indexLength: function() {
+      if (this.table.indexs) {
+        return this.table.indexs.length;
+      } else {
+        return 0;
+      }
+    }
+  },
   methods: {
     async init(id) {
       this.$store.commit(
@@ -678,7 +717,9 @@ export default {
         table.pluralName = table.name + "s";
         table.tableName = "ca_newtable" + tableCount;
         table.engine = "INNODB";
-        table.columns = this.getInitColumn();
+        if (!this.reverse) {
+          table.columns = this.getInitColumn();
+        }
         this.table = table;
         let sequences = await metadataSequenceService.list(1, 999);
         this.sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
@@ -689,6 +730,31 @@ export default {
         console.error(error);
       }
     },
+
+    async onLoadMetadata2ClickAction() {
+      try {
+        this.$q.loading.show();
+        let metadata = await metadataTableService.getMetadata(this.table.tableName);
+        console.dir(metadata);
+
+        this.table.name = this.table.tableName;
+        this.table.pluralName = this.table.tableName;
+
+        this.table.columns = [];
+
+        metadata.columns.forEach((t) => {
+          this.addRowFromMetadata(t);
+        });
+
+        this.isLoadMetadataValid = true;
+
+        this.$q.loading.hide();
+      } catch (error) {
+        console.error(error);
+        this.$q.loading.hide();
+      }
+    },
+
 
     async onLoadMetadataClickAction() {
       try {
@@ -830,6 +896,15 @@ export default {
           length = typeArr[1].split(")")[0];
       }
 
+      let indexType = null;
+      if (t.Key === "PRI") {
+        indexType = "PRIMARY";
+      } else if (t.Key === "UNI") {
+        indexType = "UNIQUE";
+      } else if (t.Key === "MUL") {
+        indexType = "INDEX";
+      }
+
       const newRow = {
         id: (new Date()).valueOf(),
         autoIncrement: false,
@@ -840,6 +915,7 @@ export default {
         unsigned: type.indexOf("UNSIGNED") >= 0,
         updatable: true,
         dataType : typeArr[0].replace("UNSIGNED", "").trim(),
+        indexType: indexType,
         name: t.Field,
         caption: t.Field,
         description: t.Field,
@@ -883,6 +959,10 @@ export default {
       ids.forEach((id) => {
         this.removeRow(id);
       });
+    },
+
+    onIndexClickAction() {
+      this.showIndexDialog = true;
     },
 
     async onDeleteClickAction(id) {
@@ -992,15 +1072,15 @@ export default {
       const index = columns.findIndex(t => t.id === row.id);
       if (index != 0){
         columns.unshift(columns.splice(index, 1)[0]);
-      }
+      }
     },
     onUpClick: function(row) {
       const columns = this.table.columns;
       const index = columns.findIndex(t => t.id === row.id);
-      if (index != 0){
+      if (index != 0){
         columns[index] = columns.splice(index - 1, 1, columns[index])[0];
         console.dir(columns);
-      }
+      }
     },
     onDownClick: function(row) {
       const columns = this.table.columns;
@@ -1015,6 +1095,13 @@ export default {
       if (index != columns.length - 1){
         columns.push(columns.splice(index, 1)[0]);
       }
+    },
+
+    onConfirmIndexClick: function() {
+      const ref = this.$refs['cIndexListRef'];
+      const data = ref.getData();
+      console.info(data);
+      this.table.indexs = data.indexs;
     }
   }
 }

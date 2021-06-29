@@ -258,16 +258,19 @@ export default {
         const table = extend(true, {}, this.value);
 
         let columnOptions = table.columns;
-        if (table && table.indexs) {
-          table.indexs.forEach(function(item){
-            let columns = [];
-            item.indexLines.forEach(function(indexLine) {
-              columns.push(columnOptions.find(t => t.id === indexLine.column.id));
+        if (table) {
+          if (table.indexs) {
+              table.indexs.forEach(function(item){
+              let columns = [];
+              item.indexLines.forEach(function(indexLine) {
+                columns.push(columnOptions.find(t => t.id === indexLine.column.id));
+              });
+
+              item.columns = columns;
             });
-
-            item.columns = columns;
-          });
-
+          } else {
+            table.indexs = [];
+          }
 
           this.table = table;
         }
@@ -285,7 +288,7 @@ export default {
     },
 
     addRow() {
-      const indexs = this.table.indexs;
+      const indexs = this.table.indexs || [];
       const cursor = indexs.length + 1;
       const newRow = {
         id: (new Date()).valueOf(),
