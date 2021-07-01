@@ -762,16 +762,16 @@ export default {
       const index = columns.findIndex(t => t.id === row.id);
       if (index != 0){
         columns.unshift(columns.splice(index, 1)[0]);
-      }
+      }
     },
     onUpClick: function(row) {
       const columns = this.table.columns;
       const index = columns.findIndex(t => t.id === row.id);
 
-      if (index != 0){
+      if (index != 0){
         columns[index] = columns.splice(index - 1, 1, columns[index])[0];
         console.dir(columns);
-      }
+      }
     },
     onDownClick: function(row) {
       const columns = this.table.columns;

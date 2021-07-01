@@ -94,7 +94,7 @@
               unelevated
               @click="onIndexClickAction()"
               color="purple"
-              :label="`联合索引（${indexLength}）`"
+              :label="`联合索引（${indexCount}）`"
             />
             <p class="q-px-sm"  v-show="!reverse"/>
             <q-btn v-show="!reverse"
@@ -304,6 +304,7 @@ export default {
   data () {
     return {
       reverse: false,
+      indexCount: 0,
       isLoadMetadataValid: true,
       selected: [],
       loading: false,
@@ -1013,6 +1014,21 @@ export default {
       });
       try {
         let table = extend(true, {}, this.table);
+
+        if (table.indexs) {
+          table.indexs.forEach(function(index){
+            index.indexLines.forEach(function(indexLine){
+                const columnId = indexLine.column.id;
+                const column = table.columns.find(t => t.id === columnId);
+                indexLine.column.name = column.name;
+                delete indexLine.column.id;
+            });
+
+            delete index.id;
+            delete index.isNewRow;
+          });
+        }
+
         let displayOrder = 0;
         table.columns.forEach(function(column){
             column.displayOrder = displayOrder++;
@@ -1101,7 +1117,12 @@ export default {
       const ref = this.$refs['cIndexListRef'];
       const data = ref.getData();
       console.info(data);
-      this.table.indexs = data.indexs;
+      this.table.indexs  = data.indexs;
+      if (this.table.indexs) {
+        this.indexCount = this.table.indexs.length;
+      } else {
+        this.indexCount = 0;
+      }
     }
   }
 }

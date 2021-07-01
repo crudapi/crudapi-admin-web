@@ -334,10 +334,10 @@ export default {
     getData() {
       let newIndexs = [];
       this.table.indexs.forEach(function(item){
-          if (item.isNewRow) {
-            delete item.id;
-            delete item.isNewRow;
-          }
+          // if (item.isNewRow) {
+          //   delete item.id;
+          //   delete item.isNewRow;
+          // }
 
           const newIndexLines = [];
           item.columns.forEach(function(column){
@@ -351,6 +351,7 @@ export default {
 
           const newIndex = {
             id: item.id,
+            isNewRow: item.isNewRow,
             caption: item.caption,
             description: item.description,
             indexStorage: item.indexStorage,

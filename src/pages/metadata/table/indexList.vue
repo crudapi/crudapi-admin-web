@@ -40,6 +40,7 @@
 <script>
 import { metadataTableService } from "../../../service";
 import { date } from "../../../utils";
+import { extend } from 'quasar'
 
 export default {
   data () {
@@ -127,8 +128,6 @@ export default {
           })
           .onOk(async () => {
             await this.onSubmit();
-            this.$q.notify("修改成功");
-            this.loadData();
           })
           .onCancel(() => {})
           .onDismiss(() => {
@@ -143,12 +142,29 @@ export default {
       this.$q.loading.show({
         message: "提交中"
       });
-      const ref = this.$refs['cIndexListRef'];
-      const data = ref.getData();
 
-      await metadataTableService.update(this.$route.params.id, data);
+      try {
+        const ref = this.$refs['cIndexListRef'];
+        const data = ref.getData();
 
-      this.$q.loading.hide();
+        let indexData = extend(true, {}, data);
+        indexData.indexs.forEach(function(item) {
+          if (item.isNewRow) {
+            delete item.id;
+            delete item.isNewRow;
+          }
+        });
+
+        await metadataTableService.update(this.$route.params.id, indexData);
+
+        this.$q.notify("修改成功");
+        this.$q.loading.hide();
+
+        this.loadData();
+      } catch (error) {
+        console.error(error);
+        this.$q.loading.hide();
+      }
     }
   }
 }
