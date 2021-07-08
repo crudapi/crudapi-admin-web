@@ -86,11 +86,11 @@
             <q-btn v-show="reverse"
               unelevated
               @click="onLoadMetadata2ClickAction()"
-              color="purple"
+              color="primary"
               label="加载元数据"
             />
-            <p class="q-px-sm"  v-show="!reverse"/>
-            <q-btn v-show="!reverse"
+            <p class="q-px-sm"/>
+            <q-btn
               unelevated
               @click="onIndexClickAction()"
               color="purple"
@@ -208,8 +208,7 @@
               <span v-else> {{ props.row.scale }}</span>
             </q-td>
             <q-td key="autoIncrement" :props="props">
-              <q-toggle v-if="!isCanEdit(props.row) && props.row.name=='id'"
-                disable v-model="props.row.autoIncrement"/>
+              <q-toggle disable v-model="props.row.autoIncrement"/>
             </q-td>
             <q-td key="nullable" :props="props">
               <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.nullable"/></span>
@@ -743,8 +742,9 @@ export default {
 
         this.table.columns = [];
 
+        let singleIndexColumns = this.getSingleIndexColumns(metadata.indexs);
         metadata.columns.forEach((t) => {
-          this.addRowFromMetadata(t);
+          this.addRowFromMetadata(t, singleIndexColumns);
         });
 
         this.isLoadMetadataValid = true;
@@ -886,29 +886,69 @@ export default {
       this.addRow();
     },
 
-    addRowFromMetadata(t) {
+    indexsGroupBy(indexs) {
+      const groups = {};
+      indexs.forEach(function (t) {
+        if (groups[t.Key_name]) {
+          groups[t.Key_name].push(t);
+        } else {
+          groups[t.Key_name] = [t];
+        }
+      });
+
+      return groups;
+    },
+
+    getSingleIndexColumns(indexs) {
+      let singleIndexColumns = {};
+      const groups = this.indexsGroupBy(indexs);
+      for (let key in groups) {
+        const group = groups[key];
+        if (group.length > 1) {
+          console.info(key + "is union index");
+        } else {
+          singleIndexColumns[group[0].Column_name] = group[0];
+        }
+      }
+
+      //console.dir(singleIndexColumns);
+
+      return singleIndexColumns;
+    },
+
+    addRowFromMetadata(t, singleIndexColumns) {
       const columns = this.table.columns;
       const index = columns.length + 1;
       const type = t.Type.toUpperCase();
+      const name = t.Field;
 
       let length = 10;
       let typeArr = type.split("(");
       if (typeArr.length > 1) {
-          length = typeArr[1].split(")")[0];
+        length = typeArr[1].split(")")[0];
       }
 
       let indexType = null;
-      if (t.Key === "PRI") {
-        indexType = "PRIMARY";
-      } else if (t.Key === "UNI") {
-        indexType = "UNIQUE";
-      } else if (t.Key === "MUL") {
-        indexType = "INDEX";
+      let indexStorage = null;
+      let indexColumn = singleIndexColumns[name];
+      if (indexColumn) {
+        //console.dir(indexColumn);
+        if (indexColumn.Key_name === "PRIMARY") {
+          indexType = "PRIMARY";
+        } else if (indexColumn.Index_type === "FULLTEXT") {
+          indexType = "FULLTEXT";
+        } else if (indexColumn.Non_unique === 0) {
+          indexType = "UNIQUE";
+          indexStorage = indexColumn.Index_type;
+        } else {
+          indexType = "INDEX";
+          indexStorage = indexColumn.Index_type;
+        }
       }
 
       const newRow = {
         id: (new Date()).valueOf(),
-        autoIncrement: false,
+        autoIncrement:  (t.Extra === "auto_increment"),
         displayOrder: columns.length,
         insertable: true,
         nullable: (t.Null === "YES"),
@@ -917,12 +957,14 @@ export default {
         updatable: true,
         dataType : typeArr[0].replace("UNSIGNED", "").trim(),
         indexType: indexType,
-        name: t.Field,
-        caption: t.Field,
-        description: t.Field,
+        indexStorage: indexStorage,
+        name: name,
+        caption: name,
+        description: name,
         length: length,
         systemable: false
       };
+      //console.dir(newRow);
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
     },
 
