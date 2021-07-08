@@ -997,6 +997,7 @@ export default {
 
       let indexType = null;
       let indexStorage = null;
+      let indexName = null;
       let indexColumn = singleIndexColumns[name];
       if (indexColumn) {
         //console.dir(indexColumn);
@@ -1004,11 +1005,14 @@ export default {
           indexType = "PRIMARY";
         } else if (indexColumn.Index_type === "FULLTEXT") {
           indexType = "FULLTEXT";
+          indexName = indexColumn.Key_name;
         } else if (indexColumn.Non_unique === 0) {
           indexType = "UNIQUE";
+          indexName = indexColumn.Key_name;
           indexStorage = indexColumn.Index_type;
         } else {
           indexType = "INDEX";
+          indexName = indexColumn.Key_name;
           indexStorage = indexColumn.Index_type;
         }
       }
@@ -1026,6 +1030,7 @@ export default {
         dataType : typeArr[0].replace("UNSIGNED", "").trim(),
         indexType: indexType,
         indexStorage: indexStorage,
+        indexName: indexName,
         name: name,
         caption: comment,
         description: comment,

@@ -199,8 +199,7 @@
               <span v-else> {{ props.row.scale }}</span>
             </q-td>
             <q-td key="autoIncrement" :props="props">
-              <q-toggle v-if="!isCanEdit(props.row) && props.row.name=='id'"
-                disable v-model="props.row.autoIncrement"/>
+              <q-toggle disable v-model="props.row.autoIncrement"/>
             </q-td>
             <q-td key="nullable" :props="props">
               <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.nullable"/></span>
