@@ -739,13 +739,19 @@ export default {
 
         this.table.name = this.table.tableName;
         this.table.pluralName = this.table.tableName;
+        this.table.caption = metadata.Comment ? metadata.Comment : this.table.tableName;
+        this.table.engine = metadata.Engine.toUpperCase();
 
         this.table.columns = [];
 
-        let singleIndexColumns = this.getSingleIndexColumns(metadata.indexs);
+        let indexColumns = this.getIndexColumns(metadata.indexs);
+
+        let baseId = (new Date()).valueOf();
         metadata.columns.forEach((t) => {
-          this.addRowFromMetadata(t, singleIndexColumns);
+          this.addRowFromMetadata(baseId++, t, indexColumns.single);
         });
+
+        this.addIndexFromMetadata(indexColumns.union);
 
         this.isLoadMetadataValid = true;
 
@@ -899,24 +905,85 @@ export default {
       return groups;
     },
 
-    getSingleIndexColumns(indexs) {
-      let singleIndexColumns = {};
+    getIndexColumns(indexs) {
+      let single = {};
+      let union = {};
       const groups = this.indexsGroupBy(indexs);
       for (let key in groups) {
         const group = groups[key];
         if (group.length > 1) {
           console.info(key + "is union index");
+          union[group[0].Key_name] = group;
         } else {
-          singleIndexColumns[group[0].Column_name] = group[0];
+          single[group[0].Column_name] = group[0];
         }
       }
-
-      //console.dir(singleIndexColumns);
-
-      return singleIndexColumns;
+      return {
+        single: single,
+        union: union
+      };
     },
 
-    addRowFromMetadata(t, singleIndexColumns) {
+
+    addIndexFromMetadata(union) {
+      let baseId = (new Date()).valueOf();
+
+      let newIndexs = [];
+      const tableColumns = this.table.columns;
+      console.dir(tableColumns);
+
+      for (let key in union) {
+        const unionLines = union[key];
+        const newIndexLines = [];
+
+        unionLines.forEach((item) => {
+          const columnName = item.Column_name;
+          const columnId = tableColumns.find(t => t.name === columnName).id;
+
+          newIndexLines.push({
+            column: {
+              id: columnId,
+              name: columnName
+            }
+          });
+        });
+
+        const unionLineFirst = unionLines[0];
+        let indexType = null;
+        let indexStorage = null;
+        if (unionLineFirst.Non_unique === 0) {
+          indexType = "UNIQUE";
+          indexStorage = unionLineFirst.Index_type;
+        } else {
+          indexType = "INDEX";
+          indexStorage = unionLineFirst.Index_type;
+        }
+
+        const indexComment = unionLineFirst.Index_comment ? unionLineFirst.Index_comment:  unionLineFirst.Key_name;
+
+        const newIndex = {
+          id: baseId++,
+          isNewRow: true,
+          caption: indexComment,
+          description: indexComment,
+          indexStorage: indexStorage,
+          indexType: indexType,
+          name: unionLineFirst.Key_name,
+          indexLines: newIndexLines
+        }
+
+        newIndexs.push(newIndex);
+      }
+
+      this.table.indexs = newIndexs;
+      if (this.table.indexs) {
+        this.indexCount = this.table.indexs.length;
+      } else {
+        this.indexCount = 0;
+      }
+    },
+
+    addRowFromMetadata(id, t, singleIndexColumns) {
       const columns = this.table.columns;
       const index = columns.length + 1;
       const type = t.Type.toUpperCase();
@@ -945,9 +1012,10 @@ export default {
           indexStorage = indexColumn.Index_type;
         }
       }
+      const comment = t.Comment ? t.Comment : name;
 
       const newRow = {
-        id: (new Date()).valueOf(),
+        id: id,
         autoIncrement:  (t.Extra === "auto_increment"),
         displayOrder: columns.length,
         insertable: true,
@@ -959,8 +1027,8 @@ export default {
         indexType: indexType,
         indexStorage: indexStorage,
         name: name,
-        caption: name,
-        description: name,
+        caption: comment,
+        description: comment,
         length: length,
         systemable: false
       };
