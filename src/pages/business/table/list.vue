@@ -86,7 +86,7 @@
       <q-table
         :data="data"
         :columns="columns"
-        row-key="id"
+        :row-key="primaryName"
         selection="multiple"
         :selected.sync="selected"
         :visible-columns="visibleColumns"
@@ -103,7 +103,7 @@
               <div v-if="key.indexOf('dataClickAction') >= 0">
                 <q-btn
                   unelevated
-                  @click="onDeleteClickAction(props.row.id)"
+                  @click="onDeleteClickAction(props.row)"
                   color="negative"
                   label="删除"
                   flat
@@ -111,7 +111,7 @@
                 ></q-btn>
                 <q-btn
                   unelevated
-                  @click="onEditClickAction(props.row.id)"
+                  @click="onEditClickAction(props.row)"
                   color="primary"
                   label="编辑"
                   flat
@@ -150,6 +150,7 @@ export default {
       data: [],
       tableName: "",
       tableCaption: "",
+      primaryName: "",
       listUrl: "",
       loading: true,
       selected: [],
@@ -272,18 +273,18 @@ export default {
       this.$router.push("/business/" + this.tableName + "/new",);
     },
 
-    onEditClickAction(recId) {
-      this.$router.push("/business/" + this.tableName + "/" + recId);
+    onEditClickAction(row) {
+      this.$router.push("/business/" + this.tableName + "/" + row[this.primaryName]);
     },
 
     onImportClickAction() {
       this.$router.push("/business/" + this.tableName + "/import");
     },
 
-    async onDeleteClickAction(id) {
+    async onDeleteClickAction(row) {
       let ids = [];
-      this.selected.forEach(function(val){
-          ids.push(val.id);
+      this.selected.forEach((val) => {
+          ids.push(val[this.primaryName]);
       });
 
       try {
@@ -301,8 +302,8 @@ export default {
             persistent: false
           })
           .onOk(async () => {
-            if (id) {
-              await tableService.delete(this.tableName, id);
+            if (row) {
+              await tableService.delete(this.tableName, row[this.primaryName]);
             } else {
               await tableService.batchDelete(this.tableName, ids);
             }
@@ -386,6 +387,7 @@ export default {
       try {
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
+        this.primaryName = table.columns.find(t => t.indexType === "PRIMARY").name;
         this.listUrl = "/business/" + this.tableName;
 
         const tableRelations = await metadataRelationService.getByName(this.tableName);
