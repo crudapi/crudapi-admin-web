@@ -187,6 +187,10 @@ export default {
 
       indexTypeOptions: [
         {
+          value: "PRIMARY",
+          label: "主键"
+        },
+        {
           value: "UNIQUE",
           label: "唯一"
         },

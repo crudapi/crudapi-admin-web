@@ -378,6 +378,13 @@ export default {
           .dialog({
             title: "删除",
             message: "确认删除吗？",
+            options: {
+              type: 'toggle',
+              model: [true],
+              items: [
+                { label: '是否删除物理表', value: true }
+              ]
+            },
             ok: {
               unelevated: true
             },
@@ -387,17 +394,20 @@ export default {
             },
             persistent: false
           })
-          .onOk(async () => {
+          .onOk(async (data) => {
+            console.log(data);
             if (id) {
-              await metadataTableService.delete(id);
+              await metadataTableService.delete(id, data[0]);
             } else {
-              await metadataTableService.batchDelete(ids);
+              await metadataTableService.batchDelete(ids, data[0]);
             }
 
             this.$q.notify("删除成功");
             this.reload();
           })
-          .onCancel(() => {})
+          .onCancel((data) => {
+            console.info("I am triggered on Cancel");
+          })
           .onDismiss(() => {
             console.info("I am triggered on both OK and Cancel");
           });

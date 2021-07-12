@@ -71,12 +71,21 @@ const metadataTable = {
       columnNameLsit
     );
   },
-  delete: function(id) {
-    return axiosInstance.delete("/api/metadata/tables/" + id);
+  delete: function(id, isDropPhysicalTable) {
+    return axiosInstance.delete("/api/metadata/tables/" + id, {
+      params: {
+        isDropPhysicalTable: isDropPhysicalTable
+      }
+    });
   },
-  batchDelete: function(ids) {
+  batchDelete: function(ids, isDropPhysicalTable) {
     return axiosInstance.delete("/api/metadata/tables",
-      {data: ids}
+      {
+        data:  ids,
+        params: {
+          isDropPhysicalTable: isDropPhysicalTable
+        }
+      }
     );
   }
 };

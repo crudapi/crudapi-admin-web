@@ -951,7 +951,9 @@ export default {
         const unionLineFirst = unionLines[0];
         let indexType = null;
         let indexStorage = null;
-        if (unionLineFirst.Non_unique === 0) {
+        if (unionLineFirst.Key_name === "PRIMARY") {
+          indexType = "PRIMARY";
+        } else if (unionLineFirst.Non_unique === 0) {
           indexType = "UNIQUE";
           indexStorage = unionLineFirst.Index_type;
         } else {

@@ -33,12 +33,12 @@ const metadataTableService = {
     var res = await metadataTable.repairMeataData(name, columnNameLsit);
     return res.data;
   },
-  delete: async function(id) {
-    var res = await metadataTable.delete(id);
+  delete: async function(id, isDropPhysicalTable) {
+    var res = await metadataTable.delete(id, isDropPhysicalTable);
     return res.data;
   },
-  batchDelete: async function(ids) {
-    var res = await metadataTable.batchDelete(ids);
+  batchDelete: async function(ids, isDropPhysicalTable) {
+    var res = await metadataTable.batchDelete(ids, isDropPhysicalTable);
     return res.data;
   }
 };
