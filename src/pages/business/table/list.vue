@@ -86,7 +86,7 @@
       <q-table
         :data="data"
         :columns="columns"
-        :row-key="primaryName"
+        :row-key="getRecId"
         selection="multiple"
         :selected.sync="selected"
         :visible-columns="visibleColumns"
@@ -150,7 +150,7 @@ export default {
       data: [],
       tableName: "",
       tableCaption: "",
-      primaryName: "",
+      primaryNames: [],
       listUrl: "",
       loading: true,
       selected: [],
@@ -274,17 +274,36 @@ export default {
     },
 
     onEditClickAction(row) {
-      this.$router.push("/business/" + this.tableName + "/" + row[this.primaryName]);
+      const recId = this.getRecId(row);
+      console.log(recId);
+
+      this.$router.push("/business/" + this.tableName + "/" + recId);
     },
 
     onImportClickAction() {
       this.$router.push("/business/" + this.tableName + "/import");
     },
 
+    getRecId(row) {
+      if (this.primaryNames.length === 1) {
+        return row[this.primaryNames[0]];
+      } else {
+        let recIds = [];
+        this.primaryNames.forEach((primaryName) => {
+          recIds.push(primaryName + "=" + row[primaryName]);
+        });
+
+        const recId = recIds.join(",");
+        console.log(recId);
+
+        return recId;
+      }
+    },
+
     async onDeleteClickAction(row) {
       let ids = [];
-      this.selected.forEach((val) => {
-          ids.push(val[this.primaryName]);
+      this.selected.forEach((item) => {
+          ids.push(this.getRecId(item));
       });
 
       try {
@@ -303,7 +322,7 @@ export default {
           })
           .onOk(async () => {
             if (row) {
-              await tableService.delete(this.tableName, row[this.primaryName]);
+              await tableService.delete(this.tableName, this.getRecId(row));
             } else {
               await tableService.batchDelete(this.tableName, ids);
             }
@@ -387,7 +406,7 @@ export default {
       try {
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
-        this.primaryName = table.columns.find(t => t.indexType === "PRIMARY").name;
+        this.primaryNames = table.primaryNames;
         this.listUrl = "/business/" + this.tableName;
 
         const tableRelations = await metadataRelationService.getByName(this.tableName);
