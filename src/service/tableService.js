@@ -18,14 +18,7 @@ const tableService = {
     return res.data;
   },
   listByIds: async function(tableName, ids) {
-    let filter = {
-      "name":"L",
-      "columnName":"id",
-      "operatorType": "IN",
-      "values": ids
-    };
-
-    var res = await table.list(tableName, 1, 9999, null, null, filter);
+    var res = await table.listAllByIds(tableName, ids);
     return res.data;
   },
   get: async function(tableName, id) {

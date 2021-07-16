@@ -359,16 +359,49 @@ export default {
       }
     },
 
+    getRecId(tableDTO, dataMap) {
+      const primaryNames = tableDTO.primaryNames;
+      if (primaryNames.length === 1) {
+        return dataMap[primaryNames[0]];
+      } else {
+        let recIds = [];
+        primaryNames.forEach((primaryName) => {
+          recIds.push(primaryName + "=" + dataMap[primaryName]);
+        });
+
+        const recId = recIds.join(",");
+        console.log(recId);
+
+        return recId;
+      }
+    },
+
     async loadMeta() {
       console.info("CTableEdit loadMeta");
+      const that = this;
 
       this.loading = true;
       this.insertColumns = [];
       try {
+        /* 主表元数据 */
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
+
+        /* 关联关系 */
         const tableRelations = await metadataRelationService.getByName(this.tableName);
 
+        /* 关联表元数据 */
+        let relationMetadataMap = {};
+        await Promise.all(tableRelations.map(async (tableRelation) => {
+           if (tableRelation.relationType === "OneToOneMainToSub"
+            || tableRelation.relationType === "OneToMany") {
+            const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+
+            relationMetadataMap[tableRelation.toTable.name] = relationTable;
+           }
+        }));
+
+        /* 主表业务数据 */
         let tableData = await tableService.get(this.tableName, this.recId);
         this.tableData = tableData;
 
@@ -377,7 +410,8 @@ export default {
         tableRelations.forEach((tableRelation) => {
           if (tableRelation.relationType === "OneToOneMainToSub") {
             let recId = null;
-            tableData[tableRelation.name] && (recId = tableData[tableRelation.name].id);
+            tableData[tableRelation.name] && (recId = that.getRecId(relationMetadataMap[tableRelation.toTable.name]), tableData[tableRelation.name]);
+            console.dir(recId);
             oneToOneMainToSubTables.push({
               "relationName": tableRelation.name,
               "tableName": tableRelation.toTable.name,
@@ -388,9 +422,11 @@ export default {
             let recIds = [];
             if (tableData[tableRelation.name]) {
               tableData[tableRelation.name].forEach((item) => {
-                recIds.push(item.id);
+                recIds.push(that.getRecId(relationMetadataMap[tableRelation.toTable.name], item));
               });
             }
+
+            console.dir(recIds);
             oneToManySubTables.push({
               "relationName": tableRelation.name,
               "tableName": tableRelation.toTable.name,

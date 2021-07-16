@@ -44,6 +44,14 @@ const table = {
       }
     );
   },
+  listAllByIds: function(tableName, ids) {
+    return axiosInstance.post("/api/business/" + tableName + "/all",
+      ids,
+      {
+        params: {}
+      }
+    );
+  },
   count: function(tableName, search, query) {
     return axiosInstance.get("/api/business/" + tableName + "/count",
       {

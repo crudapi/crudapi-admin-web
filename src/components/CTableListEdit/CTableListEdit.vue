@@ -16,7 +16,7 @@
     <q-table v-show="expand"
       :data="qTableData"
       :columns="qTableColums"
-      row-key="id"
+      :row-key="getRecId"
       selection="multiple"
       :selected.sync="selected"
       :pagination.sync="tablePagination"
@@ -48,7 +48,7 @@
           </q-td>
           <q-td key="dataClickAction" :props="props">
             <q-btn unelevated
-              @click="onDeleteClickAction(props.row.id)"
+              @click="onDeleteClickAction(props.row)"
               color="negative"
               icon="delete_forever"
               flat
@@ -116,10 +116,11 @@
                 v-else style="min-width: 80px;"
                 :placeholder="getPlaceHolderByKey(colKey, props.cols)"
                 v-model="props.row[colKey]"
-                :type="passwordMaps[props.key][colKey].isPwd ? 'password' : 'text'" >
-                <template v-slot:append v-if="!passwordMaps[props.key][colKey].isText" >
+                :type="getInputTextType(props, colKey)" >
+                <template v-slot:append 
+                v-if="isPasswordTextType(props, colKey)" >
                   <q-icon
-                    :name="passwordMaps[props.key][colKey].isPwd ? 'visibility_off' : 'visibility'"
+                    :name="getInputIcon(props, colKey)"
                     class="cursor-pointer"
                     @click="togglePwd(colKey, props.key)"
                   />
@@ -205,6 +206,7 @@ export default {
       passwordMap: {},
       passwordMaps: {},
       tableCaption: "",
+      primaryNames: [],
       expand: true,
       insertColumns: [],
       relationMap: {},
@@ -383,8 +385,10 @@ export default {
       let newPasswordMaps =  extend(true, {}, this.passwordMaps);
 
       let newPasswordMap = newPasswordMaps[key];
-      newPasswordMap[colKey].isPwd = !newPasswordMap[colKey].isPwd;
-
+      if (newPasswordMap) {
+        newPasswordMap[colKey].isPwd = !newPasswordMap[colKey].isPwd;
+      }
+      
       this.passwordMaps = newPasswordMaps;
     },
 
@@ -397,6 +401,30 @@ export default {
       return null;
     },
 
+    getInputTextType: function(props, colKey) {
+      if (this.passwordMaps[props.key] && this.passwordMaps[props.key][colKey].isPwd) {
+        return "password";
+      } else {
+        return "text";
+      }
+    },
+
+    isPasswordTextType: function(props, colKey) {
+      if (this.passwordMaps[props.key] && this.passwordMaps[props.key][colKey].isPwd) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    getInputIcon: function(props, colKey) {
+      if (this.passwordMaps[props.key] && this.passwordMaps[props.key][colKey].isPwd) {
+        return "visibility_off";
+      } else {
+        return "visibility";
+      }
+    },
+
     addRow() {
       const index = this.qTableData.length + 1;
       const newRow = { isNewRow: true };
@@ -404,15 +432,17 @@ export default {
       this.insertColumns.forEach((column) => {
         newRow[column.name] = column.value;
       });
-      newRow.id = (new Date()).valueOf();
-
+    
       this.qTableData  = [ ...this.qTableData.slice(0, index), newRow, ...this.qTableData.slice(index) ];
+      
+      const id = this.getRecIdByDataMap(newRow);
 
-      this.passwordMaps[newRow.id] = extend(true, {}, this.passwordMap);
+      this.passwordMaps[id] = extend(true, {}, this.passwordMap);
     },
 
     removeRow(id) {
-      const index = this.qTableData.findIndex(t => t.id === id);
+      console.log("removeRow = " + id);
+      const index = this.qTableData.findIndex(t => this.getRecId(t) === id);
       if (index >= 0) {
         this.qTableData = [ ...this.qTableData.slice(0, index), ...this.qTableData.slice(index + 1) ];
       }
@@ -430,14 +460,14 @@ export default {
       this.addRow();
     },
 
-    async onDeleteClickAction(id) {
+    async onDeleteClickAction(row) {
       let ids = [];
-      this.selected.forEach((row) => {
-        ids.push(row.id);
+      this.selected.forEach((item) => {
+        ids.push(this.getRecId(item));
       });
       console.info(JSON.stringify(ids));
-      if (id) {
-        this.removeRow(id);
+      if (row) {
+        this.removeRow(this.getRecId(row));
       } else {
         this.batchRemoveRow(ids);
         this.selected = [];
@@ -522,14 +552,50 @@ export default {
       }
     },
 
+    getRecId(row) {
+      if (this.primaryNames.length === 1) {
+        return row[this.primaryNames[0]];
+      } else {
+        let recIds = [];
+        this.primaryNames.forEach((primaryName) => {
+          recIds.push(primaryName + "=" + row[primaryName]);
+        });
+
+        const recId = recIds.join(",");
+        console.log(recId);
+
+        return recId;
+      }
+    },
+
+    getRecIdByDataMap(dataMap) {
+      const primaryNames = this.primaryNames;
+      if (primaryNames.length === 1) {
+        return dataMap[primaryNames[0]];
+      } else {
+        let recIds = [];
+        primaryNames.forEach((primaryName) => {
+          recIds.push(primaryName + "=" + dataMap[primaryName]);
+        });
+
+        const recId = recIds.join(",");
+        console.log(recId);
+
+        return recId;
+      }
+    },
+
     async loadMeta() {
       this.loading = true;
       try {
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
+        this.primaryNames = table.primaryNames;
         const tableRelations = await metadataRelationService.getByName(this.tableName);
 
+        console.dir("listByIds:" + this.tableName);
         let tableDatas = await tableService.listByIds(this.tableName, this.recIds);
+        console.dir(tableDatas);
 
         let oneToOneMainToSubTables = [];
         let oneToManySubTables = [];
@@ -714,7 +780,9 @@ export default {
         this.qTableColums = qTableColums;
 
         tableDatas.forEach((tableData) => {
-          this.passwordMaps[tableData.id] = extend(true, {}, this.passwordMap);
+          console.log(tableData);
+          const key = this.getRecIdByDataMap(tableData);
+          this.passwordMaps[key] = extend(true, {}, this.passwordMap);
         });
 
         this.qTableData = tableDatas;
