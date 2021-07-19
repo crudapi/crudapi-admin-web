@@ -111,10 +111,11 @@
                 v-else style="min-width: 80px;"
                 :placeholder="getPlaceHolderByKey(colKey, props.cols)"
                 v-model="props.row[colKey]"
-                :type="passwordMaps[props.key][colKey].isPwd ? 'password' : 'text'" >
-                <template v-slot:append v-if="!passwordMaps[props.key][colKey].isText" >
+                :type="getInputTextType(props, colKey)" >
+                <template v-slot:append
+                  v-if="isPasswordTextType(props, colKey)" >
                   <q-icon
-                    :name="passwordMaps[props.key][colKey].isPwd ? 'visibility_off' : 'visibility'"
+                    :name="getInputIcon(props, colKey)"
                     class="cursor-pointer"
                     @click="togglePwd(colKey, props.key)"
                   />
@@ -130,14 +131,14 @@
               <div :key="item.relationName" v-for="item in oneToOneMainToSubTables">
                 <CTableNew
                 :fkColumnName="item.fkColumnName"
-                :ref="'rTableNewRef' + item.relationName + props.row.id"
+                :ref="getRefName('rTableNewRef', item.relationName, props.row)"
                 :tableName="item.tableName" ></CTableNew>
               </div>
 
               <div :key="item.relationName" v-for="item in oneToManySubTables">
                 <CTableList
                 :fkColumnName="item.fkColumnName"
-                :ref="'rTableListRef' + item.relationName + props.row.id"
+                :ref="getRefName('rTableListRef', item.relationName, props.row)"
                 :tableName="item.tableName"
                  ></CTableList>
               </div>
@@ -179,7 +180,9 @@ export default {
     return {
       passwordMap: {},
       passwordMaps: {},
+      relationMetadataMap: {},
       tableCaption: "",
+      primaryNames: [],
       expand: true,
       insertColumns: [],
       relationMap: {},
@@ -371,14 +374,14 @@ export default {
       this.addRow();
     },
 
-    async onDeleteClickAction(id) {
+    async onDeleteClickAction(row) {
       let ids = [];
-      this.selected.forEach((row) => {
-        ids.push(row.id);
+      this.selected.forEach((item) => {
+        ids.push(this.getRecId(item));
       });
 
-      if (id) {
-        this.removeRow(id);
+      if (row) {
+        this.removeRow(this.getRecId(row));
       } else {
         this.batchRemoveRow(ids);
         this.selected = [];
@@ -433,12 +436,75 @@ export default {
       }
     },
 
+
+    getInputTextType: function(props, colKey) {
+      if (this.passwordMaps[props.key] && this.passwordMaps[props.key][colKey].isPwd) {
+        return "password";
+      } else {
+        return "text";
+      }
+    },
+
+    isPasswordTextType: function(props, colKey) {
+      if (this.passwordMaps[props.key] && this.passwordMaps[props.key][colKey].isPwd) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    getInputIcon: function(props, colKey) {
+      if (this.passwordMaps[props.key] && this.passwordMaps[props.key][colKey].isPwd) {
+        return "visibility_off";
+      } else {
+        return "visibility";
+      }
+    },
+
+    getRefName: function(prefix, relationName, row) {
+      const refName = prefix + relationName + this.getRecId(row);
+      console.log(refName);
+      return refName;
+    },
+
+    getRecId(row) {
+      if (this.primaryNames.length === 1) {
+        return row[this.primaryNames[0]];
+      } else {
+        let recIds = [];
+        this.primaryNames.forEach((primaryName) => {
+          recIds.push(primaryName + "=" + row[primaryName]);
+        });
+
+        const recId = recIds.join(",");
+        console.log(recId);
+
+        return recId;
+      }
+    },
+
     async loadMeta() {
       this.loading = true;
       try {
+        /* 主表元数据 */
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
+        this.primaryNames = table.primaryNames;
+
+        /* 关联关系 */
         const tableRelations = await metadataRelationService.getByName(this.tableName);
+
+        /* 关联表元数据 */
+        let relationMetadataMap = {};
+        await Promise.all(tableRelations.map(async (tableRelation) => {
+           if (tableRelation.relationType === "OneToOneMainToSub"
+            || tableRelation.relationType === "OneToMany") {
+            const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+
+            relationMetadataMap[tableRelation.toTable.name] = relationTable;
+           }
+        }));
+        this.relationMetadataMap = relationMetadataMap;
 
         let oneToOneMainToSubTables = [];
         let oneToManySubTables = [];

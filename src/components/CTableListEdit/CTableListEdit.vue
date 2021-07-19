@@ -134,33 +134,35 @@
           <q-td colspan="100%">
             <div class="text-left">
               <div :key="item.relationName" v-for="item in oneToOneMainToSubTables">
-                <CTableEdit v-if="!!item.recIdMap[props.row.id]"
-                  :recId="item.recIdMap[props.row.id]"
+                <CTableEdit 
+                  v-if="isExistCTableListEdit(item.recIdsMap, props.row)"
+                  :recIds="getCTableListEditRecIds(item.recIdsMap, props.row)"
                   :fkColumnName="item.fkColumnName"
-                  :ref="'rTableNewOrEditRef' + item.relationName + props.row.id"
-                  :tableName="item.tableName" ></CTableEdit>
+                  :ref="getRefName('rTableNewOrEditRef', item.relationName, props.row)"
+                  :tableName="item.tableName" >
+                </CTableEdit>
 
                 <CTableNew v-else
                   :fkColumnName="item.fkColumnName"
-                  :ref="'rTableNewOrEditRef' + item.relationName + props.row.id"
-                  :tableName="item.tableName" ></CTableNew>
+                  :ref="getRefName('rTableNewOrEditRef', item.relationName, props.row)"
+                  :tableName="item.tableName" >
+                </CTableNew>
               </div>
 
               <div :key="item.relationName" v-for="item in oneToManySubTables">
                 <CTableListEdit
-                 v-if="item.recIdsMap[props.row.id]
-                 && item.recIdsMap[props.row.id].length > 0"
-                :recIds="item.recIdsMap[props.row.id]"
-                :fkColumnName="item.fkColumnName"
-                :ref="'rTableListRef' + item.relationName + props.row.id"
-                :tableName="item.tableName"
-                 ></CTableListEdit>
+                  v-if="isExistCTableListEdit(item.recIdsMap, props.row)"
+                  :recIds="getCTableListEditRecIds(item.recIdsMap, props.row)"
+                  :fkColumnName="item.fkColumnName"
+                  :ref="getRefName('rTableListRef', item.relationName, props.row)"
+                  :tableName="item.tableName">
+                </CTableListEdit>
 
                 <CTableList  v-else
-                :fkColumnName="item.fkColumnName"
-                :ref="'rTableListRef' + item.relationName + props.row.id"
-                :tableName="item.tableName"
-                 ></CTableList>
+                  :fkColumnName="item.fkColumnName"
+                  :ref="getRefName('rTableListRef', item.relationName, props.row)"
+                  :tableName="item.tableName">
+                </CTableList>
               </div>
             </div>
           </q-td>
@@ -205,6 +207,7 @@ export default {
     return {
       passwordMap: {},
       passwordMaps: {},
+      relationMetadataMap: {},
       tableCaption: "",
       primaryNames: [],
       expand: true,
@@ -409,6 +412,12 @@ export default {
       }
     },
 
+    getRefName: function(prefix, relationName, row) {
+      const refName = prefix + relationName + this.getRecId(row);
+      console.log(refName);
+      return refName;
+    },
+
     isPasswordTextType: function(props, colKey) {
       if (this.passwordMaps[props.key] && this.passwordMaps[props.key][colKey].isPwd) {
         return true;
@@ -422,6 +431,27 @@ export default {
         return "visibility_off";
       } else {
         return "visibility";
+      }
+    },
+
+    isExistCTableListEdit: function(recIdsMap, row) {
+      console.log("isExistCTableListEdit");
+      const recIds = this.getCTableListEditRecIds(recIdsMap, row);
+      if (recIds && recIds.length > 0) {
+        return true;
+      }
+
+      return false;
+    },
+
+    getCTableListEditRecIds: function(recIdsMap, row) {
+      if (recIdsMap && row) {
+        const recIds = recIdsMap[this.getRecId(row)];
+        console.dir(recIds);
+        return recIds;
+      } else {
+        console.log("getCTableListEditRecIds empty");
+        return [];
       }
     },
 
@@ -517,14 +547,18 @@ export default {
 
 
           that.oneToOneMainToSubTables.forEach((oneToOneMainToSubTable) => {
-            const ref = that.$refs['rTableNewOrEditRef' + oneToOneMainToSubTable.relationName + newDataItem.id];
+            const refName = 'rTableNewOrEditRef' + oneToOneMainToSubTable.relationName + this.getRecId(newDataItem);
+            console.dir(refName);
+            const ref = that.$refs[refName];
             console.dir(ref);
             const subData = ref[0].getData();
             newDataItem[oneToOneMainToSubTable.relationName] = subData;
           });
 
           that.oneToManySubTables.forEach((oneToManySubTable) => {
-            const ref = that.$refs['rTableListRef' + oneToManySubTable.relationName + newDataItem.id];
+            const refName = 'rTableListRef' + oneToManySubTable.relationName + this.getRecId(newDataItem);
+            console.dir(refName);
+            const ref = that.$refs[refName];
             console.dir(ref);
             const subData = ref[0].getData();
             newDataItem[oneToManySubTable.relationName] = subData;
@@ -585,15 +619,49 @@ export default {
       }
     },
 
+    getRecIdByTableAndDataMap(tableDTO, dataMap) {
+      const primaryNames = tableDTO.primaryNames;
+      if (primaryNames.length === 1) {
+        return dataMap[primaryNames[0]];
+      } else {
+        let recIds = [];
+        primaryNames.forEach((primaryName) => {
+          recIds.push(primaryName + "=" + dataMap[primaryName]);
+        });
+
+        const recId = recIds.join(",");
+        console.log(recId);
+
+        return recId;
+      }
+    },
+
+
     async loadMeta() {
+      const that = this;
       this.loading = true;
       try {
+        /* 主表元数据 */
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
         this.primaryNames = table.primaryNames;
+
+        /* 关联关系 */
         const tableRelations = await metadataRelationService.getByName(this.tableName);
 
-        console.dir("listByIds:" + this.tableName);
+        /* 关联表元数据 */
+        let relationMetadataMap = {};
+        await Promise.all(tableRelations.map(async (tableRelation) => {
+           if (tableRelation.relationType === "OneToOneMainToSub"
+            || tableRelation.relationType === "OneToMany") {
+            const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+
+            relationMetadataMap[tableRelation.toTable.name] = relationTable;
+           }
+        }));
+        this.relationMetadataMap = relationMetadataMap;
+
+        /* 主表业务数据 */
         let tableDatas = await tableService.listByIds(this.tableName, this.recIds);
         console.dir(tableDatas);
 
@@ -603,11 +671,11 @@ export default {
           if (tableRelation.relationType === "OneToOneMainToSub") {
             let recIdMap = {};
             tableDatas.forEach((tableData) => {
-              let recId = null;
               if (tableData[tableRelation.name]) {
-                recId = tableData[tableRelation.name].id;
+                let mainRecId = that.getRecIdByTableAndDataMap(table, tableData);
+                let relationRecId = that.getRecIdByTableAndDataMap(relationMetadataMap[tableRelation.toTable.name], tableData[tableRelation.name]);
+                recIdMap[mainRecId] = relationRecId;
               }
-              recIdMap[tableData.id] = recId;
             });
             console.info("recIdMap" + JSON.stringify(recIdMap));
 
@@ -620,15 +688,21 @@ export default {
           } else if (tableRelation.relationType === "OneToMany") {
             let recIdsMap = {};
             tableDatas.forEach((tableData) => {
+              console.log("[1]recIdsMap->table:" + table.caption + tableData.name);
+              let mainRecId = that.getRecIdByTableAndDataMap(table, tableData);
+              console.log("[1]recIdsMap->mainRecId:" + mainRecId);
               let recIds = [];
               if (tableData[tableRelation.name]) {
                 tableData[tableRelation.name].forEach((item) => {
-                  recIds.push(item.id);
+                  let relationRecId = that.getRecIdByTableAndDataMap(relationMetadataMap[tableRelation.toTable.name], item);
+                  recIds.push(relationRecId);
+                  console.info("[1]recIdsMap->relationRecId:" + recIds);
                 });
               }
-              recIdsMap[tableData.id] = recIds;
+              recIdsMap[mainRecId] = recIds;
+              console.info("[1]recIdsMap:" + JSON.stringify(recIdsMap));
             });
-            console.info("recIdsMap" + JSON.stringify(recIdsMap));
+            
 
             oneToManySubTables.push({
               "relationName": tableRelation.name,
