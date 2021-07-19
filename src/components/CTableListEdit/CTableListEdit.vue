@@ -456,6 +456,7 @@ export default {
     },
 
     addRow() {
+      console.log("CTableListEdit-> addRow");
       const index = this.qTableData.length + 1;
       const newRow = { isNewRow: true };
 
@@ -566,7 +567,6 @@ export default {
 
           if (newDataItem.isNewRow) {
             delete newDataItem.isNewRow;
-            delete newDataItem.id;
           }
 
           delete newDataItem.createdDate;
@@ -588,7 +588,7 @@ export default {
 
     getRecId(row) {
       if (this.primaryNames.length === 1) {
-        return row[this.primaryNames[0]];
+        return row[this.primaryNames[0]] || null;
       } else {
         let recIds = [];
         this.primaryNames.forEach((primaryName) => {

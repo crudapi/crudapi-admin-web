@@ -16,7 +16,7 @@
     <q-table v-show="expand"
       :data="qTableData"
       :columns="qTableColums"
-      row-key="id"
+      :row-key="getRecId"
       selection="multiple"
       :selected.sync="selected"
       :pagination.sync="tablePagination"
@@ -48,7 +48,7 @@
           </q-td>
           <q-td key="dataClickAction" :props="props">
             <q-btn unelevated
-              @click="onDeleteClickAction(props.row.id)"
+              @click="onDeleteClickAction(props.row)"
               color="negative"
               icon="delete_forever"
               flat
@@ -342,21 +342,23 @@ export default {
     },
 
     addRow() {
+      console.log("CTableList-> addRow");
       const index = this.qTableData.length + 1;
       const newRow = { };
 
       this.insertColumns.forEach((column) => {
         newRow[column.name] = column.value;
       });
-      newRow.id = (new Date()).valueOf();
-
+     
       this.qTableData  = [ ...this.qTableData.slice(0, index), newRow, ...this.qTableData.slice(index) ];
 
-      this.passwordMaps[newRow.id] = extend(true, {}, this.passwordMap);
+      const id = this.getRecIdByDataMap(newRow);
+
+      this.passwordMaps[id] = extend(true, {}, this.passwordMap);
     },
 
     removeRow(id) {
-      const index = this.qTableData.findIndex(t => t.id === id);
+      const index = this.qTableData.findIndex(t => this.getRecId(t) === id);
       if (index >= 0) {
         this.qTableData = [ ...this.qTableData.slice(0, index), ...this.qTableData.slice(index + 1) ];
       }
@@ -379,7 +381,7 @@ export default {
       this.selected.forEach((item) => {
         ids.push(this.getRecId(item));
       });
-
+      console.info(JSON.stringify(ids));
       if (row) {
         this.removeRow(this.getRecId(row));
       } else {
@@ -409,18 +411,23 @@ export default {
           }
 
           that.oneToOneMainToSubTables.forEach((oneToOneMainToSubTable) => {
-            const ref = that.$refs['rTableNewRef' + oneToOneMainToSubTable.relationName + newDataItem.id];
+            const refName = 'rTableNewRef' + oneToOneMainToSubTable.relationName + this.getRecId(newDataItem);
+            console.dir(refName);
+            const ref = that.$refs[refName];
+            console.dir(ref);
             const subData = ref[0].getData();
             newDataItem[oneToOneMainToSubTable.relationName] = subData;
           });
 
           that.oneToManySubTables.forEach((oneToManySubTable) => {
-            const ref = that.$refs['rTableListRef' + oneToManySubTable.relationName + newDataItem.id];
+            const refName = 'rTableListRef' + oneToManySubTable.relationName + this.getRecId(newDataItem);
+            console.dir(refName);
+            const ref = that.$refs[refName];
+            console.dir(ref);
             const subData = ref[0].getData();
             newDataItem[oneToManySubTable.relationName] = subData;
           });
 
-          delete newDataItem.id;
           delete newDataItem.createdDate;
           delete newDataItem.lastModifiedDate;
           newData.push(newDataItem);
@@ -474,6 +481,23 @@ export default {
         let recIds = [];
         this.primaryNames.forEach((primaryName) => {
           recIds.push(primaryName + "=" + row[primaryName]);
+        });
+
+        const recId = recIds.join(",");
+        console.log(recId);
+
+        return recId;
+      }
+    },
+
+    getRecIdByDataMap(dataMap) {
+      const primaryNames = this.primaryNames;
+      if (primaryNames.length === 1) {
+        return dataMap[primaryNames[0]];
+      } else {
+        let recIds = [];
+        primaryNames.forEach((primaryName) => {
+          recIds.push(primaryName + "=" + dataMap[primaryName]);
         });
 
         const recId = recIds.join(",");
