@@ -85,7 +85,7 @@
             <p class="q-px-sm" v-show="reverse"/>
             <q-btn v-show="reverse"
               unelevated
-              @click="onLoadMetadata2ClickAction()"
+              @click="onLoadMetadataClickAction()"
               color="primary"
               label="加载元数据"
             />
@@ -126,13 +126,24 @@
         flat
         separator="cell"
         hide-bottom>
+        <template v-slot:top="props">
+          <q-space />
+
+          
+          <q-btn
+            flat round dense
+            :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+            @click="props.toggleFullscreen"
+            class="q-ml-md"
+          />
+        </template>
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td>
-              <q-checkbox v-if="isCanEdit(props.row)" v-model="props.selected" />
+              <q-checkbox v-model="props.selected" />
             </q-td>
             <q-td key="dataClickAction" :props="props">
-              <q-btn v-if="isCanEdit(props.row)"
+              <q-btn
                 unelevated
                 @click="onDeleteClickAction(props.row.id)"
                 color="negative"
@@ -148,23 +159,19 @@
               <q-btn @click="onBottomClick(props.row)" round size="sm" color="primary" icon="vertical_align_bottom" flat dense />
             </q-td>
             <q-td key="caption" :props="props">
-              <q-input v-if="isCanEdit(props.row)" style="width: 80px;" v-model="props.row.caption" />
-              <span v-else> {{ props.row.caption }}</span>
+              <q-input style="width: 80px;" v-model="props.row.caption" />
             </q-td>
             <q-td key="name" :props="props">
-              <q-input v-if="isCanEdit(props.row)" style="width: 120px;" v-model="props.row.name" />
-              <span v-else> {{ props.row.name }}</span>
+              <q-input  style="width: 120px;" v-model="props.row.name" />
             </q-td>
             <q-td key="description" :props="props">
-              <q-input v-if="isCanEdit(props.row)"  style="width: 150px;" v-model="props.row.description" />
-              <span v-else> {{ props.row.description }}</span>
+              <q-input style="width: 150px;" v-model="props.row.description" />
             </q-td>
             <q-td key="unsigned" :props="props">
-              <q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.unsigned"/>
+              <q-toggle  v-model="props.row.unsigned"/>
             </q-td>
             <q-td key="dataType" :props="props">
               <q-select
-                :disable="!isCanEdit(props.row)"
                 outlined
                 v-model="props.row.dataType"
                 :options="dataTypeOptions"
@@ -174,7 +181,6 @@
             </q-td>
             <q-td key="indexType" :props="props">
               <q-select
-                :disable="!isCanEdit(props.row)"
                 outlined
                 v-model="props.row.indexType"
                 :options="indexTypeOptions"
@@ -183,7 +189,7 @@
               />
             </q-td>
             <q-td key="indexStorage" :props="props">
-              <q-select v-if="isCanEdit(props.row)"
+              <q-select
                 outlined
                 v-model="props.row.indexStorage"
                 :options="indexStorageOptions"
@@ -192,33 +198,28 @@
               />
             </q-td>
             <q-td key="indexName" :props="props">
-              <q-input v-if="isCanEdit(props.row)"  style="width: 150px;" v-model="props.row.indexName" />
-              <span v-else> {{ props.row.indexName }}</span>
+              <q-input style="width: 150px;" v-model="props.row.indexName" />
             </q-td>
             <q-td key="length" :props="props">
-              <q-input style="width: 60px;" v-if="isCanEdit(props.row)" type="number" v-model="props.row.length" />
-              <span v-else> {{ props.row.length }}</span>
+              <q-input style="width: 60px;"  type="number" v-model="props.row.length" />
             </q-td>
             <q-td key="precision" :props="props">
-              <q-input style="width: 50px;" v-if="isCanEdit(props.row)" type="number" v-model="props.row.precision" />
-              <span v-else> {{ props.row.precision }}</span>
+              <q-input style="width: 50px;"  type="number" v-model="props.row.precision" />
             </q-td>
             <q-td key="scale" :props="props">
-              <q-input style="width: 40px;" v-if="isCanEdit(props.row)" type="number" v-model="props.row.scale" />
-              <span v-else> {{ props.row.scale }}</span>
+              <q-input style="width: 40px;" type="number" v-model="props.row.scale" />
             </q-td>
             <q-td key="autoIncrement" :props="props">
-              <q-toggle disable v-model="props.row.autoIncrement"/>
+              <q-toggle v-model="props.row.autoIncrement"/>
             </q-td>
             <q-td key="nullable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.nullable"/></span>
+              <span><q-toggle v-model="props.row.nullable"/></span>
             </q-td>
             <q-td key="defaultValue" :props="props">
-              <q-input v-if="isCanEdit(props.row)"  style="width: 80px;" v-model="props.row.defaultValue" />
-              <span v-else> {{ props.row.defaultValue }}</span>
+              <q-input style="width: 80px;" v-model="props.row.defaultValue" />
             </q-td>
             <q-td key="seqId" :props="props">
-              <q-select v-if="isCanEdit(props.row) && isStringType(props.row)"
+              <q-select v-if="isStringType(props.row)"
                 outlined
                 v-model="props.row.seqId"
                 :options="sequenceStringOptions"
@@ -227,7 +228,7 @@
                 emit-value
                 map-options
               />
-              <q-select v-else-if="isCanEdit(props.row) && isNumberType(props.row)"
+              <q-select v-else-if="isNumberType(props.row)"
                 outlined
                 v-model="props.row.seqId"
                 :options="sequenceLongOptions"
@@ -238,13 +239,13 @@
               />
             </q-td>
             <q-td key="insertable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.insertable"/></span>
+              <span><q-toggle v-model="props.row.insertable"/></span>
             </q-td>
             <q-td key="updatable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.updatable"/></span>
+              <span><q-toggle v-model="props.row.updatable"/></span>
             </q-td>
             <q-td key="queryable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.queryable"/></span>
+              <span><q-toggle v-model="props.row.queryable"/></span>
             </q-td>
           </q-tr>
         </template>
@@ -640,7 +641,7 @@ export default {
               "queryable": false,
               "unsigned": true,
               "updatable": false,
-              "systemable": true
+              "systemable": false
           }, {
               "id": 2,
               "autoIncrement": false,
@@ -655,7 +656,7 @@ export default {
               "queryable": true,
               "unsigned": false,
               "updatable": true,
-              "systemable": true
+              "systemable": false
           },{
               "id": 3,
               "autoIncrement": false,
@@ -671,7 +672,7 @@ export default {
               "queryable": false,
               "unsigned": false,
               "updatable": false,
-              "systemable": true
+              "systemable": false
           }, {
               "id": 4,
               "autoIncrement": false,
@@ -685,7 +686,7 @@ export default {
               "queryable": false,
               "unsigned": false,
               "updatable": false,
-              "systemable": true
+              "systemable": false
           }, {
               "id": 5,
               "autoIncrement": false,
@@ -699,7 +700,7 @@ export default {
               "queryable": false,
               "unsigned": false,
               "updatable": false,
-              "systemable": true
+              "systemable": false
           }];
     },
 
@@ -731,7 +732,7 @@ export default {
       }
     },
 
-    async onLoadMetadata2ClickAction() {
+    async onLoadMetadataClickAction() {
       try {
         this.$q.loading.show();
         let metadata = await metadataTableService.getMetadata(this.table.tableName);
@@ -759,132 +760,6 @@ export default {
       } catch (error) {
         console.error(error);
         this.$q.loading.hide();
-      }
-    },
-
-
-    async onLoadMetadataClickAction() {
-      try {
-        this.$q.loading.show();
-        let metadata = await metadataTableService.getMetadata(this.table.tableName);
-        console.dir(metadata);
-
-        this.table.name = this.table.tableName;
-        this.table.pluralName = this.table.tableName;
-
-        this.table.columns = this.getInitColumn();
-
-        let isHasId = false;
-        let isHasName = false;
-        let isHasFullTextBody = false;
-        let isHasCreatedDate = false;
-        let isHasLastModifiedDate = false;
-
-        metadata.columns.forEach((t) => {
-          if (t.Field === "id") {
-            isHasId = true;
-          } else if (t.Field === "name") {
-            isHasName = true;
-          } else if (t.Field === "fullTextBody") {
-            isHasFullTextBody = true;
-          } else if (t.Field === "createdDate") {
-            isHasCreatedDate = true;
-          } else if (t.Field === "lastModifiedDate") {
-            isHasLastModifiedDate = true;
-          }
-        });
-
-        // isHasId = true;
-        // isHasName = true;
-        // isHasFullTextBody = true;
-        // isHasCreatedDate = true;
-        // isHasLastModifiedDate = true;
-        // ALTER TABLE `spring_user`
-        // ADD `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-        // ADD `fullTextBody` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-        if (!isHasId) {
-          this.$q.notify("缺少字段：主键id");
-        } else if (!isHasName) {
-          this.$q.notify("缺少字段：名称name");
-        } else if (!isHasFullTextBody) {
-          this.$q.notify("缺少字段：全文索引fullTextBody");
-        } else if (!isHasCreatedDate) {
-          this.$q.notify("缺少字段：创建时间createdDate");
-        }  else if (!isHasLastModifiedDate) {
-          this.$q.notify("缺少字段：修改时间lastModifiedDate");
-        } else {
-          metadata.columns.forEach((t) => {
-            if (t.Field !== "id"
-              && t.Field !== "name"
-              && t.Field !== "fullTextBody"
-              && t.Field !== "createdDate"
-              && t.Field !== "lastModifiedDate" ) {
-              this.addRowFromMetadata(t);
-            }
-          });
-
-          this.isLoadMetadataValid = true;
-        }
-
-        if (!this.isLoadMetadataValid) {
-          let repairColumns = [];
-
-          if (!isHasId) {
-            repairColumns.push("id");
-          }
-
-          if (!isHasName) {
-            repairColumns.push("name");
-          }
-
-          if (!isHasFullTextBody) {
-            repairColumns.push("fullTextBody");
-          }
-          if (!isHasCreatedDate) {
-            repairColumns.push("createdDate");
-          }
-
-          if (!isHasLastModifiedDate) {
-            repairColumns.push("lastModifiedDate");
-          }
-
-          this.repairMetadata(this.table.tableName, repairColumns);
-        }
-
-        this.$q.loading.hide();
-      } catch (error) {
-        console.error(error);
-        this.isLoadMetadataValid = false;
-        this.$q.loading.hide();
-      }
-    },
-
-    async repairMetadata(tableName, repairColumns) {
-      try {
-        this.$q
-          .dialog({
-            title: "修复元数据，添加系统字段",
-            message: "确认修复吗？",
-            ok: {
-              unelevated: true
-            },
-            cancel: {
-              color: "negative",
-              unelevated: true
-            },
-            persistent: false
-          })
-          .onOk(async () => {
-            await metadataTableService.repairMeataData(tableName, repairColumns);
-            this.$q.notify("修复成功");
-          })
-          .onCancel(() => {})
-          .onDismiss(() => {
-            console.info("I am triggered on both OK and Cancel");
-          });
-      } catch (error) {
-        this.$q.notify("修复失败");
       }
     },
 
@@ -1086,9 +961,7 @@ export default {
     async onDeleteClickAction(id) {
       let ids = [];
       this.selected.forEach((row) => {
-        if (this.isCanEdit(row)) {
-          ids.push(row.id);
-        }
+        ids.push(row.id);
       });
       if (id) {
         this.removeRow(id);
@@ -1169,14 +1042,6 @@ export default {
         this.isLoadMetadataValid = false;
       }
       await this.fetchFromServer();
-    },
-
-    isCanEdit: function(row) {
-      if (row.systemable) {
-        return false;
-      } else {
-        return true;
-      }
     },
 
     isStringType: function(row) {
