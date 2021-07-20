@@ -80,28 +80,12 @@
 
     <div class="bg-table-list">
       <q-banner inline-actions class="text-black bg-listcolor">
-          列信息
           <template v-slot:action>
             <q-btn
               unelevated
               @click="onIndexClickAction()"
               color="purple"
               :label="`联合索引（${indexLength}）`"
-            />
-            <p class="q-px-sm"/>
-            <q-btn
-              :disable="selected.length == 0"
-              unelevated
-              @click="onDeleteClickAction()"
-              color="negative"
-              label="批量删除"
-            />
-            <p class="q-px-sm"/>
-            <q-btn
-              unelevated
-              @click="onNewClickAction()"
-              color="primary"
-              label="添加列"
             />
           </template>
       </q-banner>
@@ -117,6 +101,33 @@
         flat
         separator="cell"
         hide-bottom>
+         <template v-slot:top="props">
+          <p class="q-px-sm"/>
+          <q-btn 
+            :disable="selected.length == 0"
+            unelevated
+            @click="onDeleteClickAction()"
+            color="negative"
+            label="批量删除"
+          />
+
+          <p class="q-px-sm"/>
+          <q-btn 
+            unelevated
+            @click="onNewClickAction()"
+            color="primary"
+            label="添加字段"
+          />
+
+          <q-space />
+
+          <q-btn
+            flat round dense
+            :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+            @click="props.toggleFullscreen"
+            class="q-ml-md"
+          />
+        </template>
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td>
@@ -422,6 +433,10 @@ export default {
 
       indexTypeOptions: [
         {
+          value: "NONE",
+          label: "无"
+        },
+        {
           value: "PRIMARY",
           label: "主键"
         },
@@ -440,6 +455,10 @@ export default {
       ],
 
       indexStorageOptions: [
+        {
+          value: "NONE",
+          label: "无"
+        },
         {
           value: "BTREE",
           label: "B树"
@@ -592,9 +611,20 @@ export default {
         this.table = table;
 
         let sequences = await metadataSequenceService.list(1, 999);
-        this.sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
-        this.sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
+        let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
+        let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
+        sequenceLongOptions.unshift({
+          "id": -1,
+          "caption": "无"
+        });
 
+        sequenceStringOptions.unshift({
+          "id": -1,
+          "caption": "无"
+        });
+        this.sequenceLongOptions = sequenceLongOptions;
+        this.sequenceStringOptions = sequenceStringOptions;
+        
         this.loading = false;
         this.$q.loading.hide();
       } catch (error) {

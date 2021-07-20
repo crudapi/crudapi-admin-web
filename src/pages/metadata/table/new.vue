@@ -8,6 +8,9 @@
     <q-separator />
 
     <div class="q-pb-md bg-white">
+     <q-banner inline-actions class="text-black bg-listcolor">
+      基本信息
+     </q-banner>
       <div class="row justify-start items-baseline content-center items-center">
         <div class="row justify-start items-baseline content-center items-center">
           <div class="q-px-md">
@@ -96,21 +99,6 @@
               color="purple"
               :label="`联合索引（${indexCount}）`"
             />
-            <p class="q-px-sm"  v-show="!reverse"/>
-            <q-btn v-show="!reverse"
-              :disable="selected.length == 0"
-              unelevated
-              @click="onDeleteClickAction()"
-              color="negative"
-              label="批量删除"
-            />
-            <p class="q-px-sm"  v-show="!reverse"/>
-            <q-btn v-show="!reverse"
-              unelevated
-              @click="onNewClickAction()"
-              color="primary"
-              label="添加列"
-            />
           </template>
       </q-banner>
 
@@ -127,9 +115,25 @@
         separator="cell"
         hide-bottom>
         <template v-slot:top="props">
+          <p class="q-px-sm"  v-show="!reverse"/>
+          <q-btn v-show="!reverse"
+            :disable="selected.length == 0"
+            unelevated
+            @click="onDeleteClickAction()"
+            color="negative"
+            label="批量删除"
+          />
+
+          <p class="q-px-sm"  v-show="!reverse"/>
+          <q-btn v-show="!reverse"
+            unelevated
+            @click="onNewClickAction()"
+            color="primary"
+            label="添加字段"
+          />
+
           <q-space />
 
-          
           <q-btn
             flat round dense
             :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
@@ -472,7 +476,7 @@ export default {
 
       indexTypeOptions: [
         {
-          value: null,
+          value: "NONE",
           label: "无"
         },
         {
@@ -494,8 +498,8 @@ export default {
       ],
       indexStorageOptions: [
         {
-          value: null,
-          label: "默认"
+          value: "NONE",
+          label: "无"
         },
         {
           value: "BTREE",
