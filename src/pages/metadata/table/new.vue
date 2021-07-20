@@ -472,6 +472,10 @@ export default {
 
       indexTypeOptions: [
         {
+          value: null,
+          label: "无"
+        },
+        {
           value: "PRIMARY",
           label: "主键"
         },
@@ -489,6 +493,10 @@ export default {
         }
       ],
       indexStorageOptions: [
+        {
+          value: null,
+          label: "默认"
+        },
         {
           value: "BTREE",
           label: "B树"
@@ -723,8 +731,21 @@ export default {
         }
         this.table = table;
         let sequences = await metadataSequenceService.list(1, 999);
-        this.sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
-        this.sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
+
+        let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
+        let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
+        sequenceLongOptions.unshift({
+          "id": null,
+          "caption": "无"
+        });
+
+        sequenceStringOptions.unshift({
+          "id": null,
+          "caption": "无"
+        });
+
+        this.sequenceLongOptions = sequenceLongOptions;
+        this.sequenceStringOptions = sequenceStringOptions;
         this.$q.loading.hide();
       } catch (error) {
         this.$q.loading.hide();

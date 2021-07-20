@@ -120,10 +120,10 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td>
-              <q-checkbox v-if="isCanEdit(props.row)" v-model="props.selected" />
+              <q-checkbox  v-model="props.selected" />
             </q-td>
             <q-td key="dataClickAction" :props="props">
-              <q-btn v-if="isCanEdit(props.row)"
+              <q-btn 
                 unelevated
                 @click="onDeleteClickAction(props.row.id)"
                 color="negative"
@@ -139,23 +139,19 @@
               <q-btn @click="onBottomClick(props.row)" round size="sm" color="primary" icon="vertical_align_bottom" flat dense />
             </q-td>
             <q-td key="caption" :props="props">
-              <q-input v-if="isCanEdit(props.row)" style="width: 80px;" v-model="props.row.caption" />
-              <span v-else> {{ props.row.caption }}</span>
+              <q-input style="width: 80px;" v-model="props.row.caption" />
             </q-td>
             <q-td key="name" :props="props">
-              <q-input v-if="isCanEdit(props.row)" style="width: 120px;" v-model="props.row.name" />
-              <span v-else> {{ props.row.name }}</span>
+              <q-input style="width: 120px;" v-model="props.row.name" />
             </q-td>
             <q-td key="description" :props="props">
-              <q-input v-if="isCanEdit(props.row)"  style="width: 150px;" v-model="props.row.description" />
-              <span v-else> {{ props.row.description }}</span>
+              <q-input style="width: 150px;" v-model="props.row.description" />
             </q-td>
             <q-td key="unsigned" :props="props">
-              <q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.unsigned"/>
+              <q-toggle v-model="props.row.unsigned"/>
             </q-td>
             <q-td key="dataType" :props="props">
               <q-select
-                :disable="!isCanEdit(props.row)"
                 outlined
                 v-model="props.row.dataType"
                 :options="dataTypeOptions"
@@ -165,7 +161,6 @@
             </q-td>
             <q-td key="indexType" :props="props">
               <q-select
-                :disable="!isCanEdit(props.row)"
                 outlined
                 v-model="props.row.indexType"
                 :options="indexTypeOptions"
@@ -174,7 +169,7 @@
               />
             </q-td>
             <q-td key="indexStorage" :props="props">
-              <q-select v-if="isCanEdit(props.row)"
+              <q-select 
                 outlined
                 v-model="props.row.indexStorage"
                 :options="indexStorageOptions"
@@ -183,33 +178,28 @@
               />
             </q-td>
             <q-td key="indexName" :props="props">
-              <q-input v-if="isCanEdit(props.row)"  style="width: 150px;" v-model="props.row.indexName" />
-              <span v-else> {{ props.row.indexName }}</span>
+              <q-input style="width: 150px;" v-model="props.row.indexName" />
             </q-td>
             <q-td key="length" :props="props">
-              <q-input style="width: 60px;" v-if="isCanEdit(props.row)" type="number" v-model="props.row.length" />
-              <span v-else> {{ props.row.length }}</span>
+              <q-input style="width: 60px;" type="number" v-model="props.row.length" />
             </q-td>
             <q-td key="precision" :props="props">
-              <q-input style="width: 50px;" v-if="isCanEdit(props.row)" type="number" v-model="props.row.precision" />
-              <span v-else> {{ props.row.precision }}</span>
+              <q-input style="width: 50px;" type="number" v-model="props.row.precision" />
             </q-td>
             <q-td key="scale" :props="props">
-              <q-input style="width: 40px;" v-if="isCanEdit(props.row)" type="number" v-model="props.row.scale" />
-              <span v-else> {{ props.row.scale }}</span>
+              <q-input style="width: 40px;" type="number" v-model="props.row.scale" />
             </q-td>
             <q-td key="autoIncrement" :props="props">
-              <q-toggle disable v-model="props.row.autoIncrement"/>
+              <q-toggle v-model="props.row.autoIncrement"/>
             </q-td>
             <q-td key="nullable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.nullable"/></span>
+              <span><q-toggle v-model="props.row.nullable"/></span>
             </q-td>
             <q-td key="defaultValue" :props="props">
-              <q-input v-if="isCanEdit(props.row)"  style="width: 80px;" v-model="props.row.defaultValue" />
-              <span v-else> {{ props.row.defaultValue }}</span>
+              <q-input style="width: 80px;" v-model="props.row.defaultValue" />
             </q-td>
             <q-td key="seqId" :props="props">
-              <q-select v-if="isCanEdit(props.row) && isStringType(props.row)"
+              <q-select v-if="isStringType(props.row)"
                 outlined
                 v-model="props.row.seqId"
                 :options="sequenceStringOptions"
@@ -218,7 +208,7 @@
                 emit-value
                 map-options
               />
-              <q-select v-else-if="isCanEdit(props.row) && isNumberType(props.row)"
+              <q-select v-else-if="isNumberType(props.row)"
                 outlined
                 v-model="props.row.seqId"
                 :options="sequenceLongOptions"
@@ -229,13 +219,13 @@
               />
             </q-td>
             <q-td key="insertable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.insertable"/></span>
+              <span><q-toggle v-model="props.row.insertable"/></span>
             </q-td>
             <q-td key="updatable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.updatable"/></span>
+              <span><q-toggle v-model="props.row.updatable"/></span>
             </q-td>
             <q-td key="queryable" :props="props">
-              <span><q-toggle :disable="!isCanEdit(props.row)" v-model="props.row.queryable"/></span>
+              <span><q-toggle v-model="props.row.queryable"/></span>
             </q-td>
             <q-td key="createdDate" :props="props">
               <span>{{ props.row.createdDate | dateTimeFormat }}</span>
@@ -660,9 +650,7 @@ export default {
     async onDeleteClickAction(id) {
       let ids = [];
       this.selected.forEach((row) => {
-        if (this.isCanEdit(row)) {
-          ids.push(row.id);
-        }
+        ids.push(row.id);
       });
       if (id) {
         this.removeRow(id);
@@ -725,14 +713,6 @@ export default {
       } catch (error) {
         this.$q.loading.hide();
         console.error(error);
-      }
-    },
-
-    isCanEdit: function(row) {
-      if (row.systemable) {
-        return false;
-      } else {
-        return true;
       }
     },
 
