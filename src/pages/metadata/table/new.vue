@@ -891,10 +891,19 @@ export default {
       const type = t.Type.toUpperCase();
       const name = t.Field;
 
-      let length = 10;
+      let length = null;
+      let precision = null;
+      let scale = null;
+
       let typeArr = type.split("(");
       if (typeArr.length > 1) {
-        length = typeArr[1].split(")")[0];
+        const lengthOrprecisionScale = typeArr[1].split(")")[0];
+        if (lengthOrprecisionScale.indexOf(",") > 0) {
+          precision = lengthOrprecisionScale.split(",")[0];
+          scale = lengthOrprecisionScale.split(",")[1];
+        } else {
+          length = lengthOrprecisionScale;
+        }
       }
 
       let indexType = null;
@@ -937,6 +946,8 @@ export default {
         caption: comment,
         description: comment,
         length: length,
+        precision: precision,
+        scale: scale,
         systemable: false
       };
       //console.dir(newRow);
