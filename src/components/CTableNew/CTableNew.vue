@@ -21,11 +21,10 @@
         {{item.caption}}:</div>
 
         <div class="col-7">
-          <q-select
+         <!--  <q-select
             v-if="item.options"
             style="min-width: 150px;height: 40px;"
             outlined
-            option-label="name"
             use-input
             hide-selected
             fill-input
@@ -34,7 +33,15 @@
             @filter-abort="item.abortFilterFn"
             v-model="item.value"
             :options="item.options"
-          />
+          /> -->
+          <q-input  v-if="item.options"
+              v-model="item.value">
+            <template v-slot:after>
+              <q-btn round dense flat icon="send"
+               @click="openDialogClickAction(item)" />
+            </template>
+          </q-input>
+ 
 
            <q-input v-else-if="isDateTimeType(item.dataType)"
               v-model="item.value">
@@ -146,6 +153,7 @@ import { tableService } from "../../service";
 import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
 import { extend } from 'quasar'
+import CTableListReadDialog from '../../components/CTableListRead/CTableListReadDialog'
 
 export default {
   name: "CTableNew",
@@ -302,6 +310,33 @@ export default {
       }
     },
 
+    openDialogClickAction(item) {
+      this.$q.dialog({
+        component: CTableListReadDialog,
+
+        // optional if you want to have access to
+        // Router, Vuex store, and so on, in your
+        // custom component:
+        parent: this, // becomes child of this Vue node
+                      // ("this" points to your Vue component)
+                      // (prop was called "root" in < 1.1.0 and
+                      // still works, but recommending to switch
+                      // to data: the more appropriate "parent" name)
+
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        tableName: item.relationTableName,
+        data: item.value
+        // ...more.props...
+      }).onOk((data) => {
+        item.value = data;
+      }).onCancel(() => {
+        console.log('Cancel')
+      }).onDismiss(() => {
+        console.log('Called on OK or Cancel')
+      });
+    },
+
     async loadMeta() {
       this.loading = true;
       try {
@@ -338,6 +373,9 @@ export default {
             || tableRelation.relationType === "OneToOneSubToMain") {
 
              const toTableData = await tableService.list(tableRelation.toTable.name);
+             toTableData.forEach((item) => {
+                item.label = JSON.stringify(item);
+             });
 
              const fromColumnName = tableRelation.fromColumn.name;
 
@@ -378,6 +416,7 @@ export default {
 
             const relation = this.relationMap[columnName];
             if (relation) {
+              column.relationTableName = relation.relation.toTable.name;
               column.options = relation.data;
               column.optionValueColumnName = relation.relation.toColumn.name;
               if (column.options) {

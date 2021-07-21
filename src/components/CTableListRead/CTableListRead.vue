@@ -51,7 +51,7 @@
       </div>
 
       <div class="bg-table-list">
-        <q-banner inline-actions class="text-black bg-listcolor">
+        <q-banner v-if="!readOnly" inline-actions class="text-black bg-listcolor">
             <template v-slot:action>
               <q-btn
                 unelevated
@@ -74,14 +74,14 @@
                 label="添加"
               />
             </template>
-
         </q-banner>
         <q-table
           :data="data"
           :columns="columns"
           :row-key="getRecId"
-          selection="multiple"
+          :selection="selection"
           :selected.sync="selected"
+          @selection="onSelection"
           :visible-columns="visibleColumns"
           :pagination.sync="tablePagination"
           :loading="loading"
@@ -95,6 +95,7 @@
               <q-td :key="index" v-for="(value, key, index) in props.row">
                 <div v-if="key.indexOf('dataClickAction') >= 0">
                   <q-btn
+                    v-if="!readOnly"
                     unelevated
                     @click="onDeleteClickAction(props.row)"
                     color="negative"
@@ -103,6 +104,7 @@
                     dense
                   ></q-btn>
                   <q-btn
+                    v-if="!readOnly"
                     unelevated
                     @click="onEditClickAction(props.row)"
                     color="primary"
@@ -143,15 +145,25 @@ import { tableService } from "../../service";
 import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
 import { date } from "../../utils";
+import { extend } from "quasar";
 
 export default {
   name: "CTableListRead",
   props: {
     tableName: {
       required: true
+    },
+    selectionProp: {
+      required: false
+    },
+    value: {
+      required: false
+    },
+    readOnly: {
+      required: false
     }
   },
-   data () {
+  data () {
     return {
       data: [],
       tableCaption: "",
@@ -159,6 +171,7 @@ export default {
       listUrl: "",
       loading: true,
       selected: [],
+      selection: 'multiple',
       search: "",
       queryColumns: [],
       pagination: {
@@ -176,7 +189,6 @@ export default {
       relationMap: {}
     }
   },
-
   async created() {
     await this.init()
     await this.onRefresh();
@@ -305,6 +317,21 @@ export default {
       }
     },
 
+    onSelection({ rows, added, evt }) {
+      console.log("onSelection");
+      console.dir(rows);
+      console.dir(added);
+      if (added) {
+        let ids = [];
+        rows.forEach((item) => {
+          ids.push(this.getRecId(item));
+        });
+        this.$emit("input", ids);
+      } else {
+        this.$emit("input", []);
+      }
+    },
+
     async onDeleteClickAction(row) {
       let ids = [];
       this.selected.forEach((item) => {
@@ -377,6 +404,19 @@ export default {
         }
 
         this.data = newData;
+
+        const selectedProp = this.value || [];
+        console.log(selectedProp);
+
+        let selected = [];
+        for (let i = 0; i < this.data.length; i++) {
+          const recId = this.getRecId(this.data[i]);
+          if (selectedProp.findIndex(t => t == recId) >= 0) {
+            selected.push(this.data[i]);
+          }
+        }
+        this.selected = selected;
+
         this.loading = false;
       } catch (error) {
         this.loading = false;
@@ -391,7 +431,8 @@ export default {
         this.$route.meta.isAllowBack
       );
 
-      this.selected =[];
+      this.selection = this.selectionProp || 'multiple';
+
       this.columns = [];
       this.visibleColumns = [];
       this.pagination = {
@@ -477,7 +518,6 @@ export default {
             }
           }
         }
-
 
         visibleColumns.push("dataClickAction");
 
