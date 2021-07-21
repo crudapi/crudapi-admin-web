@@ -28,7 +28,8 @@ module.exports = function ( ctx ) {
       'ctablelist',
       'ctableedit',
       'ctablelistedit',
-      'cindexlist'
+      'cindexlist',
+      'ctablelistread'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
