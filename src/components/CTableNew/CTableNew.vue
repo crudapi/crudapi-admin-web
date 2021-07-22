@@ -34,15 +34,18 @@
             v-model="item.value"
             :options="item.options"
           /> -->
-          <q-input  v-if="item.options"
-              v-model="item.value">
-            <template v-slot:after>
-              <q-btn round dense flat icon="send"
-               @click="openDialogClickAction(item)" />
-            </template>
-          </q-input>
- 
-
+          <div class="row items-baseline content-center"
+            style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
+           v-if="item.options">
+            <div class="col-10">
+              <span>{{ item.value | relationDataFormat(item.optionValueColumnName) }}</span>
+            </div>
+            
+            <div class="col-2">
+              <q-btn round dense flat icon="send" @click="openDialogClickAction(item)" />
+            </div>
+          </div>
+         
            <q-input v-else-if="isDateTimeType(item.dataType)"
               v-model="item.value">
             <template v-slot:prepend>
@@ -199,7 +202,14 @@ export default {
   destroyed: function() {
     console.info("CTableNew->destroyed");
   },
-  filters: {},
+  filters: {
+    relationDataFormat: function(value, displayName) {
+       if (value) {
+         return value[displayName];
+       }
+       return null;
+    }
+  },
   computed: {},
   methods: {
     async init(tableName) {

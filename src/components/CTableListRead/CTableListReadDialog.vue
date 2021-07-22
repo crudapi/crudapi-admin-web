@@ -1,7 +1,6 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide" full-width full-height  persistent>
     <q-card class="q-dialog-plugin">
-
       <CTableListRead
         ref="rTablelistRead"
         v-model="selected"

@@ -302,6 +302,9 @@ export default {
     },
 
     getRecId(row) {
+      if (!row) {
+        return null;
+      }
       if (this.primaryNames.length === 1) {
         return row[this.primaryNames[0]];
       } else {
@@ -322,13 +325,9 @@ export default {
       console.dir(rows);
       console.dir(added);
       if (added) {
-        let ids = [];
-        rows.forEach((item) => {
-          ids.push(this.getRecId(item));
-        });
-        this.$emit("input", ids);
+        this.$emit("input", rows[0]);
       } else {
-        this.$emit("input", []);
+        this.$emit("input", null);
       }
     },
 
@@ -405,13 +404,13 @@ export default {
 
         this.data = newData;
 
-        const selectedProp = this.value || [];
-        console.log(selectedProp);
+        const selectedRecId = this.getRecId(this.value);
+        console.log(selectedRecId);
 
         let selected = [];
         for (let i = 0; i < this.data.length; i++) {
           const recId = this.getRecId(this.data[i]);
-          if (selectedProp.findIndex(t => t == recId) >= 0) {
+          if (selectedRecId === recId) {
             selected.push(this.data[i]);
           }
         }
