@@ -251,6 +251,9 @@
             <q-td key="queryable" :props="props">
               <span><q-toggle v-model="props.row.queryable"/></span>
             </q-td>
+            <q-td key="displayable" :props="props">
+              <span><q-toggle v-model="props.row.displayable"/></span>
+            </q-td>
           </q-tr>
         </template>
       </q-table>
@@ -336,6 +339,7 @@ export default {
         "insertable",
         "updatable",
         "queryable",
+        "displayable",
         "description"
       ],
       columns: [
@@ -459,6 +463,12 @@ export default {
           align: "left",
           label: "查询",
           field: "queryable",
+          sortable: false
+        }, {
+          name: "displayable",
+          align: "left",
+          label: "显示",
+          field: "displayable",
           sortable: false
         }
       ],
@@ -651,6 +661,7 @@ export default {
               "name": "id",
               "nullable": false,
               "queryable": false,
+              "displayable": false,
               "unsigned": true,
               "updatable": false,
               "systemable": false
@@ -666,6 +677,7 @@ export default {
               "name": "name",
               "nullable": false,
               "queryable": true,
+              "displayable": true,
               "unsigned": false,
               "updatable": true,
               "systemable": false
@@ -682,6 +694,7 @@ export default {
               "name": "fullTextBody",
               "nullable": true,
               "queryable": false,
+              "displayable": false,
               "unsigned": false,
               "updatable": false,
               "systemable": false
@@ -696,6 +709,7 @@ export default {
               "name": "createdDate",
               "nullable": false,
               "queryable": false,
+              "displayable": false,
               "unsigned": false,
               "updatable": false,
               "systemable": false
@@ -710,6 +724,7 @@ export default {
               "name": "lastModifiedDate",
               "nullable": true,
               "queryable": false,
+              "displayable": false,
               "unsigned": false,
               "updatable": false,
               "systemable": false
@@ -936,6 +951,7 @@ export default {
         insertable: true,
         nullable: (t.Null === "YES"),
         queryable: true,
+        displayable: false,
         unsigned: type.indexOf("UNSIGNED") >= 0,
         updatable: true,
         dataType : typeArr[0].replace("UNSIGNED", "").trim(),
@@ -964,6 +980,7 @@ export default {
         insertable: true,
         nullable: true,
         queryable: true,
+        displayable: false,
         unsigned: false,
         updatable: true,
         dataType : "VARCHAR",

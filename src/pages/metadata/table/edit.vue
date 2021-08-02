@@ -238,6 +238,9 @@
             <q-td key="queryable" :props="props">
               <span><q-toggle v-model="props.row.queryable"/></span>
             </q-td>
+            <q-td key="displayable" :props="props">
+              <span><q-toggle v-model="props.row.displayable"/></span>
+            </q-td>
             <q-td key="createdDate" :props="props">
               <span>{{ props.row.createdDate | dateTimeFormat }}</span>
             </q-td>
@@ -403,6 +406,12 @@ export default {
           align: "left",
           label: "查询",
           field: "queryable",
+          sortable: false
+        }, {
+          name: "displayable",
+          align: "left",
+          label: "显示",
+          field: "displayable",
           sortable: false
         }, {
           name: "createdDate",
@@ -650,6 +659,7 @@ export default {
         insertable: true,
         nullable: true,
         queryable: true,
+        displayable: false,
         unsigned: false,
         updatable: true,
         dataType : "VARCHAR",

@@ -36,13 +36,15 @@
           /> -->
           <div class="row items-baseline content-center"
             style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
-           v-if="item.options">
+           v-if="item.relationTableName">
             <div class="col-10">
-              <span>{{ item.value | relationDataFormat(item.optionValueColumnName) }}</span>
+              <span>{{ item.value | relationDataFormat(item) }}</span>
             </div>
-            
-            <div class="col-2">
-              <q-btn round dense flat icon="send" @click="openDialogClickAction(item)" />
+            <div class="col-1">
+              <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(item)" />
+            </div>
+            <div class="col-1">
+              <q-btn round dense color="negative" flat icon="clear" @click="item.value = null" />
             </div>
           </div>
          
@@ -203,9 +205,17 @@ export default {
     console.info("CTableNew->destroyed");
   },
   filters: {
-    relationDataFormat: function(value, displayName) {
+    relationDataFormat: function(value, item) {
        if (value) {
-         return value[displayName];
+         if (item.relationDisplayColumns.length > 0) {
+            let displayValues = [];
+            item.relationDisplayColumns.forEach((t) => {
+                displayValues.push(value[t.name]);
+            });
+            return displayValues.join("|");
+         } else {
+            return value[item.relationColumnName];
+         }
        }
        return null;
     }
@@ -287,7 +297,8 @@ export default {
 
         const relation = this.relationMap[columnName];
         if (relation) {
-          data[relation.relation.name] = insertColumn.value;
+          data[columnName] = insertColumn.value && insertColumn.value[insertColumn.relationColumnName];
+          data[relation.name] = insertColumn.value;
         } else {
           if (insertColumn.value != undefined
             && insertColumn.value != null
@@ -348,12 +359,25 @@ export default {
     },
 
     async loadMeta() {
+      const that = this;
       this.loading = true;
       try {
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
         const tableRelations = await metadataRelationService.getByName(this.tableName);
 
+        /* 关联表元数据 */
+        let relationMetadataMap = {};
+        await Promise.all(tableRelations.map(async (tableRelation) => {
+           if (tableRelation.relationType === "ManyToOne"
+            || tableRelation.relationType === "OneToOneSubToMain") {
+            const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+
+            relationMetadataMap[tableRelation.toTable.name] = relationTable;
+           }
+        }));
+
+        let relationMap = {};
         let oneToOneMainToSubTables = [];
         let oneToManySubTables = [];
         tableRelations.forEach((tableRelation) => {
@@ -369,33 +393,14 @@ export default {
               "tableName": tableRelation.toTable.name,
               "fkColumnName": tableRelation.toColumn.name
             });
-          }
+          } else if (tableRelation.relationType === "ManyToOne"
+            || tableRelation.relationType === "OneToOneSubToMain") {
+             const fromColumnName = tableRelation.fromColumn.name;
+             relationMap[fromColumnName] = tableRelation;
+           }
         });
         this.oneToOneMainToSubTables = oneToOneMainToSubTables;
         this.oneToManySubTables = oneToManySubTables;
-
-        let optionsMap = {};
-        let optionValueColumnNameMap = {};
-        let relationMap = {};
-
-        await Promise.all(tableRelations.map(async (tableRelation) => {
-           if (tableRelation.relationType === "ManyToOne"
-            || tableRelation.relationType === "OneToOneSubToMain") {
-
-             const toTableData = await tableService.list(tableRelation.toTable.name);
-             toTableData.forEach((item) => {
-                item.label = JSON.stringify(item);
-             });
-
-             const fromColumnName = tableRelation.fromColumn.name;
-
-             relationMap[fromColumnName] = {
-                "data": toTableData,
-                "relation": tableRelation
-             }
-           }
-        }));
-
         this.relationMap = relationMap;
 
         let insertColumns = [];
@@ -426,31 +431,9 @@ export default {
 
             const relation = this.relationMap[columnName];
             if (relation) {
-              column.relationTableName = relation.relation.toTable.name;
-              column.options = relation.data;
-              column.optionValueColumnName = relation.relation.toColumn.name;
-              if (column.options) {
-                column.value = column.options.find(t =>
-                  t[column.optionValueColumnName] + "" === column.defaultValue + "");
-              }
-
-              column.filterFn = (val, update, abort) => {
-                tableService.list(relation.relation.toTable.name, 0, 10, val)
-                .then((data) => {
-                  update(() => {
-                    if (val === '') {
-                      column.options = relation.data;
-                    }
-                    else {
-                      column.options = data;
-                    }
-                  })
-                });
-              };
-
-              column.abortFilterFn = () => {
-                console.info('delayed filter aborted')
-              }
+              column.relationTableName = relation.toTable.name;
+              column.relationColumnName = relation.toColumn.name;
+              column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
 
               insertColumns.push(column);
             } else {
@@ -466,6 +449,11 @@ export default {
         this.loading = false;
         console.error(error);
       }
+    },
+
+    getDisplayableColumns(tableMetadata) {
+      const displayableColumns = tableMetadata.columns.filter(t => t.displayable === true);
+      return displayableColumns;
     }
   }
 };
