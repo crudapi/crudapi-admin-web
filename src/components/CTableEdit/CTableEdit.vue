@@ -36,20 +36,19 @@
         </div>
 
         <div class="col-7" v-else>
-          <q-select
-            v-if="item.options"
-            style="min-width: 150px;height: 40px;"
-            outlined
-            option-label="name"
-            use-input
-            hide-selected
-            fill-input
-            input-debounce="0"
-            @filter="item.filterFn"
-            @filter-abort="item.abortFilterFn"
-            v-model="item.value"
-            :options="item.options"
-          />
+          <div class="row items-baseline content-center"
+            style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
+           v-if="item.relationTableName">
+            <div class="col-10">
+              <span>{{ item.value | relationDataFormat(item) }}</span>
+            </div>
+            <div class="col-1">
+              <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(item)" />
+            </div>
+            <div class="col-1">
+              <q-btn round dense color="negative" flat icon="clear" @click="item.value = null" />
+            </div>
+          </div>
 
           <q-input v-else-if="isDateTimeType(item.dataType)"
               v-model="item.value">
@@ -177,6 +176,7 @@ import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
 import { extend } from 'quasar'
 import { date } from "../../utils";
+import CTableListReadDialog from '../../components/CTableListRead/CTableListReadDialog'
 
 export default {
   name: "CTableEdit",
@@ -244,6 +244,27 @@ export default {
         return value.name;
       }
       return value;
+    },
+    relationDataFormat: function(value, item) {
+       console.log("relationDataFormat:" +  JSON.stringify(value));
+       let ret = value;
+       if (value) {
+         if (item.relationDisplayColumns.length > 0) {
+            let displayValues = [];
+            item.relationDisplayColumns.forEach((t) => {
+                value[t.name] && displayValues.push(value[t.name]);
+            });
+
+            if (displayValues.length > 0) {
+              ret = displayValues.join("|");
+            } else {
+              ret = value[item.relationColumnName];
+            }
+         } else {
+            ret = value[item.relationColumnName];
+         }
+       } 
+       return ret ? ret : value;
     }
   },
   computed: {},
@@ -328,7 +349,8 @@ export default {
 
         const relation = this.relationMap[columnName];
         if (relation) {
-          data[relation.relation.name] = insertColumn.value;
+          data[columnName] = insertColumn.value && insertColumn.value[insertColumn.relationColumnName];
+          data[relation.name] = insertColumn.value;
         } else {
           if (insertColumn.value != undefined
             && insertColumn.value != null
@@ -376,6 +398,33 @@ export default {
       }
     },
 
+    openDialogClickAction(item) {
+      this.$q.dialog({
+        component: CTableListReadDialog,
+
+        // optional if you want to have access to
+        // Router, Vuex store, and so on, in your
+        // custom component:
+        parent: this, // becomes child of this Vue node
+                      // ("this" points to your Vue component)
+                      // (prop was called "root" in < 1.1.0 and
+                      // still works, but recommending to switch
+                      // to data: the more appropriate "parent" name)
+
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        tableName: item.relationTableName,
+        data: item.value
+        // ...more.props...
+      }).onOk((data) => {
+        item.value = data;
+      }).onCancel(() => {
+        console.log('Cancel')
+      }).onDismiss(() => {
+        console.log('Called on OK or Cancel')
+      });
+    },
+
     async loadMeta() {
       console.info("CTableEdit loadMeta");
       const that = this;
@@ -393,18 +442,15 @@ export default {
         /* 关联表元数据 */
         let relationMetadataMap = {};
         await Promise.all(tableRelations.map(async (tableRelation) => {
-           if (tableRelation.relationType === "OneToOneMainToSub"
-            || tableRelation.relationType === "OneToMany") {
-            const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
-
-            relationMetadataMap[tableRelation.toTable.name] = relationTable;
-           }
+          const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+          relationMetadataMap[tableRelation.toTable.name] = relationTable;
         }));
 
         /* 主表业务数据 */
         let tableData = await tableService.get(this.tableName, this.recId);
         this.tableData = tableData;
 
+        let relationMap = {};
         let oneToOneMainToSubTables = [];
         let oneToManySubTables = [];
         tableRelations.forEach((tableRelation) => {
@@ -433,30 +479,14 @@ export default {
               "fkColumnName": tableRelation.toColumn.name,
               "recIds": recIds
             });
+          } else if (tableRelation.relationType === "ManyToOne"
+            || tableRelation.relationType === "OneToOneSubToMain") {
+             const fromColumnName = tableRelation.fromColumn.name;
+             relationMap[fromColumnName] = tableRelation;
           }
         });
         this.oneToOneMainToSubTables = oneToOneMainToSubTables;
         this.oneToManySubTables = oneToManySubTables;
-
-        let optionsMap = {};
-        let optionValueColumnNameMap = {};
-        let relationMap = {};
-
-        await Promise.all(tableRelations.map(async (tableRelation) => {
-           if (tableRelation.relationType === "ManyToOne"
-            || tableRelation.relationType === "OneToOneSubToMain") {
-
-             const toTableData = await tableService.list(tableRelation.toTable.name);
-
-             const fromColumnName = tableRelation.fromColumn.name;
-
-             relationMap[fromColumnName] = {
-                "data": toTableData,
-                "relation": tableRelation
-             }
-           }
-        }));
-
         this.relationMap = relationMap;
 
         let insertColumns = [];
@@ -491,31 +521,10 @@ export default {
 
           const relation = this.relationMap[columnName];
           if (relation) {
-            column.options = relation.data;
-            column.optionValueColumnName = relation.relation.toColumn.name;
-            if (column.options) {
-              column.value = column.options.find(t =>
-                t[column.optionValueColumnName] + "" === column.value + "");
-            }
-
-            column.filterFn = (val, update, abort) => {
-              tableService.list(relation.relation.toTable.name, 0, 10, val)
-              .then((data) => {
-                update(() => {
-                  if (val === '') {
-                    column.options = relation.data;
-                  }
-                  else {
-                    column.options = data;
-                  }
-                })
-              });
-            };
-
-            column.abortFilterFn = () => {
-              console.info('delayed filter aborted')
-            }
-
+            column.relationTableName = relation.toTable.name;
+            column.relationColumnName = relation.toColumn.name;
+            column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
+            column.value = tableData[relation.name];
             insertColumns.push(column);
           } else {
             insertColumns.push(column);
@@ -529,6 +538,11 @@ export default {
         this.loading = false;
         console.error(error);
       }
+    },
+
+    getDisplayableColumns(tableMetadata) {
+      const displayableColumns = tableMetadata.columns.filter(t => t.displayable === true);
+      return displayableColumns;
     }
   }
 };
