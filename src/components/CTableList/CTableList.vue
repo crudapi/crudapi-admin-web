@@ -66,14 +66,11 @@
             <div class="row items-baseline content-center"
               style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
              v-if="isHasRelationTableNameByKey(colKey, props.cols)">
-              <div class="col-8">
+              <div class="col-10">
                 <span >{{ props.row[colKey] | relationDataFormat(colKey, props.cols) }}</span>
               </div>
               <div class="col-2">
                 <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(props, colKey)" />
-              </div>
-              <div class="col-2">
-                <q-btn round dense color="negative" flat icon="clear" @click="props.row[colKey] = null" />
               </div>
             </div>
 

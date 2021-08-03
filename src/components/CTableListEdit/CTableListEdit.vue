@@ -70,14 +70,11 @@
               <div class="row items-baseline content-center"
               style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
                v-if="isHasRelationTableNameByKey(colKey, props.cols)">
-                <div class="col-8">
+                <div class="col-10">
                   <span >{{ props.row[colKey] | relationDataFormat(colKey, props.cols) }}</span>
                 </div>
                 <div class="col-2">
                   <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(props, colKey)" />
-                </div>
-                <div class="col-2">
-                  <q-btn round dense color="negative" flat icon="clear" @click="props.row[colKey] = null" />
                 </div>
               </div>
 
@@ -503,37 +500,21 @@ export default {
           let newDataItem = {};
           let relationNames = [];
           for (let columnName in t) {
-            if (relationNames.findIndex(t => t === columnName) < 0) {
-              const value = t[columnName];
-              const relation = this.relationMap[columnName];
-              if (relation) {
-                if (value && value.id) {
-                  newDataItem[relation.relation.name] = value;
-                } else {
-                  newDataItem[relation.relation.name] = {"id": value};
-                }
-                relationNames.push(relation.relation.name);
-                console.info(relation.relation.name);
-              } else {
-                if (value != undefined
-                && value != null
-                && value.toString().trim() !== "") {
-                  newDataItem[columnName] = value;
-                }
+            const value = t[columnName];
+            const relation = this.relationMap[columnName];
+            if (relation) {
+              newDataItem[relation.name] = value;
+              newDataItem[columnName] = value && value[relation.toColumn.name];
+            } else {
+              if (value != undefined
+              && value != null
+              && value.toString().trim() !== "") {
+                newDataItem[columnName] = value;
               }
             }
           }
 
           console.info(newDataItem);
-          // const relation = this.relationMap[columnName];
-          // if (relation) {
-          //   data[relation.relation.name] = insertColumn.value;
-          // } else {
-          //   if (insertColumn.value && insertColumn.value.trim() !== "") {
-          //     data[columnName] = insertColumn.value;
-          //   }
-          // }
-
 
           that.oneToOneMainToSubTables.forEach((oneToOneMainToSubTable) => {
             const refName = 'rTableNewOrEditRef' + oneToOneMainToSubTable.relationName + this.getRecId(newDataItem);
@@ -782,6 +763,10 @@ export default {
             column.relationTableName = relation.toTable.name;
             column.relationColumnName = relation.toColumn.name;
             column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
+
+            tableDatas.forEach((tableData) => {
+              tableData[columnName] = tableData[relation.name];
+            });
 
             insertColumns.push(column);
           } else {
