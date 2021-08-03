@@ -497,7 +497,6 @@ export default {
       }
     },
 
-    //props.row[colKey], colKey, props.cols
     openDialogClickAction(props, colKey) {
       const col = props.cols.find(t => t.name === colKey);
       const row = props.row;

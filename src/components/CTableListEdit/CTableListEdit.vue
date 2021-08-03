@@ -67,26 +67,19 @@
                 {{ value | dataFormat(colKey, props.cols)}}
               </span>
 
-              <q-select
-                v-else-if="isOptionsByKey(colKey, props.cols)"
-                style="min-width: 150px;height: 40px;"
-                outlined
-                use-input
-                hide-selected
-                fill-input
-                input-debounce="0"
-                @filter="(val, update, abort) => {
-                  getFilterFnByKey(colKey, props.cols, val, update, abort)
-                }"
-                @filter-abort="(val, update, abort) => {
-                  getAbortFilterFnByKey(colKey, props.cols)
-                }"
-                v-model="props.row[colKey]"
-                :options="getOptionsByKey(colKey, props.cols)"
-                option-label="name"
-                option-value="id"
-                map-options
-              />
+              <div class="row items-baseline content-center"
+              style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
+               v-if="isHasRelationTableNameByKey(colKey, props.cols)">
+                <div class="col-8">
+                  <span >{{ props.row[colKey] | relationDataFormat(colKey, props.cols) }}</span>
+                </div>
+                <div class="col-2">
+                  <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(props, colKey)" />
+                </div>
+                <div class="col-2">
+                  <q-btn round dense color="negative" flat icon="clear" @click="props.row[colKey] = null" />
+                </div>
+              </div>
 
               <q-input v-else-if="isDateTimeTypeByKey(colKey, props.cols)"
                 v-model="props.row[colKey]">
@@ -186,6 +179,7 @@ import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
 import { extend } from 'quasar'
 import { date } from "../../utils";
+import CTableListReadDialog from '../../components/CTableListRead/CTableListReadDialog'
 
 export default {
   name: "CTableListEdit",
@@ -278,6 +272,28 @@ export default {
         return value.name;
       }
       return value;
+    },
+    relationDataFormat: function(value, colKey, cols) {
+       console.log("relationDataFormat:" +  JSON.stringify(value));
+       const item = cols.find(t => t.name === colKey);
+       let ret = value;
+       if (value) {
+         if (item.relationDisplayColumns.length > 0) {
+            let displayValues = [];
+            item.relationDisplayColumns.forEach((t) => {
+                value[t.name] && displayValues.push(value[t.name]);
+            });
+
+            if (displayValues.length > 0) {
+              ret = displayValues.join("|");
+            } else {
+              ret = value[item.relationColumnName];
+            }
+         } else {
+            ret = value[item.relationColumnName];
+         }
+       } 
+       return ret ? ret : value;
     }
   },
   computed: {},
@@ -300,42 +316,14 @@ export default {
       return newRow;
     },
 
-    isOptionsByKey: function(key, cols) {
-      //console.info("isOptionsByKey");
+    isHasRelationTableNameByKey: function(key, cols) {
       const find = cols.find(t => t.name === key);
-      if (find && find.options) {
-        console.info("isOptionsByKey:" + key);
-        console.info("isOptionsByKey:" + JSON.stringify(cols));
+      if (find.relationTableName) {
         return true;
       }
       return false;
     },
 
-    getOptionsByKey: function(key, cols) {
-      //console.info("getOptionsByKey");
-      const find = cols.find(t => t.name === key);
-      if (find && find.options) {
-        console.info(find.options);
-        return find.options;
-      }
-      return null;
-    },
-
-    getFilterFnByKey: function(key, cols, val, update, abort) {
-      console.info("getFilterFnByKey");
-      const find = cols.find(t => t.name === key);
-      if (find && find.options) {
-        find.filterFn(val, update, abort);
-      }
-    },
-
-    getAbortFilterFnByKey: function(key, cols) {
-      console.info("getAbortFilterFnByKey");
-      const find = cols.find(t => t.name === key);
-      if (find && find.options) {
-        find.abortFilterFn();
-      }
-    },
 
     isUpdatableByKey: function(key, cols) {
       const find = cols.find(t => t.name === key);
@@ -636,6 +624,34 @@ export default {
       }
     },
 
+    openDialogClickAction(props, colKey) {
+      const col = props.cols.find(t => t.name === colKey);
+      const row = props.row;
+      this.$q.dialog({
+        component: CTableListReadDialog,
+
+        // optional if you want to have access to
+        // Router, Vuex store, and so on, in your
+        // custom component:
+        parent: this, // becomes child of this Vue node
+                      // ("this" points to your Vue component)
+                      // (prop was called "root" in < 1.1.0 and
+                      // still works, but recommending to switch
+                      // to data: the more appropriate "parent" name)
+
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        tableName: col.relationTableName,
+        data: row[colKey]
+        // ...more.props...
+      }).onOk((data) => {
+        row[colKey] = data;
+      }).onCancel(() => {
+        console.log('Cancel')
+      }).onDismiss(() => {
+        console.log('Called on OK or Cancel')
+      });
+    },
 
     async loadMeta() {
       const that = this;
@@ -652,12 +668,8 @@ export default {
         /* 关联表元数据 */
         let relationMetadataMap = {};
         await Promise.all(tableRelations.map(async (tableRelation) => {
-           if (tableRelation.relationType === "OneToOneMainToSub"
-            || tableRelation.relationType === "OneToMany") {
             const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
-
             relationMetadataMap[tableRelation.toTable.name] = relationTable;
-           }
         }));
         this.relationMetadataMap = relationMetadataMap;
 
@@ -665,6 +677,7 @@ export default {
         let tableDatas = await tableService.listByIds(this.tableName, this.recIds);
         console.dir(tableDatas);
 
+        let relationMap = {};
         let oneToOneMainToSubTables = [];
         let oneToManySubTables = [];
         tableRelations.forEach((tableRelation) => {
@@ -710,32 +723,14 @@ export default {
               "fkColumnName": tableRelation.toColumn.name,
               "recIdsMap": recIdsMap
             });
+          } else if (tableRelation.relationType === "ManyToOne"
+            || tableRelation.relationType === "OneToOneSubToMain") {
+             const fromColumnName = tableRelation.fromColumn.name;
+             relationMap[fromColumnName] = tableRelation;
           }
         });
         this.oneToOneMainToSubTables = oneToOneMainToSubTables;
         this.oneToManySubTables = oneToManySubTables;
-
-        let optionsMap = {};
-        let optionValueColumnNameMap = {};
-        let relationMap = {};
-
-        await Promise.all(tableRelations.map(async (tableRelation) => {
-           if (tableRelation.relationType === "ManyToOne"
-            || tableRelation.relationType === "OneToOneSubToMain") {
-             console.info("tableRelation:" + JSON.stringify(tableRelation));
-
-             const toTableData = await tableService.list(tableRelation.toTable.name);
-             console.info("toTableData:" + JSON.stringify(toTableData));
-
-             const fromColumnName = tableRelation.fromColumn.name;
-
-             relationMap[fromColumnName] = {
-                "data": toTableData,
-                "relation": tableRelation
-             }
-           }
-        }));
-
         this.relationMap = relationMap;
 
         console.info("relationMap:" + JSON.stringify(this.relationMap));
@@ -748,6 +743,7 @@ export default {
           if (column.indexType === "FULLTEXT") {
             continue;
           }
+
           // if (this.fkColumnName && columnName === this.fkColumnName) {
           //   continue;
           // }
@@ -783,32 +779,9 @@ export default {
 
           const relation = this.relationMap[columnName];
           if (relation) {
-            column.options = relation.data;
-            column.optionValueColumnName = relation.relation.toColumn.name;
-            if (column.options) {
-              column.value = column.options.find(t =>
-                t[column.optionValueColumnName] + "" === column.defaultValue + "");
-            }
-
-            column.filterFn = (val, update, abort) => {
-              // call abort() at any time if you can't retrieve data somehow
-              console.info('filterFn:' + val)
-              tableService.list(relation.relation.toTable.name, 0, 10, val)
-              .then((data) => {
-                update(() => {
-                  if (val === '') {
-                    column.options = relation.data;
-                  }
-                  else {
-                    column.options = data;
-                  }
-                })
-              });
-            };
-
-            column.abortFilterFn = () => {
-              console.info('delayed filter aborted')
-            }
+            column.relationTableName = relation.toTable.name;
+            column.relationColumnName = relation.toColumn.name;
+            column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
 
             insertColumns.push(column);
           } else {
@@ -843,9 +816,9 @@ export default {
             sortable: false,
             placeHolder: column.description,
             updatable: column.updatable,
-            options: column.options,
-            filterFn: column.filterFn,
-            abortFilterFn: column.abortFilterFn,
+            relationTableName: column.relationTableName,
+            relationColumnName: column.relationColumnName,
+            relationDisplayColumns: column.relationDisplayColumns,
             isPwd: column.isPwd,
             isText: column.isText
           });
@@ -867,6 +840,10 @@ export default {
         this.loading = false;
         console.error(error);
       }
+    },
+    getDisplayableColumns(tableMetadata) {
+      const displayableColumns = tableMetadata.columns.filter(t => t.displayable === true);
+      return displayableColumns;
     }
   }
 };
