@@ -224,7 +224,26 @@ export default {
     dataFormat: function(value, key, cols) {
       const find = cols.find(t => t.name === key);
       if (find) {
-        if (find.dataType === "DATETIME") {
+        if (find.relationTableName) {
+          let ret = value;
+          if (value) {
+           if (find.relationDisplayColumns.length > 0) {
+              let displayValues = [];
+              find.relationDisplayColumns.forEach((t) => {
+                  value[t.name] && displayValues.push(value[t.name]);
+              });
+
+              if (displayValues.length > 0) {
+                ret = displayValues.join("|");
+              } else {
+                ret = value[find.relationColumnName];
+              }
+           } else {
+              ret = value[find.relationColumnName];
+           }
+         } 
+         return ret ? ret : value;
+        } else if (find.dataType === "DATETIME") {
           return date.dateTimeFormat(value);
         } else if (find.dataType === "DATE") {
           return date.dateFormat(value);
@@ -236,7 +255,7 @@ export default {
           } else if (value === false) {
             return "否"
           }
-        }
+        } 
       }
       return value;
     }
@@ -393,8 +412,8 @@ export default {
           this.columns.forEach(function(item, index, arr) {
             const columnName = item.name;
             const relation = relationMap[columnName];
-            if (relation && row[relation.relation.name]) {
-              obj[relation.relation.name] = row[relation.relation.name].name;
+            if (relation) {
+              obj[columnName] = row[relation.name];
             } else {
               obj[columnName] = row[columnName];
             }
@@ -446,6 +465,7 @@ export default {
     },
 
     async loadMeta() {
+      const that = this;
       this.loading = true;
       try {
         const table = await metadataTableService.getByName(this.tableName);
@@ -454,24 +474,23 @@ export default {
        
         const tableRelations = await metadataRelationService.getByName(this.tableName);
 
-        let optionsMap = {};
-        let optionValueColumnNameMap = {};
-        let relationMap = {};
+        /* 关联表元数据 */
+        let relationMetadataMap = {};
+        await Promise.all(tableRelations.map(async (tableRelation) => {
+          const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+          relationMetadataMap[tableRelation.toTable.name] = relationTable;
+        }));
+        this.relationMetadataMap = relationMetadataMap;
 
+
+        let relationMap = {};
         await Promise.all(tableRelations.map(async (tableRelation) => {
            if (tableRelation.relationType === "ManyToOne"
             || tableRelation.relationType === "OneToOneSubToMain") {
-
-             const toTableData = await tableService.list(tableRelation.toTable.name);
              const fromColumnName = tableRelation.fromColumn.name;
-
-             relationMap[fromColumnName] = {
-                "data": toTableData,
-                "relation": tableRelation
-             }
+             relationMap[fromColumnName] = tableRelation
            }
         }));
-
         this.relationMap = relationMap;
 
         let columns = [{
@@ -489,20 +508,27 @@ export default {
           if (column.indexType !== "FULLTEXT"
             && column.dataType !== "PASSWORD") {
             const relation = this.relationMap[columnName];
+            if (relation) {
+              column.relationTableName = relation.toTable.name;
+              column.relationColumnName = relation.toColumn.name;
+              column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
+
+              // tableDatas.forEach((tableData) => {
+              //   tableData[columnName] = tableData[relation.name];
+              // });
+            }
+
             let newColumn = {
                 name: column.name,
                 align: "left",
                 label: column.caption,
                 field: column.name,
                 dataType: column.dataType,
-                sortable: true
+                sortable: true,
+                relationTableName: column.relationTableName,
+                relationColumnName: column.relationColumnName,
+                relationDisplayColumns: column.relationDisplayColumns,
             };
-
-            if (relation) {
-              newColumn.isRelation = true
-            } else {
-              newColumn.isRelation = false
-            }
 
             columns.push(newColumn);
 
@@ -528,6 +554,12 @@ export default {
         this.loading = false;
         console.error(error);
       }
+    },
+
+
+    getDisplayableColumns(tableMetadata) {
+      const displayableColumns = tableMetadata.columns.filter(t => t.displayable === true);
+      return displayableColumns;
     }
   }
 };
