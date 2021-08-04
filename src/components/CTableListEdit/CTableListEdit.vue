@@ -79,6 +79,29 @@
               </div>
 
               <q-input v-else-if="isDateTimeTypeByKey(colKey, props.cols)"
+                  v-model="props.row[colKey]">
+                <template v-slot:prepend>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date v-model="props.row[colKey]"
+                      mask="YYYY-MM-DD HH:mm:ss"
+                      @input="hideRefPopProxyAction('qDateProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                      <q-time v-model="props.row[colKey]" mask="YYYY-MM-DD HH:mm:ss"
+                      format24h with-seconds
+                      @input="hideRefPopProxyAction('qTimeProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-input v-else-if="isDateTypeByKey(colKey, props.cols)"
                 v-model="props.row[colKey]">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
@@ -86,6 +109,19 @@
                       <q-date v-model="props.row[colKey]"
                       mask="YYYY-MM-DD"
                       @input="hideRefPopProxyAction('qDateProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-input v-else-if="isTimeTypeByKey(colKey, props.cols)"
+                v-model="props.row[colKey]">
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                      <q-time v-model="props.row[colKey]" mask="HH:mm:ss"
+                      format24h with-seconds
+                      @input="hideRefPopProxyAction('qTimeProxy')" />
                     </q-popup-proxy>
                   </q-icon>
                 </template>
@@ -330,12 +366,30 @@ export default {
       return false;
     },
 
-    isDateTimeTypeByKey: function(key, cols) {
+   isDateTimeTypeByKey: function(key, cols) {
       const find = cols.find(t => t.name === key);
       if (find) {
-        if (find.dataType === "DATETIME"
-          || find.dataType === "DATE"
-          || find.dataType === "TIME") {
+        if (find.dataType === "DATETIME") {
+          return true
+        }
+      }
+      return false;
+    },
+
+    isDateTypeByKey: function(key, cols) {
+      const find = cols.find(t => t.name === key);
+      if (find) {
+        if (find.dataType === "DATE") {
+          return true
+        }
+      }
+      return false;
+    },
+
+    isTimeTypeByKey: function(key, cols) {
+      const find = cols.find(t => t.name === key);
+      if (find) {
+        if (find.dataType === "TIME") {
           return true
         }
       }
@@ -747,7 +801,6 @@ export default {
             columnValue = column.defaultValue;
           }
 
-
           if (column.dataType === 'DATE' && columnValue) {
             column.value = date.dateFormat(columnValue);
           } else if (column.dataType === 'DATETIME' && columnValue) {
@@ -756,6 +809,16 @@ export default {
             column.value = date.timeFormat(columnValue);
           } else {
             column.value = columnValue;
+          }
+
+          if (column.dataType === 'DATE') {
+            tableDatas.forEach((tableData) => {
+              tableData[columnName] =  date.dateFormat(tableData[columnName]);
+            });
+          } else if (column.dataType === 'DATETIME') {
+            tableDatas.forEach((tableData) => {
+              tableData[columnName] =  date.dateTimeFormat(tableData[columnName]);
+            });
           }
 
           const relation = this.relationMap[columnName];

@@ -32,7 +32,7 @@
             </div>
           </div>
          
-           <q-input v-else-if="isDateTimeType(item.dataType)"
+          <q-input v-else-if="isDateTimeType(item.dataType)"
               v-model="item.value">
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
