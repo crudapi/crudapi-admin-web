@@ -379,6 +379,7 @@ export default {
     },
 
     getRecId(tableDTO, dataMap) {
+      console.log("getRecId");
       const primaryNames = tableDTO.primaryNames;
       if (primaryNames.length === 1) {
         return dataMap[primaryNames[0]];
@@ -453,8 +454,11 @@ export default {
         tableRelations.forEach((tableRelation) => {
           if (tableRelation.relationType === "OneToOneMainToSub") {
             let recId = null;
-            tableData[tableRelation.name] && (recId = that.getRecId(relationMetadataMap[tableRelation.toTable.name]), tableData[tableRelation.name]);
-            console.dir(recId);
+            if (tableData[tableRelation.name]) {
+              recId = that.getRecId(relationMetadataMap[tableRelation.toTable.name], tableData[tableRelation.name]);
+              console.dir(recId);
+            }
+            
             oneToOneMainToSubTables.push({
               "relationName": tableRelation.name,
               "tableName": tableRelation.toTable.name,
