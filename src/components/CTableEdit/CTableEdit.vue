@@ -38,7 +38,7 @@
         <div class="col-7" v-else>
           <div class="row items-baseline content-center"
             style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
-           v-if="item.relationTableName">
+            v-if="item.relationTableName">
             <div class="col-11">
               <span>{{ item.value | relationDataFormat(item) }}</span>
             </div>

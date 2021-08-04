@@ -63,28 +63,28 @@
             :icon="props.expand ? 'expand_less' : 'expand_more'"/>
           </q-td>
           <q-td :key="index" v-for="(value, colKey, index) in filterRow(props.row)">
-            <div class="row items-baseline content-center"
-              style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
-             v-if="isHasRelationTableNameByKey(colKey, props.cols)">
-              <div class="col-10">
-                <span >{{ props.row[colKey] | relationDataFormat(colKey, props.cols) }}</span>
+              <div class="row items-baseline content-center"
+                style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
+               v-if="isHasRelationTableNameByKey(colKey, props.cols)">
+                <div class="col-10">
+                  <span >{{ props.row[colKey] | relationDataFormat(colKey, props.cols) }}</span>
+                </div>
+                <div class="col-2">
+                  <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(props, colKey)" />
+                </div>
               </div>
-              <div class="col-2">
-                <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(props, colKey)" />
-              </div>
-            </div>
 
               <q-input v-else-if="isDateTimeTypeByKey(colKey, props.cols)"
                 v-model="props.row[colKey]">
-              <template v-slot:append>
-                <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="props.row[colKey]"
-                    mask="YYYY-MM-DD"
-                    @input="hideRefPopProxyAction('qDateProxy')" />
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date v-model="props.row[colKey]"
+                      mask="YYYY-MM-DD"
+                      @input="hideRefPopProxyAction('qDateProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
               </q-input>
 
               <q-input

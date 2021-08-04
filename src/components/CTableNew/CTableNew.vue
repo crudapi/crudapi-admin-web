@@ -21,22 +21,9 @@
         {{item.caption}}:</div>
 
         <div class="col-7">
-         <!--  <q-select
-            v-if="item.options"
-            style="min-width: 150px;height: 40px;"
-            outlined
-            use-input
-            hide-selected
-            fill-input
-            input-debounce="0"
-            @filter="item.filterFn"
-            @filter-abort="item.abortFilterFn"
-            v-model="item.value"
-            :options="item.options"
-          /> -->
           <div class="row items-baseline content-center"
             style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
-           v-if="item.relationTableName">
+            v-if="item.relationTableName">
             <div class="col-11">
               <span>{{ item.value | relationDataFormat(item) }}</span>
             </div>
