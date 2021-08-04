@@ -160,9 +160,10 @@
           <q-td colspan="100%">
             <div class="text-left">
               <div :key="item.relationName" v-for="item in oneToOneMainToSubTables">
+               
                 <CTableEdit 
-                  v-if="isExistCTableListEdit(item.recIdsMap, props.row)"
-                  :recIds="getCTableListEditRecIds(item.recIdsMap, props.row)"
+                  v-if="isExistCTableEdit(item.recIdMap, props.row)"
+                  :recId="getCTableEditRecId(item.recIdMap, props.row)"
                   :fkColumnName="item.fkColumnName"
                   :ref="getRefName('rTableNewOrEditRef', item.relationName, props.row)"
                   :tableName="item.tableName" >
@@ -486,11 +487,32 @@ export default {
     getCTableListEditRecIds: function(recIdsMap, row) {
       if (recIdsMap && row) {
         const recIds = recIdsMap[this.getRecId(row)];
-        console.dir(recIds);
+        console.log("getCTableListEditRecIds: " + JSON.stringify(recIds));
         return recIds;
       } else {
         console.log("getCTableListEditRecIds empty");
         return [];
+      }
+    },
+
+    isExistCTableEdit: function(recIdMap, row) {
+      console.log("isExistCTableEdit");
+      const recId = this.getCTableEditRecId(recIdMap, row);
+      if (recId) {
+        return true;
+      }
+
+      return false;
+    },
+
+    getCTableEditRecId: function(recIdMap, row) {
+      if (recIdMap && row) {
+        const recId = recIdMap[this.getRecId(row)];
+        console.log("getCTableEditRecId: " + recId);
+        return recId;
+      } else {
+        console.log("getCTableEditRecId empty");
+        return null;
       }
     },
 
@@ -725,7 +747,7 @@ export default {
                 recIdMap[mainRecId] = relationRecId;
               }
             });
-            console.info("recIdMap" + JSON.stringify(recIdMap));
+            console.info("OneToOneMainToSub recIdMap" + JSON.stringify(recIdMap));
 
             oneToOneMainToSubTables.push({
               "relationName": tableRelation.name,
