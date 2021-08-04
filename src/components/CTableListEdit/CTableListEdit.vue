@@ -74,7 +74,7 @@
                   <span >{{ props.row[colKey] | relationDataFormat(colKey, props.cols) }}</span>
                 </div>
                 <div class="col-2">
-                  <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(props, colKey)" />
+                  <q-btn round dense flat icon="zoom_in" @click="openDialogClickAction(props, colKey)" />
                 </div>
               </div>
 

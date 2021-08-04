@@ -8,7 +8,7 @@
             <q-icon name="attach_file" />
           </template>
           <template v-slot:after>
-            <q-btn round dense flat icon="send" @click="onSubmitClick" />
+            <q-btn round dense flat icon="cloud_upload" @click="onSubmitClick" />
           </template>
         </q-file>
       </div>
@@ -19,7 +19,7 @@
             <q-icon name="attach_file" />
           </template>
           <template v-slot:after>
-            <q-btn round dense flat icon="flight_land" @click="onBigSubmitClick" />
+            <q-btn round dense flat icon="cloud_upload" @click="onBigSubmitClick" />
           </template>
         </q-file>
       </div>

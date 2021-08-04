@@ -43,7 +43,7 @@
               <span>{{ item.value | relationDataFormat(item) }}</span>
             </div>
             <div class="col-1">
-              <q-btn round dense color="primary" flat icon="add" @click="openDialogClickAction(item)" />
+              <q-btn round dense flat icon="zoom_in" @click="openDialogClickAction(item)" />
             </div>
           </div>
 
