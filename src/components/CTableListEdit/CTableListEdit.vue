@@ -134,6 +134,13 @@
                 type="number" >
               </q-input>
 
+              <CFile v-else-if="isAttachmentTypeByKey(colKey, props.cols)"
+                 v-model="props.row[colKey]"
+                 @input="(data)=>{
+                  props.row[colKey] = data.url;
+                 }">
+              </CFile>
+
               <q-toggle v-else-if="isBoolTypeByKey(colKey, props.cols)"
                 v-model="props.row[colKey]">
               </q-toggle>
@@ -415,6 +422,16 @@ export default {
       const find = cols.find(t => t.name === key);
       if (find) {
         if (find.dataType === "BOOL") {
+          return true
+        }
+      }
+      return false;
+    },
+
+    isAttachmentTypeByKey: function(key, cols) {
+      const find = cols.find(t => t.name === key);
+      if (find) {
+        if (find.dataType === "ATTACHMENT") {
           return true
         }
       }
