@@ -55,16 +55,23 @@
             <template v-slot:action>
               <q-btn
                 unelevated
-                @click="onImportClickAction()"
-                color="purple"
-                label="批量导入"
+                @click="onDeleteClickAction()"
+                color="negative"
+                label="批量删除"
               />
               <p class="q-px-sm"/>
               <q-btn
                 unelevated
-                @click="onDeleteClickAction()"
-                color="negative"
-                label="批量删除"
+                @click="onExportClickAction()"
+                color="positive"
+                label="批量导出"
+              />
+              <p class="q-px-sm"/>
+              <q-btn
+                unelevated
+                @click="onImportClickAction()"
+                color="purple"
+                label="批量导入"
               />
               <p class="q-px-sm"/>
               <q-btn
@@ -387,6 +394,29 @@ export default {
       } catch (error) {
         console.error(error);
         this.$q.notify("删除失败");
+      }
+    },
+
+    async onExportClickAction() {
+      console.info("export->onExportClick");
+
+      this.$q.loading.show({
+        message: "生成中"
+      });
+
+      try {
+        let form = new FormData()
+        form.append('file', this.localFile);
+
+        const url = await tableService.export(this.tableName);
+        this.$q.notify("数据导出成功，请等待下载完成后查看！");
+
+        window.open(url, "_blank");
+
+        this.$q.loading.hide();
+      } catch (error) {
+        this.$q.loading.hide();
+        console.error(error);
       }
     },
 

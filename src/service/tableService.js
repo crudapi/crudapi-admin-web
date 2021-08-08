@@ -42,6 +42,10 @@ const tableService = {
   getImportTemplate: async function(tableName) {
     var res = await table.getImportTemplate(tableName);
     return res.data;
+  },
+  export: async function(tableName) {
+    var res = await table.export(tableName);
+    return res.data;
   }
 };
 
