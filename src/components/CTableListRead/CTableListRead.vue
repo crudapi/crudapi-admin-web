@@ -398,16 +398,11 @@ export default {
     },
 
     async onExportClickAction() {
-      console.info("export->onExportClick");
-
       this.$q.loading.show({
         message: "生成中"
       });
 
       try {
-        let form = new FormData()
-        form.append('file', this.localFile);
-
         const url = await tableService.export(this.tableName);
         this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
