@@ -26,11 +26,29 @@
       </a>
     </div>
 
-    <div class="q-pt-md text-h6">帮助文档</div>
-    <div class="q-pa-md"><a target="_blank"  href="https://help.crudapi.cn">https://help.crudapi.cn</a></div>
+    <div class="q-pt-md text-h6">联系方式</div>
+      <div class="q-pa-md">
+      个人版免费使用，添加客服微信（暗号crudapi），加入crudapi交流群可享商业版5折福利！
+      <div align="left">
+        <img width = "200" src="crudapiweixin.jpeg">
+      </div>
+    </div>
 
-    <div class="text-h6">官网</div>
-    <div class="q-pa-md"><a target="_blank"  href="https://crudapi.cn">https://crudapi.cn</a></div>
+    <div class="q-pt-md text-h6">网站</div>
+    <div class="q-px-md">
+      帮助文档：
+      <a target="_blank"  href="https://help.crudapi.cn">
+        https://help.crudapi.cn
+      </a>
+    </div>
+    <div class="q-px-md">
+      crudapi官网：
+      <a target="_blank"  href="https://crudapi.cn">
+        https://crudapi.cn
+      </a>
+    </div>
+
+   
   </div>
 </template>
 

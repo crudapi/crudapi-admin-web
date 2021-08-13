@@ -88,7 +88,14 @@ admin@crudapi.cn
 #### Weixin
 undefinedneqnull
 
-![undefinedneqnull](./img/crudapiweixin.jpeg)
+<div align="left">
+  <img width = "200" src="./img/crudapiweixin.jpeg">
+</div>
+
+#### WeixinQun
+<div align="left">
+  <img width = "200" src="./img/weixinqun.png">
+</div>
 
 If you have any questions, please contact us!
 
