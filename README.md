@@ -4,11 +4,11 @@
 [中文](README_CN.md)
 
 ## GIT URL
-### GitHub repo
-[https://github.com/crudapi/crudapi-admin-web](https://github.com/crudapi/crudapi-admin-web)
-
-### Gitee repo
-[https://gitee.com/crudapi/crudapi-admin-web](https://gitee.com/crudapi/crudapi-admin-web)
+Name | Type | License | GitHub| Gitee
+--- | --- | --- | --- | ---
+crudapi-admin-web | Vue Qusar Code | Open Source | [crudapi-admin-web](https://github.com/crudapi/crudapi-admin-web) | [crudapi-admin-web](https://gitee.com/crudapi/crudapi-admin-web)
+crudapi-example| Java SDK | Free | [crudapi-example](https://github.com/crudapi/crudapi-example) | [crudapi-example](https://gitee.com/crudapi/crudapi-example)
+crudapi-pro-example | Java Pro SDK  | Bussiness | [crudapi-pro-example](https://github.com/crudapi/crudapi-pro-example) | [crudapi-pro-example](https://gitee.com/crudapi/crudapi-pro-example)
 
 ## Install the dependencies
 ```bash
