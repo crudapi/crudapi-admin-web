@@ -1073,7 +1073,14 @@ export default {
         }
 
         let displayOrder = 0;
-        table.columns.forEach(function(column){
+        table.columns.forEach((column) => {
+            const n = Number(column.name);
+            if (!isNaN(n)) {
+              const error = "字段英文名称" + column.name + "不能为数字";
+              this.$q.notify(error);
+              throw error;
+            }
+
             column.displayOrder = displayOrder++;
             delete column.id;
         });
