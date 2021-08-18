@@ -33,6 +33,32 @@
         </q-btn>
 
         <q-space />
+          <div class="q-px-md">
+            <a class="text-white" target="_blank"  href="https://crudapi.cn">
+              crudapi官网
+            </a>
+          </div>
+          <div class="q-px-md">
+            <a class="text-white" target="_blank"  href="https://help.crudapi.cn">
+              帮助文档
+            </a>
+          </div>
+          <div class="q-px-md">
+            <a class="text-white" target="_blank"  href="https://demo.crudapi.cn/swagger-ui.html">
+              Swagger API
+            </a>
+          </div>
+          <div class="q-px-md">
+            <a class="text-white" target="_blank"  href="https://github.com/crudapi/crudapi-admin-web">
+              Github源码
+            </a>
+          </div>
+          <div class="q-px-md">
+            <a class="text-white" target="_blank"  href="https://gitee.com/crudapi/crudapi-admin-web">
+              Gitee源码
+            </a>
+          </div>
+
          <q-btn
           unelevated
           :label="userInfo.realname"
