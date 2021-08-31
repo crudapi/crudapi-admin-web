@@ -104,6 +104,11 @@ const metadataTable = {
         }
     });
   },
+  export: function(ids) {
+    return axiosInstance.post("/api/metadata/tables/export",
+      ids
+    );
+  }
 };
 
 export { metadataTable };

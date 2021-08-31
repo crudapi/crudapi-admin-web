@@ -47,6 +47,10 @@ const metadataTableService = {
       return res.data;
     })
   },
+  export: async function(ids) {
+    var res = await metadataTable.export(ids);
+    return res.data;
+  }
 };
 
 export { metadataTableService };

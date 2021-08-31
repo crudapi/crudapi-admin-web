@@ -73,7 +73,7 @@
               unelevated
               @click="onExportClickAction()"
               color="positive"
-              label="导出全部"
+              label="批量导出"
             />
             <p class="q-px-sm"/>
             <q-btn
@@ -370,8 +370,28 @@ export default {
       this.$router.push("/metadata/tables/" + id);
     },
 
-    onExportClickAction(id) {
-      window.open("/api/metadata/tables/export", "_blank");
+    async onExportClickAction(id) {
+      let ids = [];
+      this.selected.forEach(function(val){
+          ids.push(val.id);
+      });
+      console.info("list->onExportClickAction");
+
+      this.$q.loading.show({
+        message: "导出中"
+      });
+
+      try {
+        const url = await metadataTableService.export(ids);
+        this.$q.notify("元数据表生成成功，请等待下载完成后查看！");
+
+        window.open(url, "_blank");
+
+        this.$q.loading.hide();
+      } catch (error) {
+        this.$q.loading.hide();
+        console.error(error);
+      }
     },
 
     onImportClickAction() {
