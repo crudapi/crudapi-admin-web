@@ -62,18 +62,25 @@
         inline-actions class="text-black bg-listcolor">
           <template v-slot:action>
             <q-btn
-              unelevated
-              @click="onExportClickAction()"
-              color="purple"
-              label="导出全部"
-            />
-            <p class="q-px-sm"/>
-            <q-btn
               :disable="selected.length == 0"
               unelevated
               @click="onDeleteClickAction()"
               color="negative"
               label="批量删除"
+            />
+            <p class="q-px-sm"/>
+            <q-btn
+              unelevated
+              @click="onExportClickAction()"
+              color="positive"
+              label="导出全部"
+            />
+            <p class="q-px-sm"/>
+            <q-btn
+                unelevated
+                @click="onImportClickAction()"
+                color="purple"
+                label="批量导入"
             />
             <p class="q-px-sm"/>
             <q-btn
@@ -365,6 +372,10 @@ export default {
 
     onExportClickAction(id) {
       window.open("/api/metadata/tables/export", "_blank");
+    },
+
+    onImportClickAction() {
+      this.$router.push("/metadata/tables/import");
     },
 
     async onDeleteClickAction(id) {

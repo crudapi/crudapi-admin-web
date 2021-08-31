@@ -1,5 +1,10 @@
 import { axiosInstance } from "boot/axios";
 
+const HEADERS = {
+  "Content-Type": "multipart/form-data"
+};
+
+
 const metadataTable = {
   create: function(data) {
     return axiosInstance.post("/api/metadata/tables",
@@ -87,7 +92,18 @@ const metadataTable = {
         }
       }
     );
-  }
+  },
+  import: async function(data, progressCallback) {
+    return axiosInstance.post("/api/metadata/tables/import", data,
+      {
+        headers: HEADERS,
+        onUploadProgress:  (progressEvent) => {
+          if (progressCallback) {
+            progressCallback(progressEvent)
+          }
+        }
+    });
+  },
 };
 
 export { metadataTable };

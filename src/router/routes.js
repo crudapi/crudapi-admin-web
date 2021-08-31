@@ -51,6 +51,12 @@ const routes = [
         component: () => import("pages/metadata/table/list.vue")
       },
       {
+        name: "tableImport",
+        path: "metadata/tables/import",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/table/import.vue")
+      },
+      {
         name: "tableNew",
         path: "metadata/tables/new",
         meta: { isAllowBack: true },

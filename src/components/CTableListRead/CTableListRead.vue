@@ -64,7 +64,7 @@
                 unelevated
                 @click="onExportClickAction()"
                 color="positive"
-                label="批量导出"
+                label="导出全部"
               />
               <p class="q-px-sm"/>
               <q-btn
