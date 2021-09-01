@@ -382,10 +382,10 @@ export default {
       });
 
       try {
-        const url = await metadataTableService.export(ids);
+        const fileName = await metadataTableService.export(ids);
         this.$q.notify("元数据表生成成功，请等待下载完成后查看！");
 
-        window.open(url, "_blank");
+        window.open("/api/file/" + fileName, "_blank");
 
         this.$q.loading.hide();
       } catch (error) {
