@@ -1,9 +1,15 @@
 <template>
   <div class="q-pa-md">
     <div class="q-pa-md">
-      <q-btn unelevated color="primary" no-caps @click="resetAction">
-        清除浏览器缓存
-      </q-btn>
+      <q-item-label>
+        <div>crudapi v1.0.0</div>
+        <div>Quasar v{{ $q.version }}</div>
+      </q-item-label>
+      <div class="q-py-md">
+        <q-btn unelevated color="primary" no-caps @click="resetAction">
+          清除浏览器缓存
+        </q-btn>
+      </div>
     </div>
   </div>
 </template>

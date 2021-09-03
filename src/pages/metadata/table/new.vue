@@ -944,6 +944,12 @@ export default {
       }
       const comment = t.Comment ? t.Comment : name;
 
+      let dataType = typeArr[0].replace("UNSIGNED", "").trim();
+      if (dataType === "BIT") {
+        dataType = "BOOL";
+        length = null;
+      }
+
       const newRow = {
         id: id,
         autoIncrement:  (t.Extra === "auto_increment"),
@@ -954,7 +960,7 @@ export default {
         displayable: false,
         unsigned: type.indexOf("UNSIGNED") >= 0,
         updatable: true,
-        dataType : typeArr[0].replace("UNSIGNED", "").trim(),
+        dataType : dataType,
         indexType: indexType,
         indexStorage: indexStorage,
         indexName: indexName,
