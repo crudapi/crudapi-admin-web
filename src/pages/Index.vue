@@ -1,44 +1,103 @@
 <template>
-  <div class="q-pa-md row items-start q-gutter-md">
-    <q-card flat bordered class="my-card col" :key="item.id" v-for="item in modules">
-      <q-card-section class="text-white" :class="item.color ? item.color: 'bg-primary'">
-        <div class="text-h6">{{item.name}}</div>
-        <div class="text-subtitle2">共{{item.moduleLines.length}}个表</div>
-      </q-card-section>
+  <div class="q-pa-md">
+    <div>
+      <q-banner inline-actions class="text-black bg-listcolor">
+          元数据
+          <template v-slot:action>
+            <q-btn
+              dense
+              flat
+              unelevated
+              round
+              color="primary"
+              @click="metadataExpand = !metadataExpand" 
+              :icon="metadataExpand ? 'expand_less' : 'expand_more'"
+            />
+          </template>
+      </q-banner>
+      <div v-show="metadataExpand" class="q-py-md row items-start q-gutter-md">
+          <q-card flat bordered class="my-card col">
+            <q-card-section class="bg-primary text-white">
+              <div class="text-h6">序列号</div>
+              <div class="text-subtitle2">流水号配置</div>
+            </q-card-section>
+          </q-card>
 
-      <q-separator />
+          <q-card flat bordered class="my-card col">
+            <q-card-section class="bg-purple text-white">
+              <div class="text-h6">表</div>
+              <div class="text-subtitle2">动态表单设计</div>
+            </q-card-section>
+          </q-card>
 
-      <q-card-actions align="right">
-        <q-btn @click="onConfigClick(item)" unelevated  color="primary">配置</q-btn>
-        <q-btn
-          color="grey"
-          round
-          flat
-          dense
-          :icon="item.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-          @click="item.expanded = !item.expanded"
-        />
-      </q-card-actions>
+          <q-card flat bordered class="my-card col">
+            <q-card-section class="bg-orange text-white">
+              <div class="text-h6">表关系</div>
+              <div class="text-subtitle2">表关联管理</div>
+            </q-card-section>
+          </q-card>
+      </div>
+    </div>
+    
+    <div class="q-pt-md">
+      <q-banner inline-actions class="text-black bg-listcolor">
+          业务数据
+          <template v-slot:action>
+            <q-btn
+              dense
+              flat
+              unelevated
+              round
+              color="primary"
+              @click="businessExpand = !businessExpand" 
+              :icon="businessExpand ? 'expand_less' : 'expand_more'"
+            />
+          </template>
+      </q-banner>
 
-      <q-slide-transition>
-        <div v-show="item.expanded">
-          <q-separator />
-          <q-card-section class="text-subitle2">
-            <q-list dense>
-              <q-item clickable v-ripple @click="onModuleLineClick(moduleLine)" 
-              :key="moduleLine.id" v-for="moduleLine in item.moduleLines">
-                <!-- <q-item-section>
-                  <a style="text-decoration: none;color: black;" :href="'business/' + moduleLine.table.name">{{moduleLine.table.caption}}</a>
-                </q-item-section> -->
-                <q-item-section>
-                  {{moduleLine.table.caption + ' ' + moduleLine.table.name}}
-                </q-item-section>
-              </q-item>
-            </q-list>
+      <div v-show="businessExpand" class="q-py-md row items-start q-gutter-md">
+        <q-card flat bordered class="my-card col" :key="item.id" v-for="item in modules">
+          <q-card-section class="text-white" :class="item.color ? item.color: 'bg-primary'">
+            <div class="text-h6">{{item.name}}</div>
+            <div class="text-subtitle2">共{{item.moduleLines.length}}个表</div>
           </q-card-section>
-        </div>
-      </q-slide-transition>
-    </q-card>
+
+          <q-separator />
+
+          <q-card-actions align="right">
+            <q-btn @click="onConfigClick(item)" unelevated  color="primary">配置</q-btn>
+            <q-btn
+              color="grey"
+              round
+              flat
+              dense
+              :icon="item.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+              @click="item.expanded = !item.expanded"
+            />
+          </q-card-actions>
+
+          <q-slide-transition>
+            <div v-show="item.expanded">
+              <q-separator />
+              <q-card-section class="text-subitle2">
+                <q-list dense>
+                  <q-item clickable v-ripple @click="onModuleLineClick(moduleLine)" 
+                  :key="moduleLine.id" v-for="moduleLine in item.moduleLines">
+                    <!-- <q-item-section>
+                      <a style="text-decoration: none;color: black;" :href="'business/' + moduleLine.table.name">{{moduleLine.table.caption}}</a>
+                    </q-item-section> -->
+                    <q-item-section>
+                      {{moduleLine.table.caption + ' ' + moduleLine.table.name}}
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card-section>
+            </div>
+          </q-slide-transition>
+        </q-card>
+      </div>
+    </div>
+   
   </div>
 </template>
 
@@ -55,6 +114,8 @@ export default {
   name: "PageHome",
   data () {
     return {
+      metadataExpand: true,
+      businessExpand: true,
       modules:[]
     }
   },

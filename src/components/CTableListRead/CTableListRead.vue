@@ -259,7 +259,7 @@ export default {
         } else if (find.dataType === "BOOL") {
           if (value === true) {
             return "是"
-          } else if (value === false) {
+          } else {
             return "否"
           }
         } 
