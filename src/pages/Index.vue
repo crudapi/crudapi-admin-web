@@ -58,7 +58,34 @@
           </template>
       </q-banner>
 
-      <div v-show="businessExpand" class="q-py-md row items-start q-gutter-md">
+      <div v-show="businessExpand">
+        <div class="q-pt-md" 
+        :key="item.id" v-for="item in modules">
+          <div class="row items-start q-gutter-md">
+            <q-card clickable v-ripple flat bordered class="click-card col-2"
+               @click="onConfigClick(item)">
+              <q-card-section class="text-white" 
+              :class="item.color ? item.color: 'bg-primary'">
+                <div class="text-h6">{{item.name}}(共{{item.moduleLines.length}}个表)</div>
+              </q-card-section>
+            </q-card>
+          </div>
+
+          <div class="q-py-md row items-start q-gutter-md">
+              <q-item clickable v-ripple @click="onModuleLineClick(moduleLine)" 
+              :key="moduleLine.id" v-for="moduleLine in item.moduleLines"
+              >
+                <q-item-section>
+                  <q-item-label>{{moduleLine.table.caption}}</q-item-label>
+                  <q-item-label caption>{{moduleLine.table.name}}</q-item-label>
+                </q-item-section>
+              </q-item>
+          </div>
+        </div>
+      </div>  
+
+
+  <!--     <div v-show="businessExpand" class="q-py-md row items-start q-gutter-md">
         <q-card flat bordered class="my-card col" :key="item.id" v-for="item in modules">
           <q-card-section class="text-white" :class="item.color ? item.color: 'bg-primary'">
             <div class="text-h6">{{item.name}}</div>
@@ -95,7 +122,8 @@
             </div>
           </q-slide-transition>
         </q-card>
-      </div>
+      </div> -->
+
     </div>
    
   </div>
