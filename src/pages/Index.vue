@@ -59,22 +59,23 @@
       </q-banner>
 
       <div v-show="businessExpand">
-        <div class="q-pt-md" 
+        <div 
         :key="item.id" v-for="item in modules">
           <div class="row items-start q-gutter-md">
-            <q-card clickable v-ripple flat bordered class="click-card col-2"
+            <q-card clickable v-ripple flat class="click-card text-black"
                @click="onConfigClick(item)">
-              <q-card-section class="text-white" 
-              :class="item.color ? item.color: 'bg-primary'">
-                <div class="text-h6">{{item.name}}(共{{item.moduleLines.length}}个表)</div>
+              <q-card-section>
+                <div class="text-h6">{{item.name}}</div>
               </q-card-section>
             </q-card>
           </div>
 
-          <div class="q-py-md row items-start q-gutter-md">
-              <q-item clickable v-ripple @click="onModuleLineClick(moduleLine)" 
+          <div class="row items-start q-gutter-md">
+              <q-item 
+              :active="active" active-class="text-primary"
+              clickable v-ripple @click="onModuleLineClick(moduleLine)" 
               :key="moduleLine.id" v-for="moduleLine in item.moduleLines"
-              >
+              > 
                 <q-item-section>
                   <q-item-label>{{moduleLine.table.caption}}</q-item-label>
                   <q-item-label caption>{{moduleLine.table.name}}</q-item-label>
@@ -152,7 +153,8 @@ export default {
     return {
       metadataExpand: true,
       businessExpand: true,
-      modules:[]
+      modules:[],
+      active: true
     }
   },
 
