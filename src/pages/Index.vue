@@ -1,8 +1,8 @@
 <template>
-  <div class="q-pa-md">
+  <div class="q-pa-md home">
     <div>
       <q-banner inline-actions class="text-black bg-listcolor">
-          元数据
+          <span class="title">元数据</span>
           <template v-slot:action>
             <q-btn
               dense
@@ -16,21 +16,24 @@
           </template>
       </q-banner>
       <div v-show="metadataExpand" class="q-py-md row items-start q-gutter-md">
-          <q-card flat bordered class="my-card col">
+          <q-card clickable v-ripple flat bordered class="my-card click-card col"
+              @click="onMetadataSeqClick()" >
             <q-card-section class="bg-primary text-white">
               <div class="text-h6">序列号</div>
               <div class="text-subtitle2">流水号配置</div>
             </q-card-section>
           </q-card>
 
-          <q-card flat bordered class="my-card col">
-            <q-card-section class="bg-purple text-white">
+          <q-card clickable v-ripple flat bordered class="my-card click-card col"
+            @click="onMetadataTableClick()">
+            <q-card-section class="bg-teal text-white">
               <div class="text-h6">表</div>
               <div class="text-subtitle2">动态表单设计</div>
             </q-card-section>
           </q-card>
 
-          <q-card flat bordered class="my-card col">
+          <q-card clickable v-ripple flat bordered class="my-card click-card col"
+            @click="onMetadataRelationClick()">
             <q-card-section class="bg-orange text-white">
               <div class="text-h6">表关系</div>
               <div class="text-subtitle2">表关联管理</div>
@@ -41,7 +44,7 @@
     
     <div class="q-pt-md">
       <q-banner inline-actions class="text-black bg-listcolor">
-          业务数据
+          <span class="title">业务数据模块</span>
           <template v-slot:action>
             <q-btn
               dense
@@ -83,9 +86,6 @@
                 <q-list dense>
                   <q-item clickable v-ripple @click="onModuleLineClick(moduleLine)" 
                   :key="moduleLine.id" v-for="moduleLine in item.moduleLines">
-                    <!-- <q-item-section>
-                      <a style="text-decoration: none;color: black;" :href="'business/' + moduleLine.table.name">{{moduleLine.table.caption}}</a>
-                    </q-item-section> -->
                     <q-item-section>
                       {{moduleLine.table.caption + ' ' + moduleLine.table.name}}
                     </q-item-section>
@@ -102,8 +102,16 @@
 </template>
 
 <style lang="stylus">
-.my-card
-  min-width: 200px !important;  
+.home
+  .title
+    font-size: 16px;
+    
+  .my-card
+    min-width: 150px !important;  
+    max-width: 250px !important;
+
+  .click-card
+    cursor:pointer
 
 </style>
 
@@ -168,7 +176,16 @@ export default {
     },
     onModuleLineClick(moduleLine) {
        this.$router.push("/business/" + moduleLine.table.name);
-    }
+    },
+    onMetadataSeqClick() {
+       this.$router.push("/metadata/sequences");
+    },
+    onMetadataTableClick() {
+       this.$router.push("/metadata/tables");
+    },
+    onMetadataRelationClick() {
+       this.$router.push("/metadata/relations");
+    },  
   }
 };
 </script>
