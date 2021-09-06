@@ -15,7 +15,7 @@
             />
           </template>
       </q-banner>
-      <div v-show="metadataExpand" class="q-py-md row items-start q-gutter-md">
+      <div v-show="metadataExpand" class="q-py-md q-pl-md row items-start q-gutter-md">
           <q-card clickable v-ripple flat bordered class="my-card click-card col"
               @click="onMetadataSeqClick()" >
             <q-card-section class="bg-primary text-white">
@@ -35,7 +35,7 @@
           <q-card clickable v-ripple flat bordered class="my-card click-card col"
             @click="onMetadataRelationClick()">
             <q-card-section class="bg-orange text-white">
-              <div class="text-h6">表关系</div>
+              <div class="text-h6">关系</div>
               <div class="text-subtitle2">表关联管理</div>
             </q-card-section>
           </q-card>
@@ -44,7 +44,7 @@
     
     <div class="q-pt-md">
       <q-banner inline-actions class="text-black bg-listcolor">
-          <span class="title">业务数据模块</span>
+          <span class="title">业务数据</span>
           <template v-slot:action>
             <q-btn
               dense
@@ -59,18 +59,32 @@
       </q-banner>
 
       <div v-show="businessExpand">
-        <div 
-        :key="item.id" v-for="item in modules">
-          <div class="row items-start q-gutter-md">
-            <q-card clickable v-ripple flat class="click-card text-black"
-               @click="onConfigClick(item)">
-              <q-card-section>
-                <div class="text-h6">{{item.name}}</div>
-              </q-card-section>
-            </q-card>
-          </div>
+        <div class="q-pt-md  q-pl-md " :key="item.id" v-for="item in modules">
+          <q-banner clickable inline-actions class="text-black bg-listcolor">
+              <span class="title">{{item.name}}</span>
+              <template v-slot:action>
+                <q-btn
+                  dense
+                  flat
+                  unelevated
+                  round
+                  color="primary"
+                  @click="onConfigClick(item)"
+                  icon="settings"
+                />
+                <q-btn
+                  dense
+                  flat
+                  unelevated
+                  round
+                  color="primary"
+                  @click="item.expanded = !item.expanded" 
+                  :icon="item.expanded ? 'expand_less' : 'expand_more'"
+                />
+              </template>
+          </q-banner>
 
-          <div class="row items-start q-gutter-md">
+          <div v-show="item.expanded" class="q-pt-md row items-start q-gutter-md">
               <q-item 
               :active="active" active-class="text-primary"
               clickable v-ripple @click="onModuleLineClick(moduleLine)" 
@@ -83,50 +97,8 @@
               </q-item>
           </div>
         </div>
-      </div>  
-
-
-  <!--     <div v-show="businessExpand" class="q-py-md row items-start q-gutter-md">
-        <q-card flat bordered class="my-card col" :key="item.id" v-for="item in modules">
-          <q-card-section class="text-white" :class="item.color ? item.color: 'bg-primary'">
-            <div class="text-h6">{{item.name}}</div>
-            <div class="text-subtitle2">共{{item.moduleLines.length}}个表</div>
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-actions align="right">
-            <q-btn @click="onConfigClick(item)" unelevated  color="primary">配置</q-btn>
-            <q-btn
-              color="grey"
-              round
-              flat
-              dense
-              :icon="item.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-              @click="item.expanded = !item.expanded"
-            />
-          </q-card-actions>
-
-          <q-slide-transition>
-            <div v-show="item.expanded">
-              <q-separator />
-              <q-card-section class="text-subitle2">
-                <q-list dense>
-                  <q-item clickable v-ripple @click="onModuleLineClick(moduleLine)" 
-                  :key="moduleLine.id" v-for="moduleLine in item.moduleLines">
-                    <q-item-section>
-                      {{moduleLine.table.caption + ' ' + moduleLine.table.name}}
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-card-section>
-            </div>
-          </q-slide-transition>
-        </q-card>
-      </div> -->
-
+      </div>
     </div>
-   
   </div>
 </template>
 
@@ -193,7 +165,7 @@ export default {
         const modules = await tableService.list("module", 0, 9999, null, null, null);
         
         for (let i = 0; i < modules.length; i++) {
-            modules[i].expanded = false;
+            modules[i].expanded = true;
         }
 
         this.modules = modules;

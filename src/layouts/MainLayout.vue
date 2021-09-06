@@ -117,6 +117,9 @@
 </template>
 
 <style lang="stylus">
+a
+  text-decoration: none;
+  
 .profile-menu
   font-size:16px;
   font-family:PingFangSC-Regular,PingFang SC;
@@ -264,6 +267,10 @@ export default {
         const tables = await metadataTableService.list(1, 9999);
         for (let i = 0; i < tables.length; i++) {
           let table = tables[i];
+          // if (table.name === "table") {
+          //   continue;
+          // }
+
           if (table.systemable) {
             this.systemBusinessMenu.children.push({
                 label: table.caption,
@@ -300,11 +307,13 @@ export default {
         const tables = await metadataTableService.list(1, 9999);
         for (let i = 0; i < tables.length; i++) {
           let table = tables[i];
-          this.businessMenu.children.push({
-              label: table.caption,
-              labelKey: this.getBussinessPath(table.name),
-              icon: "insert_chart_outlined"
-          });
+          if (!table.systemable) {
+            this.businessMenu.children.push({
+                label: table.caption,
+                labelKey: this.getBussinessPath(table.name),
+                icon: "insert_chart_outlined"
+            });
+          }
         }
       } catch (error) {
         console.error(error);
