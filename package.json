@@ -1,6 +1,6 @@
 {
   "name": "crudapi-admin-web",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Crudapi Admin Web",
   "productName": "crudapi增删改查接口后台管理系统",
   "author": "admin@crudapi.cn",

@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <div class="q-pa-md">
       <q-item-label>
-        <div>crudapi v1.0.0</div>
+        <div>crudapi v1.1.0</div>
         <div>Quasar v{{ $q.version }}</div>
       </q-item-label>
       <div class="q-py-md">
