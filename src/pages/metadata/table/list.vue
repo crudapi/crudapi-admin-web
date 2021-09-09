@@ -400,9 +400,20 @@ export default {
 
     async onDeleteClickAction(id) {
       let ids = [];
-      this.selected.forEach(function(val){
+      this.selected.forEach((val) => {
+        if (val.systemable === true) {
+          console.warn("skip systemable table:" + val.name);
+        } else {
           ids.push(val.id);
+        }
       });
+
+      console.info(ids);
+
+      if (!id && ids.length === 0) {
+        this.$q.notify("系统表不能删除，至少选择一个非系统表！");
+        return;
+      }
 
       try {
         this.$q
@@ -429,9 +440,9 @@ export default {
             console.log(data);
             if (id) {
               await metadataTableService.delete(id, data[0]);
-            } else {
+            } else if (ids.length > 0) {
               await metadataTableService.batchDelete(ids, data[0]);
-            }
+            } 
 
             this.$q.notify("删除成功");
             this.reload();
