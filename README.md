@@ -55,7 +55,8 @@ Visit [ http://127.0.0.1/crudapi ](http://127.0.0.1/crudapi)
 11. [ 基于Vue和Quasar的前端SPA项目实战之联合索引（十一）](https://help.crudapi.cn/crudapi-admin-web/unionindex.html)
 12. [ 基于Vue和Quasar的前端SPA项目实战之数据库逆向（十二）](https://help.crudapi.cn/crudapi-admin-web/dbfirst.html)
 13. [ 基于Vue和Quasar的前端SPA项目实战之数据导出（十三）](https://help.crudapi.cn/crudapi-admin-web/export.html)
-
+14. [ 基于Vue和Quasar的前端SPA项目实战之模块管理（十四）](https://help.crudapi.cn/crudapi-admin-web/module.html)
+15. [ 基于Vue和Quasar的前端SPA项目实战之元数据导出导入（十五）](https://help.crudapi.cn/crudapi-admin-web/metadataexportimport.html)
 
 Ongoing updates...
 
