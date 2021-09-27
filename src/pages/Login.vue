@@ -7,8 +7,8 @@
         </div>
       </div>
       <div class="col-10">
-        <div  style="height: 100%;" class="row justify-center items-center content-center">
-          <div class="welcome">欢迎使用crudapi增删改查接口零代码开发平台</div>
+        <div  style="height: 100%;" class="row justify-start items-center content-center">
+          <div class="welcome q-ml-sm">欢迎使用crudapi增删改查接口零代码开发平台</div>
         </div>
       </div>
     </div>
