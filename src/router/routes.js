@@ -27,6 +27,12 @@ const routes = [
         component: () => import("pages/Setting.vue")
       },
       {
+        name: "form-builder-simple",
+        path: "formBuilder",
+        meta: { isAllowBack: true },
+        component: () => import("pages/form-builder/index.vue")
+      },
+      {
         name: "sequenceList",
         path: "metadata/sequences",
         meta: { isAllowBack: true },
