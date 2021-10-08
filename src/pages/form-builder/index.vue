@@ -1,6 +1,6 @@
 <template>
-  <q-layout class="bg-page" view="hhh lpr lfr">
-    <q-header  class="bg-white text-black" height-hint="98">
+  <q-layout style="z-index: 1;" class="bg-page" view="hhh lpr lfr">
+    <q-header class="bg-white text-black" height-hint="98">
       <q-toolbar>
 
        <!--  <q-btn dense flat round icon="menu" @click="left = !left" /> -->
@@ -17,20 +17,28 @@
       <q-separator />
     </q-header>
     <q-drawer show-if-above v-model="left" side="left" bordered>
-      <div>
+      <div class="q-pa-md">
         <draggable
           class="dragArea list-group"
           :list="list1"
           :group="{ name: 'people'}"
           @change="log"
         >
-          <div
-            class="list-group-item"
+          <q-list bordered separator
             v-for="element in list1"
             :key="element.name"
           >
-            {{ element.caption }}
-          </div>
+            <q-item clickable v-ripple>
+              <q-item-section avatar>
+                <q-icon :name="element | iconFormat" color="primary" text-color="white" />
+              </q-item-section>
+
+              <q-item-section>
+                <q-item-label lines="1">{{ element.caption }}</q-item-label>
+                <q-item-label caption>{{ element.name }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
         </draggable>
       </div>
     </q-drawer>
@@ -41,19 +49,38 @@
     </q-drawer>
 
     <q-page-container>
-      <div>
+      <div class="q-pa-md">
         <draggable
           class="dragArea list-group"
           :list="list2"
           group="people"
           @change="log"
         >
-          <div
-            class="list-group-item"
+          <div class="editable-element-container q-pa-md" 
             v-for="element in list2"
             :key="element.name"
-          >
-            {{ element.caption }}
+            @click="selectForEdit(element)"
+          > 
+            <div 
+              v-bind:class="{ 'required': !element.nullable}">
+              {{element.caption}}:
+            </div>
+            <q-input
+              :placeholder="element.description"
+              v-model="element.value"
+              :type="element.isPwd ? 'password' : 'text'" >
+              <template v-slot:append v-if="!element.isText" >
+                <q-icon
+                  :name="element.isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="element.isPwd = !element.isPwd"
+                />
+              </template>
+            </q-input>
+            <div class="editable-element-action-buttons">
+              <q-btn v-if="isSelectedForEdit(element)" class="editable-element-button" color="red" icon="delete" round size="xs"><q-tooltip>移除</q-tooltip></q-btn><!-- 
+              <q-btn class="editable-element-button" color="secondary" icon="file_copy" round size="xs"><q-tooltip>Duplicate this field</q-tooltip></q-btn> -->
+            </div>
           </div>
         </draggable>
       </div>
@@ -80,6 +107,27 @@
   
 .list-group-item i
   cursor: pointer;
+
+.sortable-chosen
+  opacity: 0.3;
+  background: $primary;
+  
+.sortable-ghost
+  opacity: 0.5;
+  background: #c8ebfb;
+
+.editable-element-container
+  position relative
+
+.editable-element-action-buttons
+  position absolute
+  bottom -11 px
+  right 0
+  z-index 2
+
+.editable-element-button
+  float right
+  margin-right 5px
   
 </style>
 
@@ -100,6 +148,7 @@ export default {
       list2: [],
       loading: true,
       table: {},
+      currentColumn: {},
       sequenceLongOptions: [],
       sequenceStringOptions: []
     }
@@ -129,7 +178,30 @@ export default {
   destroyed: function() {
     console.info('destroyed');
   },
+  filters: {
+    iconFormat: function(value) {
+      let icon = 'text_rotate_vertical';
+      if (value.dataType === 'PASSWORD' ) {
+        icon = 'lock' ;
+      } else if (value.dataType === 'DATETIME' ) {
+        icon = 'calendar_today' ;
+      } else if (value.dataType === 'DATE' ) {
+        icon = 'event' ;
+      } else if (value.dataType === 'TIME' ) {
+        icon = 'schedule' ;
+      } else if (value.dataType === 'TIME' ) {
+        icon = 'schedule' ;
+      } else if (value.dataType === 'ATTACHMENT' ) {
+        icon = 'upload_file' ;
+      } else if (value.dataType === 'LONGBLOB' ) {
+        icon = 'attachment' ;
+      } else if (value.dataType === 'DECIMAL' ) {
+        icon = 'format_list_numbered' ;
+      } 
 
+      return icon;
+    }
+  },
   methods: {
     log: function(evt) {
       window.console.log(evt);
@@ -143,6 +215,13 @@ export default {
       await this.loadData(id);
     },
 
+    selectForEdit (column) {
+      this.currentColumn = column;
+    },
+    isSelectedForEdit (column) {
+      return column && this.currentColumn.id === column.id;
+    },
+
     async loadData(id) {
       this.$q.loading.show({
         message: "加载中"
@@ -151,7 +230,29 @@ export default {
         this.loading = true;
         const table = await metadataTableService.get(id || this.$route.params.id);
         this.table = table;
-        this.list1 = table.columns;
+        const list1 = [];
+        const list2 = [];
+
+        table.columns.forEach((column) => {
+          if (column.dataType === 'PASSWORD') {
+            column.isText = false;
+            column.isPwd = true;
+          } else {
+            column.isText = true;
+            column.isPwd = false;
+          }
+
+          if (column.name === 'createdDate' 
+            || column.name === 'lastModifiedDate'
+            || column.name === 'fullTextBody') {
+            list1.push(column);
+          } else {
+            list2.push(column);
+          }
+        });
+
+        this.list1 = list1;
+        this.list2 = list2;
 
         let sequences = await metadataSequenceService.list(1, 999);
         let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
