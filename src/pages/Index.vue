@@ -187,7 +187,7 @@ export default {
     },
     onMetadataRelationClick() {
        this.$router.push("/metadata/relations");
-    },  
+    }
   }
 };
 </script>

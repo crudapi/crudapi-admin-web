@@ -87,6 +87,15 @@
               color="purple"
               :label="`联合索引（${indexLength}）`"
             />
+            <p class="q-px-sm"/>
+
+            <q-btn
+              unelevated
+              @click="onFormBuilderClick()"
+              color="orange"
+              :label="`页面构建`"
+            />
+
           </template>
       </q-banner>
 
@@ -702,6 +711,10 @@ export default {
 
     onIndexClickAction() {
       this.$router.push("/metadata/tables/" +  this.$route.params.id +   "/indexs");
+    },
+
+    onFormBuilderClick() {
+       this.$router.push("/metadata/tables/" +  this.$route.params.id +   "/formBuilder");
     },
 
     async onSubmitClick() {

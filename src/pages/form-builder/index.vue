@@ -1,23 +1,27 @@
 <template>
   <q-layout class="bg-page" view="hhh lpr lfr">
-    <!-- <q-header  class="bg-primary text-white" height-hint="98">
+    <q-header  class="bg-white text-black" height-hint="98">
       <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="left = !left" />
+
+       <!--  <q-btn dense flat round icon="menu" @click="left = !left" /> -->
 
         <q-toolbar-title>
-          表单定制
+          <q-breadcrumbs>
+            <q-breadcrumbs-el label="页面构建" />
+            <q-breadcrumbs-el :label="table.caption" />
+          </q-breadcrumbs>
         </q-toolbar-title>
 
-        <q-btn dense flat round icon="menu" @click="right = !right" />
+       <!--  <q-btn dense flat round icon="menu" @click="right = !right" /> -->
       </q-toolbar>
-    </q-header> -->
-
+      <q-separator />
+    </q-header>
     <q-drawer show-if-above v-model="left" side="left" bordered>
       <div>
         <draggable
           class="dragArea list-group"
           :list="list1"
-          :group="{ name: 'people', pull: 'clone', put: false }"
+          :group="{ name: 'people'}"
           @change="log"
         >
           <div
@@ -25,7 +29,7 @@
             v-for="element in list1"
             :key="element.name"
           >
-            {{ element.name }}
+            {{ element.caption }}
           </div>
         </draggable>
       </div>
@@ -49,7 +53,7 @@
             v-for="element in list2"
             :key="element.name"
           >
-            {{ element.name }}
+            {{ element.caption }}
           </div>
         </draggable>
       </div>
@@ -58,8 +62,30 @@
   </q-layout>
 </template>
 
+<style lang="stylus" scoped>
+.dragArea
+  min-height: 50px;
+  
+.list-group
+  min-height: 20px;
+
+.list-group-item
+  cursor: move;
+  position: relative;
+  display: block;
+  padding: .75rem 1.25rem;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.125);
+  
+.list-group-item i
+  cursor: pointer;
+  
+</style>
+
 <script>
 import draggable from 'vuedraggable'
+import { metadataTableService, metadataSequenceService } from "../../service";
 
 export default {
   name: "formBulder",
@@ -70,22 +96,86 @@ export default {
     return {
       left: true,
       right: true,
-      list1: [
-        { name: "John", id: 1 },
-        { name: "Joao", id: 2 },
-        { name: "Jean", id: 3 },
-        { name: "Gerard", id: 4 }
-      ],
-      list2: [
-        { name: "Juan", id: 5 },
-        { name: "Edgard", id: 6 },
-        { name: "Johnson", id: 7 }
-      ]
+      list1: [],
+      list2: [],
+      loading: true,
+      table: {},
+      sequenceLongOptions: [],
+      sequenceStringOptions: []
     }
   },
+
+  created() {
+    this.init();
+    console.info('created');
+  },
+
+  mounted: function() {
+    console.info('mounted');
+  },
+
+  activated: function() {
+    console.info('activated');
+  },
+
+  deactivated: function() {
+    console.info('deactivated');
+  },
+
+  updated: function() {
+    console.info('updated');
+  },
+
+  destroyed: function() {
+    console.info('destroyed');
+  },
+
   methods: {
     log: function(evt) {
       window.console.log(evt);
+    },
+    async init(id) {
+      this.$store.commit(
+        "config/updateIsAllowBack",
+        this.$route.meta.isAllowBack
+      );
+
+      await this.loadData(id);
+    },
+
+    async loadData(id) {
+      this.$q.loading.show({
+        message: "加载中"
+      });
+      try {
+        this.loading = true;
+        const table = await metadataTableService.get(id || this.$route.params.id);
+        this.table = table;
+        this.list1 = table.columns;
+
+        let sequences = await metadataSequenceService.list(1, 999);
+        let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
+        let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
+        sequenceLongOptions.unshift({
+          "id": -1,
+          "caption": "无"
+        });
+
+        sequenceStringOptions.unshift({
+          "id": -1,
+          "caption": "无"
+        });
+        this.sequenceLongOptions = sequenceLongOptions;
+        this.sequenceStringOptions = sequenceStringOptions;
+        
+        this.loading = false;
+        this.$q.loading.hide();
+      } catch (error) {
+        console.error(error);
+        this.loading = false;
+        this.$q.loading.hide();
+        this.$q.notify(error);
+      }
     }
   }
 }
