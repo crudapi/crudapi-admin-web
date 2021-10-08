@@ -25,17 +25,17 @@
           @change="log"
         >
           <q-list bordered separator
-            v-for="element in list1"
-            :key="element.name"
+            v-for="column in list1"
+            :key="column.name"
           >
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon :name="element | iconFormat" color="primary" text-color="white" />
+                <q-icon :name="column | iconFormat" color="primary" text-color="white" />
               </q-item-section>
 
               <q-item-section>
-                <q-item-label lines="1">{{ element.caption }}</q-item-label>
-                <q-item-label caption>{{ element.name }}</q-item-label>
+                <q-item-label lines="1">{{ column.caption }}</q-item-label>
+                <q-item-label caption>{{ column.name }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -57,29 +57,36 @@
           @change="log"
         >
           <div class="editable-element-container q-pa-md" 
-            v-for="element in list2"
-            :key="element.name"
-            @click="selectForEdit(element)"
+            v-for="column in list2"
+            :key="column.name"
+            @click="selectForEdit(column)"
           > 
             <div 
-              v-bind:class="{ 'required': !element.nullable}">
-              {{element.caption}}:
+              v-bind:class="{ 'required': !column.nullable}">
+              {{column.caption}}:
             </div>
             <q-input
-              :placeholder="element.description"
-              v-model="element.value"
-              :type="element.isPwd ? 'password' : 'text'" >
-              <template v-slot:append v-if="!element.isText" >
+              :placeholder="column.description"
+              v-model="column.value"
+              :type="column.isPwd ? 'password' : 'text'" >
+              <template v-slot:append v-if="!column.isText" >
                 <q-icon
-                  :name="element.isPwd ? 'visibility_off' : 'visibility'"
+                  :name="column.isPwd ? 'visibility_off' : 'visibility'"
                   class="cursor-pointer"
-                  @click="element.isPwd = !element.isPwd"
+                  @click="column.isPwd = !column.isPwd"
                 />
               </template>
             </q-input>
             <div class="editable-element-action-buttons">
-              <q-btn v-if="isSelectedForEdit(element)" class="editable-element-button" color="red" icon="delete" round size="xs"><q-tooltip>移除</q-tooltip></q-btn><!-- 
-              <q-btn class="editable-element-button" color="secondary" icon="file_copy" round size="xs"><q-tooltip>Duplicate this field</q-tooltip></q-btn> -->
+              <q-btn 
+                @click="deleteColumn(column)"
+                v-if="isSelectedForEdit(column)" 
+                class="editable-element-button" 
+                color="red" 
+                icon="delete" 
+                round size="xs">
+                <q-tooltip>移除</q-tooltip>
+              </q-btn>
             </div>
           </div>
         </draggable>
@@ -221,7 +228,15 @@ export default {
     isSelectedForEdit (column) {
       return column && this.currentColumn.id === column.id;
     },
-
+    deleteColumn (column) {
+      console.dir(column);
+      this.currentColumn = {};
+      const index = this.list2.findIndex(t => t.id === column.id);
+      if (index >= 0) {
+        this.list2 = [ ...this.list2.slice(0, index), ...this.list2.slice(index + 1) ];
+        this.list1.push(column);
+      }
+    },
     async loadData(id) {
       this.$q.loading.show({
         message: "加载中"
