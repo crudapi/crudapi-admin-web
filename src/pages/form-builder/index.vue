@@ -44,30 +44,45 @@
     </q-drawer>
 
     <q-drawer show-if-above v-model="right" side="right" bordered>
-      <CRawDisplayer class="col-3" :value="list1" title="List 1" />
-      <CRawDisplayer class="col-3" :value="list2" title="List 2" />
+      <div v-if="!!currentColumn.id"  class="q-pa-md">
+        <div class="q-py-md"> 
+          宽度:
+        </div>
+
+        <q-select
+          outlined
+          v-model="currentColumn.class"
+          :options="withOptions"
+          @input="currentColumnWidthInput" 
+          emit-value
+          map-options
+        /> 
+
+        <CRawDisplayer class="col-3" :value="currentColumn" title="currentColumn" />
+      </div>
     </q-drawer>
 
     <q-page-container>
       <div class="q-pa-md">
         <draggable
-          class="dragArea list-group"
+          class="dragArea list-group row"
           :list="list2"
           group="people"
           @change="log"
         >
-          <div class="editable-element-container q-pa-md" 
+          <div class="list-group-item q-pa-md" 
             v-for="column in list2"
             :key="column.name"
-            :class="{'selected': isSelectedForEdit(column)}"
+            :class="column | classFormat(currentColumn)"
             @click="selectForEdit(column)"
           > 
-            <div >
+            <div>
               <div 
                 v-bind:class="{ 'required': !column.nullable}">
                 {{column.caption}}:
               </div>
               <q-input
+                readonly
                 :placeholder="column.description"
                 v-model="column.value"
                 :type="column.isPwd ? 'password' : 'text'" >
@@ -104,21 +119,15 @@
 <style lang="stylus" scoped>
 .dragArea
   min-height: 50px;
-  
+
+.q-item
+  cursor: move !important;
+   
 .list-group
   min-height: 20px;
 
 .list-group-item
   cursor: move;
-  position: relative;
-  display: block;
-  padding: .75rem 1.25rem;
-  margin-bottom: -1px;
-  background-color: #fff;
-  border: 1px solid rgba(0,0,0,.125);
-  
-.list-group-item i
-  cursor: pointer;
 
 .sortable-chosen
   opacity: 0.3;
@@ -152,7 +161,25 @@ export default {
       table: {},
       currentColumn: {},
       sequenceLongOptions: [],
-      sequenceStringOptions: []
+      sequenceStringOptions: [],
+      withOptions: [
+        {
+          value: "col-1",
+          label: "1/12"
+        },
+        {
+          value: "col-3",
+          label: "3/12"
+        },
+        {
+          value: "col-6",
+          label: "6/12"
+        },
+        {
+          value: "col-12",
+          label: "12/12"
+        }
+      ],
     }
   },
 
@@ -202,6 +229,19 @@ export default {
       } 
 
       return icon;
+    },
+
+    classFormat: function(column, currentColumn) {
+      let value = "";
+      if (currentColumn && currentColumn.id === column.id) {
+        value = "selected";
+      }
+
+      if (column.class) {
+        value += " " + column.class;
+      }
+      console.log(value);
+      return value;
     }
   },
   methods: {
@@ -223,14 +263,18 @@ export default {
     isSelectedForEdit (column) {
       return column && this.currentColumn.id === column.id;
     },
+    currentColumnWidthInput(value) {
+      console.log("currentColumnWidthInput");
+      this.$forceUpdate();
+    },
     deleteColumn (column) {
-      console.dir(column);
-      this.currentColumn = {};
       const index = this.list2.findIndex(t => t.id === column.id);
       if (index >= 0) {
         this.list2 = [ ...this.list2.slice(0, index), ...this.list2.slice(index + 1) ];
         this.list1.push(column);
       }
+      this.currentColumn =  {};
+      this.$forceUpdate();
     },
     async loadData(id) {
       this.$q.loading.show({
@@ -244,6 +288,7 @@ export default {
         const list2 = [];
 
         table.columns.forEach((column) => {
+          column.class = "col-12";
           if (column.dataType === 'PASSWORD') {
             column.isText = false;
             column.isPwd = true;
