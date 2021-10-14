@@ -59,34 +59,39 @@
           <div class="editable-element-container q-pa-md" 
             v-for="column in list2"
             :key="column.name"
+            :class="{'selected': isSelectedForEdit(column)}"
             @click="selectForEdit(column)"
           > 
-            <div 
-              v-bind:class="{ 'required': !column.nullable}">
-              {{column.caption}}:
+            <div >
+              <div 
+                v-bind:class="{ 'required': !column.nullable}">
+                {{column.caption}}:
+              </div>
+              <q-input
+                :placeholder="column.description"
+                v-model="column.value"
+                :type="column.isPwd ? 'password' : 'text'" >
+                <template v-slot:append v-if="!column.isText" >
+                  <q-icon
+                    :name="column.isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="column.isPwd = !column.isPwd"
+                  />
+                </template>
+              </q-input>
             </div>
-            <q-input
-              :placeholder="column.description"
-              v-model="column.value"
-              :type="column.isPwd ? 'password' : 'text'" >
-              <template v-slot:append v-if="!column.isText" >
-                <q-icon
-                  :name="column.isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="column.isPwd = !column.isPwd"
-                />
-              </template>
-            </q-input>
-            <div class="editable-element-action-buttons">
-              <q-btn 
-                @click="deleteColumn(column)"
-                v-if="isSelectedForEdit(column)" 
-                class="editable-element-button" 
-                color="red" 
-                icon="delete" 
-                round size="xs">
-                <q-tooltip>移除</q-tooltip>
-              </q-btn>
+            <div class="row reverse editable-element-action-buttons">
+              <div class="justify-end q-pt-xs">
+                <q-btn 
+                  @click="deleteColumn(column)"
+                  v-if="isSelectedForEdit(column)" 
+                  class="editable-element-button" 
+                  color="red" 
+                  icon="delete" 
+                  round unelevated  size="xs">
+                  <q-tooltip>移除</q-tooltip>
+                </q-btn>
+              </div>
             </div>
           </div>
         </draggable>
@@ -123,19 +128,9 @@
   opacity: 0.5;
   background: #c8ebfb;
 
-.editable-element-container
-  position relative
+.selected
+  background: #c8ebfb;
 
-.editable-element-action-buttons
-  position absolute
-  bottom -11 px
-  right 0
-  z-index 2
-
-.editable-element-button
-  float right
-  margin-right 5px
-  
 </style>
 
 <script>
