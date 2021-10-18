@@ -57,8 +57,9 @@
           emit-value
           map-options
         /> 
-
-        <CRawDisplayer class="col-3" :value="currentColumn" title="currentColumn" />
+        <div class="col-3">
+          <pre>{{ currentColumn | jsonFormat }}</pre>
+        </div>
       </div>
     </q-drawer>
 
@@ -242,7 +243,14 @@ export default {
       }
       console.log(value);
       return value;
+    },
+    
+    jsonFormat(value) {
+      return JSON.stringify(value, null, 2);
     }
+  },
+  computed: {
+    
   },
   methods: {
     log: function(evt) {
