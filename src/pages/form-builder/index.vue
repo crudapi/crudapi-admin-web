@@ -67,7 +67,7 @@
       <div class="q-pa-md">
         <div class="q-pb-md row reverse  justify-right">
           <div class="q-px-md">
-            <q-btn unelevated type="submit" color="primary" label="保存" />
+            <q-btn unelevated @click="onSubmitClick" color="primary" label="保存" />
           </div>
           <div class="q-px-md">
             <q-radio v-model="type" val="pc" label="电脑" />
@@ -77,7 +77,7 @@
         </div>
         
         <q-separator />
-        
+
         <draggable
           class="dragArea list-group row"
           :list="selectedList"
@@ -157,7 +157,8 @@
 
 <script>
 import draggable from 'vuedraggable'
-import { metadataTableService, metadataSequenceService } from "../../service";
+import { metadataTableService, metadataSequenceService, tableService } from "../../service";
+import { extend } from 'quasar'
 
 export default {
   name: "formBulder",
@@ -395,6 +396,31 @@ export default {
         this.loading = false;
         this.$q.loading.hide();
         this.$q.notify(error);
+      }
+    },
+    async onSubmitClick() {
+      this.$q.loading.show({
+        message: "提交中"
+      });
+      try {
+        let selectedList = extend(true, [], this.selectedList);
+        selectedList.forEach((t) => {
+          delete t.column;
+        });
+
+        const data = {
+          name: this.type,
+          type: this.type,
+          body: JSON.stringify(selectedList, null, 2),
+          tableId: this.table.id
+        };
+
+        await tableService.create("tableFormBuilder", data);
+        this.$q.loading.hide();
+        this.$q.notify("保存成功");
+      } catch (error) {
+        this.$q.loading.hide();
+        console.info(error);
       }
     }
   }
