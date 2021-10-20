@@ -65,6 +65,19 @@
 
     <q-page-container>
       <div class="q-pa-md">
+        <div class="q-pb-md row reverse  justify-right">
+          <div class="q-px-md">
+            <q-btn unelevated type="submit" color="primary" label="保存" />
+          </div>
+          <div class="q-px-md">
+            <q-radio v-model="type" val="pc" label="电脑" />
+            <q-radio v-model="type" val="pad" label="平板" />
+            <q-radio v-model="type" val="phone" label="手机" />
+          </div>
+        </div>
+        
+        <q-separator />
+        
         <draggable
           class="dragArea list-group row"
           :list="selectedList"
@@ -158,6 +171,7 @@ export default {
       unselectedList: [],
       selectedList: [],
       loading: true,
+      type: 'pc',
       table: {},
       currentElement: {},
       sequenceLongOptions: [],
