@@ -20,22 +20,22 @@
       <div class="q-pa-md">
         <draggable
           class="dragArea list-group"
-          :list="list1"
+          :list="unselectedList"
           :group="{ name: 'people'}"
           @change="log"
         >
           <q-list bordered separator
-            v-for="column in list1"
-            :key="column.name"
+            v-for="formElement in unselectedList"
+            :key="formElement.columnId"
           >
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon :name="column | iconFormat" color="primary" text-color="white" />
+                <q-icon :name="formElement | iconFormat" color="primary" text-color="white" />
               </q-item-section>
 
               <q-item-section>
-                <q-item-label lines="1">{{ column.caption }}</q-item-label>
-                <q-item-label caption>{{ column.name }}</q-item-label>
+                <q-item-label lines="1">{{ formElement.column.caption }}</q-item-label>
+                <q-item-label caption>{{ formElement.column.name }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -44,21 +44,21 @@
     </q-drawer>
 
     <q-drawer show-if-above v-model="right" side="right" bordered>
-      <div v-if="!!currentColumn.id"  class="q-pa-md">
+      <div v-if="!!currentElement.column"  class="q-pa-md">
         <div class="q-py-md"> 
           宽度:
         </div>
 
         <q-select
           outlined
-          v-model="currentColumn.class"
+          v-model="currentElement.class"
           :options="withOptions"
-          @input="currentColumnWidthInput" 
+          @input="currentElementWidthInput" 
           emit-value
           map-options
         /> 
         <div class="col-3">
-          <pre>{{ currentColumn | jsonFormat }}</pre>
+          <pre>{{ currentElement | jsonFormat }}</pre>
         </div>
       </div>
     </q-drawer>
@@ -67,31 +67,30 @@
       <div class="q-pa-md">
         <draggable
           class="dragArea list-group row"
-          :list="list2"
+          :list="selectedList"
           group="people"
           @change="log"
         >
           <div class="list-group-item q-pa-md" 
-            v-for="column in list2"
-            :key="column.name"
-            :class="column | classFormat(currentColumn)"
-            @click="selectForEdit(column)"
+            v-for="formElement in selectedList"
+            :key="formElement.columnId"
+            :class="formElement | classFormat(currentElement)"
+            @click="selectForEdit(formElement)"
           > 
             <div>
               <div 
-                v-bind:class="{ 'required': !column.nullable}">
-                {{column.caption}}:
+                v-bind:class="{ 'required': !formElement.column.nullable}">
+                {{formElement.column.caption}}:
               </div>
               <q-input
                 readonly
-                :placeholder="column.description"
-                v-model="column.value"
-                :type="column.isPwd ? 'password' : 'text'" >
-                <template v-slot:append v-if="!column.isText" >
+                :placeholder="formElement.column.description"
+                :type="formElement.isPwd ? 'password' : 'text'" >
+                <template v-slot:append v-if="!formElement.isText" >
                   <q-icon
-                    :name="column.isPwd ? 'visibility_off' : 'visibility'"
+                    :name="formElement.isPwd ? 'visibility_off' : 'visibility'"
                     class="cursor-pointer"
-                    @click="column.isPwd = !column.isPwd"
+                    @click="formElement.isPwd = !formElement.isPwd"
                   />
                 </template>
               </q-input>
@@ -99,8 +98,8 @@
             <div class="row reverse editable-element-action-buttons">
               <div class="justify-end q-pt-xs">
                 <q-btn 
-                  @click="deleteColumn(column)"
-                  v-if="isSelectedForEdit(column)" 
+                  @click="deleteElement(formElement)"
+                  v-if="isSelectedForEdit(formElement)" 
                   class="editable-element-button" 
                   color="red" 
                   icon="delete" 
@@ -156,11 +155,11 @@ export default {
     return {
       left: true,
       right: true,
-      list1: [],
-      list2: [],
+      unselectedList: [],
+      selectedList: [],
       loading: true,
       table: {},
-      currentColumn: {},
+      currentElement: {},
       sequenceLongOptions: [],
       sequenceStringOptions: [],
       withOptions: [
@@ -169,12 +168,44 @@ export default {
           label: "1/12"
         },
         {
+          value: "col-2",
+          label: "2/12"
+        },
+        {
           value: "col-3",
           label: "3/12"
         },
         {
+          value: "col-4",
+          label: "4/12"
+        },
+        {
+          value: "col-5",
+          label: "5/12"
+        },
+        {
           value: "col-6",
           label: "6/12"
+        },
+        {
+          value: "col-7",
+          label: "7/12"
+        },
+        {
+          value: "col-8",
+          label: "8/12"
+        },
+        {
+          value: "col-9",
+          label: "9/12"
+        },
+        {
+          value: "col-10",
+          label: "10/12"
+        },
+        {
+          value: "col-11",
+          label: "11/12"
         },
         {
           value: "col-12",
@@ -209,7 +240,8 @@ export default {
     console.info('destroyed');
   },
   filters: {
-    iconFormat: function(value) {
+    iconFormat: function(formElement) {
+      const value = formElement.column;
       let icon = 'text_rotate_vertical';
       if (value.dataType === 'PASSWORD' ) {
         icon = 'lock' ;
@@ -232,16 +264,19 @@ export default {
       return icon;
     },
 
-    classFormat: function(column, currentColumn) {
+    classFormat: function(formElement, currentElement) {
       let value = "";
-      if (currentColumn && currentColumn.id === column.id) {
-        value = "selected";
+      if (formElement.class) {
+        value = formElement.class;
       }
 
-      if (column.class) {
-        value += " " + column.class;
+      if (currentElement 
+        && currentElement.column 
+        && currentElement.column.id === formElement.column.id) {
+        value += " selected";
       }
-      console.log(value);
+
+      console.log(formElement.column.name + ": " + value);
       return value;
     },
     
@@ -265,23 +300,25 @@ export default {
       await this.loadData(id);
     },
 
-    selectForEdit (column) {
-      this.currentColumn = column;
+    selectForEdit (formElement) {
+      this.currentElement = formElement;
     },
-    isSelectedForEdit (column) {
-      return column && this.currentColumn.id === column.id;
+    isSelectedForEdit (formElement) {
+      return this.currentElement 
+      && this.currentElement.column
+      && this.currentElement.column.id === formElement.column.id;
     },
-    currentColumnWidthInput(value) {
-      console.log("currentColumnWidthInput");
+    currentElementWidthInput(value) {
+      console.log("currentElementWidthInput");
       this.$forceUpdate();
     },
-    deleteColumn (column) {
-      const index = this.list2.findIndex(t => t.id === column.id);
+    deleteElement (formElement) {
+      const index = this.selectedList.findIndex(t => t.column.id === formElement.column.id);
       if (index >= 0) {
-        this.list2 = [ ...this.list2.slice(0, index), ...this.list2.slice(index + 1) ];
-        this.list1.push(column);
+        this.selectedList = [ ...this.selectedList.slice(0, index), ...this.selectedList.slice(index + 1) ];
+        this.unselectedList.push(formElement);
       }
-      this.currentColumn =  {};
+      this.currentElement =  {};
       this.$forceUpdate();
     },
     async loadData(id) {
@@ -292,30 +329,35 @@ export default {
         this.loading = true;
         const table = await metadataTableService.get(id || this.$route.params.id);
         this.table = table;
-        const list1 = [];
-        const list2 = [];
+        const unselectedList = [];
+        const selectedList = [];
 
         table.columns.forEach((column) => {
-          column.class = "col-12";
+          let formElement = {
+            columnId: column.id,
+            column: column,
+            class: "col-12"
+          }
+
           if (column.dataType === 'PASSWORD') {
-            column.isText = false;
-            column.isPwd = true;
+            formElement.isText = false;
+            formElement.isPwd = true;
           } else {
-            column.isText = true;
-            column.isPwd = false;
+            formElement.isText = true;
+            formElement.isPwd = false;
           }
 
           if (column.name === 'createdDate' 
             || column.name === 'lastModifiedDate'
             || column.name === 'fullTextBody') {
-            list1.push(column);
+            unselectedList.push(formElement);
           } else {
-            list2.push(column);
+            selectedList.push(formElement);
           }
         });
 
-        this.list1 = list1;
-        this.list2 = list2;
+        this.unselectedList = unselectedList;
+        this.selectedList = selectedList;
 
         let sequences = await metadataSequenceService.list(1, 999);
         let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
