@@ -69,7 +69,8 @@
     </q-drawer>
 
     <q-page-container>
-      <div class="q-pa-md">
+      <div class="q-pa-md form-build-body" 
+          :class="type">
         <div class="q-pb-md row reverse  justify-right">
           <div class="q-px-md">
             <q-btn unelevated @click="onSubmitClick" color="primary" label="保存" />
@@ -158,6 +159,12 @@
 .selected
   background: #c8ebfb;
 
+.form-build-body.phone
+    max-width: 767px;
+
+.form-build-body.pad
+    max-width: 979px;
+    
 </style>
 
 <script>
