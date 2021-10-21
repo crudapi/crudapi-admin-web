@@ -125,6 +125,14 @@
                 flat
                 dense
               ></q-btn>
+              <q-btn
+                unelevated
+                @click="onFormBuilderClickAction(props.row.id)"
+                color="primary"
+                label="页面构建"
+                flat
+                dense
+              ></q-btn>
             </q-td>
             <q-td key="id" :props="props">{{ props.row.id }}</q-td>
             <q-td key="name" :props="props">
@@ -370,6 +378,9 @@ export default {
       this.$router.push("/metadata/tables/" + id);
     },
 
+    onFormBuilderClickAction(id) {
+       this.$router.push("/metadata/tables/" +  id +   "/formBuilder");
+    },
     async onExportClickAction(id) {
       let ids = [];
       this.selected.forEach(function(val){

@@ -46,17 +46,22 @@
     <q-drawer show-if-above v-model="right" side="right" bordered>
       <div v-if="!!currentElement.column"  class="q-pa-md">
         <div class="q-py-md"> 
-          宽度:
+          字段: {{currentElement.column.caption + currentElement.column.name}}
         </div>
 
-        <q-select
-          outlined
-          v-model="currentElement.class"
-          :options="withOptions"
-          @input="currentElementWidthInput" 
-          emit-value
-          map-options
-        /> 
+        <div class="q-py-md"> 
+          栅格:
+        </div>
+
+        <q-slider
+          v-model="currentElement.width"
+          color="primary"
+          :min="1"
+          :step="1"
+          :max="12"
+          label
+          label-always
+        />
         <div class="col-3">
           <pre>{{ currentElement | jsonFormat }}</pre>
         </div>
@@ -175,57 +180,7 @@ export default {
       type: 'pc',
       table: {},
       formBuilders: [],
-      currentElement: {},
-      withOptions: [
-        {
-          value: "col-1",
-          label: "1/12"
-        },
-        {
-          value: "col-2",
-          label: "2/12"
-        },
-        {
-          value: "col-3",
-          label: "3/12"
-        },
-        {
-          value: "col-4",
-          label: "4/12"
-        },
-        {
-          value: "col-5",
-          label: "5/12"
-        },
-        {
-          value: "col-6",
-          label: "6/12"
-        },
-        {
-          value: "col-7",
-          label: "7/12"
-        },
-        {
-          value: "col-8",
-          label: "8/12"
-        },
-        {
-          value: "col-9",
-          label: "9/12"
-        },
-        {
-          value: "col-10",
-          label: "10/12"
-        },
-        {
-          value: "col-11",
-          label: "11/12"
-        },
-        {
-          value: "col-12",
-          label: "12/12"
-        }
-      ],
+      currentElement: {}
     }
   },
 
@@ -280,8 +235,8 @@ export default {
 
     classFormat: function(formElement, currentElement) {
       let value = "";
-      if (formElement.class) {
-        value = formElement.class;
+      if (formElement.width) {
+        value = "col-" + formElement.width;
       }
 
       if (currentElement 
@@ -376,7 +331,7 @@ export default {
           let formElement = {
             columnId: column.id,
             column: column,
-            class: "col-12"
+            width: 12
           }
 
           if (column.dataType === 'PASSWORD') {
@@ -405,7 +360,7 @@ export default {
           let formElement = {
             columnId: column.id,
             column: column,
-            class: "col-12"
+            width: "12"
           }
           if (selectedList.findIndex(t => t.columnId === formElement.columnId) < 0) {
             unselectedList.push(formElement);
@@ -429,7 +384,7 @@ export default {
         const data = {
           name: this.type,
           type: this.type,
-          body: JSON.stringify(selectedList, null, 2),
+          body: JSON.stringify(selectedList),
           tableId: this.table.id
         };
 
@@ -442,6 +397,7 @@ export default {
 
         this.$q.loading.hide();
         this.$q.notify("保存成功");
+        await this.loadData(this.table.id);
       } catch (error) {
         this.$q.loading.hide();
         console.info(error);
