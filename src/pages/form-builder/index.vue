@@ -70,9 +70,9 @@
             <q-btn unelevated @click="onSubmitClick" color="primary" label="保存" />
           </div>
           <div class="q-px-md">
-            <q-radio v-model="type" val="pc" label="电脑" />
-            <q-radio v-model="type" val="pad" label="平板" />
-            <q-radio v-model="type" val="phone" label="手机" />
+            <q-radio @input="typeChange" v-model="type" val="pc" label="电脑" />
+            <q-radio @input="typeChange" v-model="type" val="pad" label="平板" />
+            <q-radio @input="typeChange" v-model="type" val="phone" label="手机" />
           </div>
         </div>
         
@@ -174,9 +174,8 @@ export default {
       loading: true,
       type: 'pc',
       table: {},
+      formBuilders: [],
       currentElement: {},
-      sequenceLongOptions: [],
-      sequenceStringOptions: [],
       withOptions: [
         {
           value: "col-1",
@@ -230,8 +229,8 @@ export default {
     }
   },
 
-  created() {
-    this.init();
+  async created() {
+    await this.init();
     console.info('created');
   },
 
@@ -291,7 +290,7 @@ export default {
         value += " selected";
       }
 
-      console.log(formElement.column.name + ": " + value);
+      //console.log(formElement.column.name + ": " + value);
       return value;
     },
     
@@ -342,12 +341,38 @@ export default {
       });
       try {
         this.loading = true;
-        const table = await metadataTableService.get(id || this.$route.params.id);
+        const tableId = id || this.$route.params.id;
+        const table = await metadataTableService.get(tableId);
         this.table = table;
-        const unselectedList = [];
-        const selectedList = [];
 
-        table.columns.forEach((column) => {
+        let query = {
+          tableId:tableId
+        };
+        this.formBuilders = await tableService.list("tableFormBuilder", 0, 999, null, query, null);
+
+        this.setFormBuilder();
+
+        this.loading = false;
+        this.$q.loading.hide();
+      } catch (error) {
+        console.error(error);
+        this.loading = false;
+        this.$q.loading.hide();
+        this.$q.notify(error);
+      }
+    },
+    typeChange(value, evt) {
+      console.log(value);
+      this.setFormBuilder();
+    },
+    setFormBuilder() {
+      const columns = this.table.columns;
+      let formBuilder = this.formBuilders.find(t => t.type === this.type);
+
+      let unselectedList = [];
+      let selectedList = [];
+      if (!formBuilder) {
+        columns.forEach((column) => {
           let formElement = {
             columnId: column.id,
             column: column,
@@ -370,33 +395,26 @@ export default {
             selectedList.push(formElement);
           }
         });
-
-        this.unselectedList = unselectedList;
-        this.selectedList = selectedList;
-
-        let sequences = await metadataSequenceService.list(1, 999);
-        let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
-        let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
-        sequenceLongOptions.unshift({
-          "id": -1,
-          "caption": "无"
+      } else {
+        selectedList = JSON.parse(formBuilder.body);
+        selectedList.forEach((formElement) => {
+          formElement.column = columns.find(t => t.id === formElement.columnId);
         });
 
-        sequenceStringOptions.unshift({
-          "id": -1,
-          "caption": "无"
+        columns.forEach((column) => {
+          let formElement = {
+            columnId: column.id,
+            column: column,
+            class: "col-12"
+          }
+          if (selectedList.findIndex(t => t.columnId === formElement.columnId) < 0) {
+            unselectedList.push(formElement);
+          }
         });
-        this.sequenceLongOptions = sequenceLongOptions;
-        this.sequenceStringOptions = sequenceStringOptions;
-        
-        this.loading = false;
-        this.$q.loading.hide();
-      } catch (error) {
-        console.error(error);
-        this.loading = false;
-        this.$q.loading.hide();
-        this.$q.notify(error);
       }
+
+      this.unselectedList = unselectedList;
+      this.selectedList = selectedList;
     },
     async onSubmitClick() {
       this.$q.loading.show({
@@ -415,7 +433,13 @@ export default {
           tableId: this.table.id
         };
 
-        await tableService.create("tableFormBuilder", data);
+        let formBuilder = this.formBuilders.find(t => t.type === this.type);
+        if (!formBuilder) {
+          await tableService.create("tableFormBuilder", data);
+        } else {
+          await tableService.update("tableFormBuilder", formBuilder.id, data);
+        }
+
         this.$q.loading.hide();
         this.$q.notify("保存成功");
       } catch (error) {
