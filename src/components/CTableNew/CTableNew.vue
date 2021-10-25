@@ -98,6 +98,11 @@
             item.value = data.url;
            }"></CFile>
 
+          <q-editor v-else-if="isTextType(item.dataType)"
+            v-model="item.value"
+            :placeholder="item.description" >
+          </q-editor>
+
           <q-input
             v-else
             :placeholder="item.description"
@@ -165,7 +170,8 @@ export default {
       insertColumns: [],
       relationMap: {},
       oneToOneMainToSubTables: [],
-      oneToManySubTables: []
+      oneToManySubTables: [],
+      formBuilder: null
     };
   },
 
@@ -210,6 +216,15 @@ export default {
       this.insertColumns = [];
 
       await this.loadMeta();
+    },
+
+    isTextType: function(dataType) {
+      if (dataType === "TEXT"
+        || dataType === "LONGTEXT" ) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     isStringType: function(dataType) {
@@ -348,6 +363,13 @@ export default {
       try {
         const table = await metadataTableService.getByName(this.tableName);
         this.tableCaption = table.caption;
+        let query = {
+          tableId:table.id
+        };
+        const formBuilders = await tableService.list("tableFormBuilder", 0, 999, null, query, null);
+        let formBuilder = formBuilders.find(t => t.type === 'pc');
+        this.formBuilder = formBuilder;
+
         const tableRelations = await metadataRelationService.getByName(this.tableName);
 
         /* 关联表元数据 */
