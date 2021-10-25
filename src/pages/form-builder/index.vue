@@ -101,7 +101,82 @@
                 v-bind:class="{ 'required': !formElement.column.nullable}">
                 {{formElement.column.caption}}:
               </div>
-              <q-input
+              <q-input v-if="isStringType(formElement)"
+                readonly
+                :placeholder="formElement.column.description"
+                :type="formElement.isPwd ? 'password' : 'text'" >
+                <template v-slot:append v-if="!formElement.isText" >
+                  <q-icon
+                    :name="formElement.isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="formElement.isPwd = !formElement.isPwd"
+                  />
+                </template>
+              </q-input>
+
+              <q-editor v-else-if="isTextType(formElement)"
+                readonly
+                :placeholder="formElement.column.description" >
+              </q-editor>
+
+              <q-input v-else-if="isDateTimeType(formElement)" readonly>
+                <template v-slot:prepend>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date
+                      mask="YYYY-MM-DD HH:mm:ss"
+                      @input="hideRefPopProxyAction('qDateProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                      <q-time mask="YYYY-MM-DD HH:mm:ss"
+                      format24h with-seconds
+                      @input="hideRefPopProxyAction('qTimeProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+               <q-input v-else-if="isDateType(formElement)" readonly>
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date
+                      mask="YYYY-MM-DD"
+                      @input="hideRefPopProxyAction('qDateProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-input v-else-if="isTimeType(formElement)" readonly>
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                      <q-time  mask="HH:mm:ss"
+                      format24h with-seconds
+                      @input="hideRefPopProxyAction('qTimeProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-toggle v-else-if="isBoolType(formElement)" readonly>
+              </q-toggle>
+
+              <q-input readonly
+                v-else-if="isNumberType(formElement)"
+                :placeholder="formElement.column.description"
+                type="number" >
+              </q-input>
+
+              <CFile readonly v-else-if="isAttachmentType(formElement)"></CFile>
+
+              <q-input v-else
                 readonly
                 :placeholder="formElement.column.description"
                 :type="formElement.isPwd ? 'password' : 'text'" >
@@ -276,6 +351,83 @@ export default {
       await this.loadData(id);
     },
 
+    isTextType: function(formElement) {
+      if (formElement.column.dataType === "TEXT"
+        || formElement.column.dataType === "LONGTEXT" ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isStringType: function(formElement) {
+      if (formElement.column.dataType === "CHAR"
+        || formElement.column.dataType === "VARCHAR" ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isNumberType: function(formElement) {
+      if (formElement.column.dataType === "TINYINT"
+        || formElement.column.dataType === "SMALLINT"
+        || formElement.column.dataType === "MEDIUMINT"
+        || formElement.column.dataType === "INT"
+        || formElement.column.dataType === "BIGINT") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isDateType: function(formElement) {
+      if (formElement.column.dataType === "DATE") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isTimeType: function(formElement) {
+      if (formElement.column.dataType === "TIME") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isDateTimeType: function(formElement) {
+      if (formElement.column.dataType === "DATETIME") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isBoolType: function(formElement) {
+      if (formElement.column.dataType === "BOOL") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    isAttachmentType: function(formElement) {
+      if (formElement.column.dataType === "ATTACHMENT") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    hideRefPopProxyAction(ref) {
+      const proxys = this.$refs[ref];
+      for (let i = 0; i < proxys.length; i++) {
+        proxys[i].hide();
+      }
+    },
+
     selectForEdit (formElement) {
       this.currentElement = formElement;
     },
@@ -325,6 +477,7 @@ export default {
     },
     typeChange(value, evt) {
       console.log(value);
+      this.currentElement =  {};
       this.setFormBuilder();
     },
     setFormBuilder() {
@@ -367,7 +520,7 @@ export default {
           let formElement = {
             columnId: column.id,
             column: column,
-            width: "12"
+            width: 12
           }
           if (selectedList.findIndex(t => t.columnId === formElement.columnId) < 0) {
             unselectedList.push(formElement);
