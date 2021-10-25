@@ -46,25 +46,26 @@
     <q-drawer show-if-above v-model="right" side="right" bordered>
       <div v-if="!!currentElement.column"  class="q-pa-md">
         <div class="q-py-md"> 
-          字段: {{currentElement.column.caption + currentElement.column.name}}
+          字段: {{currentElement.column.caption + ', ' + currentElement.column.name}}
         </div>
 
         <div class="q-py-md"> 
-          栅格:
+          栅格宽度:
         </div>
-
-        <q-slider
-          v-model="currentElement.width"
-          color="primary"
-          :min="1"
-          :step="1"
-          :max="12"
-          label
-          label-always
-        />
-        <div class="col-3">
+        <div class="q-py-md"> 
+          <q-slider
+            v-model="currentElement.width"
+            color="primary"
+            :min="1"
+            :step="1"
+            :max="12"
+            label
+            label-always
+          />
+        </div>
+        <!-- <div class="col-3">
           <pre>{{ currentElement | jsonFormat }}</pre>
-        </div>
+        </div> -->
       </div>
     </q-drawer>
 
@@ -114,8 +115,8 @@
                 </template>
               </q-input>
 
-              <q-editor v-else-if="isTextType(formElement)"
-                readonly
+              <q-editor readonly v-else-if="isTextType(formElement)"
+                v-model="formElement.value"
                 :placeholder="formElement.column.description" >
               </q-editor>
 
@@ -174,7 +175,7 @@
                 type="number" >
               </q-input>
 
-              <CFile readonly v-else-if="isAttachmentType(formElement)"></CFile>
+              <CFile v-else-if="isAttachmentType(formElement)"></CFile>
 
               <q-input v-else
                 readonly
