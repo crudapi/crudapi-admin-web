@@ -256,11 +256,11 @@ export default {
       loading: true,
       pagination: {
         page: 1,
-        rowsPerPage: 10,
+        rowsPerPage: 100,
         count: 0
       },
       tablePagination: {
-        rowsPerPage: 10
+        rowsPerPage: 100
       },
       visibleColumns: [
       ],
