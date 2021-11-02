@@ -24,7 +24,20 @@
               v-bind:class="{ 'required': !formElement.column.nullable}">
               {{formElement.column.caption}}:
             </div>
-            <q-input v-if="isStringType(formElement.column.dataType)"
+
+            <div class="row items-baseline content-center"
+              style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
+              v-if="formElement.column.relationTableName">
+              <div class="col-11">
+                <span>{{ formElement.column.value | relationDataFormat(formElement.column) }}</span>
+              </div>
+              <div class="col-1">
+                <q-btn round dense flat icon="zoom_in" 
+                @click="openDialogClickAction(formElement.column)" />
+              </div>
+            </div>
+
+            <q-input v-else-if="isStringType(formElement.column.dataType)"
               v-model="formElement.column.value"
               :placeholder="formElement.column.description"
               :type="formElement.isPwd ? 'password' : 'text'" >
