@@ -45,14 +45,14 @@
 
     <q-drawer show-if-above v-model="right" side="right" bordered>
       <div v-if="!!currentElement.column"  class="q-pa-md">
-        <div class="q-py-md"> 
+        <div class="q-pa-md"> 
           字段: {{currentElement.column.caption + ', ' + currentElement.column.name}}
         </div>
 
-        <div class="q-py-md"> 
+        <div class="q-pa-md"> 
           栅格宽度:
         </div>
-        <div class="q-py-md"> 
+        <div class="q-pa-md"> 
           <q-slider
             v-model="currentElement.width"
             color="primary"
@@ -74,7 +74,8 @@
           :class="type">
         <div class="q-pb-md row reverse  justify-right">
           <div class="q-px-md">
-            <q-btn unelevated @click="onSubmitClick" color="primary" label="保存" />
+            <q-btn class="q-mx-md" unelevated @click="onSubmitClick" color="primary" label="保存" />
+            <q-btn  unelevated @click="onDeleteClick" color="negative" label="删除" />
           </div>
           <div class="q-px-md">
             <q-radio @input="typeChange" v-model="type" val="pc" label="电脑" />
@@ -105,7 +106,8 @@
               <q-input v-if="isStringType(formElement)"
                 readonly
                 :placeholder="formElement.column.description"
-                :type="formElement.isPwd ? 'password' : 'text'" >
+                :type="formElement.isPwd ? 'password' : 'text'"
+                v-model="formElement.column.value" >
                 <template v-slot:append v-if="!formElement.isText" >
                   <q-icon
                     :name="formElement.isPwd ? 'visibility_off' : 'visibility'"
@@ -116,7 +118,7 @@
               </q-input>
 
               <q-editor readonly v-else-if="isTextType(formElement)"
-                v-model="formElement.value"
+                v-model="textValue"
                 :placeholder="formElement.column.description" >
               </q-editor>
 
@@ -166,21 +168,26 @@
                 </template>
               </q-input>
 
-              <q-toggle v-else-if="isBoolType(formElement)" readonly>
+              <q-toggle v-else-if="isBoolType(formElement)" readonly
+                v-model="formElement.column.value">
               </q-toggle>
 
               <q-input readonly
                 v-else-if="isNumberType(formElement)"
                 :placeholder="formElement.column.description"
-                type="number" >
+                type="number"
+                v-model="formElement.column.value" >
               </q-input>
 
-              <CFile v-else-if="isAttachmentType(formElement)"></CFile>
+              <CFile v-else-if="isAttachmentType(formElement)"
+                v-model="formElement.column.value" >
+              </CFile>
 
               <q-input v-else
                 readonly
                 :placeholder="formElement.column.description"
-                :type="formElement.isPwd ? 'password' : 'text'" >
+                :type="formElement.isPwd ? 'password' : 'text'"
+                v-model="formElement.column.value" >
                 <template v-slot:append v-if="!formElement.isText" >
                   <q-icon
                     :name="formElement.isPwd ? 'visibility_off' : 'visibility'"
@@ -263,7 +270,9 @@ export default {
       type: 'pc',
       table: {},
       formBuilders: [],
-      currentElement: {}
+      currentElement: {},
+      textValue: "",
+      fileValue: ""
     }
   },
 
@@ -559,6 +568,26 @@ export default {
         this.$q.loading.hide();
         this.$q.notify("保存成功");
         await this.loadData(this.table.id);
+      } catch (error) {
+        this.$q.loading.hide();
+        console.info(error);
+      }
+    },
+    async onDeleteClick() {
+      this.$q.loading.show({
+        message: "提交中"
+      });
+      try {
+        let formBuilder = this.formBuilders.find(t => t.type === this.type);
+        if (formBuilder) {
+          await tableService.delete("tableFormBuilder", formBuilder.id);
+          this.$q.loading.hide();
+          this.$q.notify("删除成功");
+          await this.loadData(this.table.id);
+        } else {
+          this.$q.loading.hide();
+          this.$q.notify("已经为空");
+        }
       } catch (error) {
         this.$q.loading.hide();
         console.info(error);
