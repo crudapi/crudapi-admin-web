@@ -71,16 +71,22 @@
 
     <q-page-container>
       <div class="q-pa-md form-build-body" 
-          :class="type">
-        <div class="q-pb-md row reverse  justify-right">
+          :class="device">
+        <div class="q-pb-md row   justify-right">
+          <div class="q-px-md">
+            <q-radio @input="deviceChange" v-model="device" val="pc" label="电脑" />
+            <q-radio @input="deviceChange" v-model="device" val="pad" label="平板" />
+            <q-radio @input="deviceChange" v-model="device" val="phone" label="手机" />
+          </div>
+
+          <div class="q-px-md">
+            <q-radio @input="typeChange" v-model="type" val="create" label="创建" />
+            <q-radio @input="typeChange" v-model="type" val="update" label="编辑" />
+          </div>
+
           <div class="q-px-md">
             <q-btn class="q-mx-md" unelevated @click="onSubmitClick" color="primary" label="保存" />
             <q-btn  unelevated @click="onDeleteClick" color="negative" label="删除" />
-          </div>
-          <div class="q-px-md">
-            <q-radio @input="typeChange" v-model="type" val="pc" label="电脑" />
-            <q-radio @input="typeChange" v-model="type" val="pad" label="平板" />
-            <q-radio @input="typeChange" v-model="type" val="phone" label="手机" />
           </div>
         </div>
         
@@ -267,7 +273,8 @@ export default {
       unselectedList: [],
       selectedList: [],
       loading: true,
-      type: 'pc',
+      type: 'create',
+      device: 'pc',
       table: {},
       formBuilders: [],
       currentElement: {},
@@ -485,6 +492,11 @@ export default {
         this.$q.notify(error);
       }
     },
+    deviceChange(value, evt) {
+      console.log(value);
+      this.currentElement =  {};
+      this.setFormBuilder();
+    },
     typeChange(value, evt) {
       console.log(value);
       this.currentElement =  {};
@@ -492,7 +504,8 @@ export default {
     },
     setFormBuilder() {
       const columns = this.table.columns;
-      let formBuilder = this.formBuilders.find(t => t.type === this.type);
+      let formBuilder = this.formBuilders.find(t => t.device === this.device 
+        && t.type === this.type);
 
       let unselectedList = [];
       let selectedList = [];
@@ -552,13 +565,15 @@ export default {
         });
 
         const data = {
-          name: this.type,
+          name: this.device + " " + this.type,
+          device: this.device,
           type: this.type,
           body: JSON.stringify(selectedList),
           tableId: this.table.id
         };
 
-        let formBuilder = this.formBuilders.find(t => t.type === this.type);
+        let formBuilder = this.formBuilders.find(t => t.device === this.device
+          && t.type === this.type);
         if (!formBuilder) {
           await tableService.create("tableFormBuilder", data);
         } else {

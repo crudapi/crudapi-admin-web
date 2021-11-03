@@ -705,7 +705,8 @@ export default {
           tableId:table.id
         };
         const formBuilders = await tableService.list("tableFormBuilder", 0, 999, null, query, null);
-        let formBuilder = formBuilders.find(t => t.type === 'pc');
+        let formBuilder = formBuilders.find(t => t.device === 'pc' 
+          && t.type === 'update');
         let selectedList = [];
         if (formBuilder != null) {
           selectedList = JSON.parse(formBuilder.body);
