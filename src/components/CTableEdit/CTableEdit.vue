@@ -14,119 +14,267 @@
       </template>
     </q-banner>
     <form v-show="expand" @submit.prevent.stop="onSubmit" class="q-pb-md">
-      <div class="row items-baseline content-center justify-start q-pb-md"
-          :key="item.name" v-for="item in insertColumns">
-        <div class="col-3 text-right text-subtitle2 q-pr-md query-cond"
-          v-bind:class="{ 'required': item.updatable  && !item.nullable}">
-        {{item.caption}}:</div>
-
-        <div class="col-7" v-if="!item.updatable">
-          <span v-if="item.dataType === 'TIME'">
-              {{ item.value }}
-          </span>
-          <span v-else-if="item.dataType === 'DATE'">
-              {{ item.value | dateFormat}}
-          </span>
-          <span v-else-if="item.dataType === 'DATETIME'">
-              {{ item.value | dateTimeFormat}}
-          </span>
-          <span v-else>
-              {{ item.value | dataFormat}}
-          </span>
-        </div>
-
-        <div class="col-7" v-else>
-          <div class="row items-baseline content-center"
-            style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
-            v-if="item.relationTableName">
-            <div class="col-11">
-              <span>{{ item.value | relationDataFormat(item) }}</span>
+      <div v-if="selectedList.length > 0" class="row">
+         <div class="list-group-item q-pa-md" 
+          v-for="formElement in selectedList"
+          :key="formElement.columnId"
+          :class="formElement | classFormat">
+          <div>
+            <div 
+              v-bind:class="{ 'required': formElement.column.updatable  && !formElement.column.nullable}">
+              {{formElement.column.caption}}:
             </div>
-            <div class="col-1">
-              <q-btn round dense flat icon="zoom_in" @click="openDialogClickAction(item)" />
+
+            <div v-if="!formElement.column.updatable">
+              <span v-if="formElement.column.dataType === 'TIME'">
+                  {{ formElement.column.value }}
+              </span>
+              <span v-else-if="formElement.column.dataType === 'DATE'">
+                  {{ formElement.column.value | dateFormat}}
+              </span>
+              <span v-else-if="formElement.column.dataType === 'DATETIME'">
+                  {{ formElement.column.value | dateTimeFormat}}
+              </span>
+              <span v-else>
+                  {{ formElement.column.value | dataFormat}}
+              </span>
+            </div>
+            
+            <div v-else>
+              <div class="row items-baseline content-center"
+                style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
+                v-if="formElement.column.relationTableName">
+                <div class="col-11">
+                  <span>{{ formElement.column.value | relationDataFormat(formElement.column) }}</span>
+                </div>
+                <div class="col-1">
+                  <q-btn round dense flat icon="zoom_in" 
+                  @click="openDialogClickAction(formElement.column)" />
+                </div>
+              </div>
+
+              <q-input v-else-if="isStringType(formElement.column.dataType)"
+                v-model="formElement.column.value"
+                :placeholder="formElement.column.description"
+                :type="formElement.isPwd ? 'password' : 'text'" >
+                <template v-slot:append v-if="!formElement.isText" >
+                  <q-icon
+                    :name="formElement.isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="formElement.isPwd = !formElement.isPwd"
+                  />
+                </template>
+              </q-input>
+
+              <q-editor  v-else-if="isTextType(formElement.column.dataType)"
+                v-model="formElement.column.value"
+                :placeholder="formElement.column.description" >
+              </q-editor>
+
+              <q-input v-else-if="isDateTimeType(formElement.column.dataType)"
+                v-model="formElement.column.value" >
+                <template v-slot:prepend>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date v-model="formElement.column.value"
+                      mask="YYYY-MM-DD HH:mm:ss"
+                      @input="hideRefPopProxyAction('qDateProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                      <q-time  v-model="formElement.column.value"
+                      mask="YYYY-MM-DD HH:mm:ss"
+                      format24h with-seconds
+                      @input="hideRefPopProxyAction('qTimeProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+               <q-input v-else-if="isDateType(formElement.column.dataType)" 
+                v-model="formElement.column.value">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date  v-model="formElement.column.value"
+                      mask="YYYY-MM-DD"
+                      @input="hideRefPopProxyAction('qDateProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-input v-else-if="isTimeType(formElement.column.dataType)"
+               v-model="formElement.column.value" >
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                      <q-time   v-model="formElement.column.value" 
+                      mask="HH:mm:ss"
+                      format24h with-seconds
+                      @input="hideRefPopProxyAction('qTimeProxy')" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-toggle v-else-if="isBoolType(formElement.column.dataType)"
+               v-model="formElement.column.value" >
+              </q-toggle>
+
+              <q-input 
+                v-else-if="isNumberType(formElement.column.dataType)"
+                v-model="formElement.column.value"
+                :placeholder="formElement.column.description"
+                type="number">
+              </q-input>
+
+              <CFile v-else-if="isAttachmentType(formElement.column.dataType)"
+               v-model="formElement.column.value"
+               @input="(data)=>{
+                formElement.column.value = data.url;
+               }"></CFile>
+
+              <q-input v-else
+                v-model="formElement.column.value"
+                :placeholder="formElement.column.description"
+                :type="formElement.isPwd ? 'password' : 'text'" >
+                <template v-slot:append v-if="!formElement.isText" >
+                  <q-icon
+                    :name="formElement.isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="formElement.isPwd = !formElement.isPwd"
+                  />
+                </template>
+              </q-input>
             </div>
           </div>
+        </div>
+      </div>
+      <div v-else>
+        <div class="row items-baseline content-center justify-start q-pb-md"
+            :key="item.name" v-for="item in insertColumns">
+          <div class="col-3 text-right text-subtitle2 q-pr-md query-cond"
+            v-bind:class="{ 'required': item.updatable  && !item.nullable}">
+          {{item.caption}}:</div>
 
-          <q-input v-else-if="isDateTimeType(item.dataType)"
+          <div class="col-7" v-if="!item.updatable">
+            <span v-if="item.dataType === 'TIME'">
+                {{ item.value }}
+            </span>
+            <span v-else-if="item.dataType === 'DATE'">
+                {{ item.value | dateFormat}}
+            </span>
+            <span v-else-if="item.dataType === 'DATETIME'">
+                {{ item.value | dateTimeFormat}}
+            </span>
+            <span v-else>
+                {{ item.value | dataFormat}}
+            </span>
+          </div>
+
+          <div class="col-7" v-else>
+            <div class="row items-baseline content-center"
+              style="border-bottom: 1px solid rgba(0,0,0,0.12)" 
+              v-if="item.relationTableName">
+              <div class="col-11">
+                <span>{{ item.value | relationDataFormat(item) }}</span>
+              </div>
+              <div class="col-1">
+                <q-btn round dense flat icon="zoom_in" @click="openDialogClickAction(item)" />
+              </div>
+            </div>
+
+            <q-input v-else-if="isDateTimeType(item.dataType)"
+                v-model="item.value">
+              <template v-slot:prepend>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                    <q-date v-model="item.value"
+                    mask="YYYY-MM-DD HH:mm:ss"
+                    @input="hideRefPopProxyAction('qDateProxy')" />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+
+              <template v-slot:append>
+                <q-icon name="access_time" class="cursor-pointer">
+                  <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                    <q-time v-model="item.value" mask="YYYY-MM-DD HH:mm:ss"
+                    format24h with-seconds
+                    @input="hideRefPopProxyAction('qTimeProxy')" />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+
+            <q-input v-else-if="isDateType(item.dataType)"
+                v-model="item.value">
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                    <q-date v-model="item.value"
+                    mask="YYYY-MM-DD"
+                    @input="hideRefPopProxyAction('qDateProxy')" />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+
+            <q-input v-else-if="isTimeType(item.dataType)"
+                v-model="item.value"
+                mask="fulltime" :rules="['fulltime']">
+              <template v-slot:append>
+                <q-icon name="access_time" class="cursor-pointer">
+                  <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
+                    <q-time v-model="item.value"
+                    format24h with-seconds
+                    @input="hideRefPopProxyAction('qTimeProxy')" />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+
+            <q-toggle v-else-if="isBoolType(item.dataType)"
               v-model="item.value">
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="item.value"
-                  mask="YYYY-MM-DD HH:mm:ss"
-                  @input="hideRefPopProxyAction('qDateProxy')" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
+            </q-toggle>
 
-            <template v-slot:append>
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
-                  <q-time v-model="item.value" mask="YYYY-MM-DD HH:mm:ss"
-                  format24h with-seconds
-                  @input="hideRefPopProxyAction('qTimeProxy')" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-
-          <q-input v-else-if="isDateType(item.dataType)"
-              v-model="item.value">
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="item.value"
-                  mask="YYYY-MM-DD"
-                  @input="hideRefPopProxyAction('qDateProxy')" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-
-          <q-input v-else-if="isTimeType(item.dataType)"
+            <q-input
+              v-else-if="isNumberType(item.dataType)"
+              :placeholder="item.description"
               v-model="item.value"
-              mask="fulltime" :rules="['fulltime']">
-            <template v-slot:append>
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy ref="qTimeProxy" transition-show="scale" transition-hide="scale">
-                  <q-time v-model="item.value"
-                  format24h with-seconds
-                  @input="hideRefPopProxyAction('qTimeProxy')" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+              type="number" >
+            </q-input>
 
-          <q-toggle v-else-if="isBoolType(item.dataType)"
-            v-model="item.value">
-          </q-toggle>
+            <CFile v-else-if="isAttachmentType(item.dataType)"
+             v-model="item.value"
+             @input="(data)=>{
+              item.value = data.url;
+             }"></CFile>
 
-          <q-input
-            v-else-if="isNumberType(item.dataType)"
-            :placeholder="item.description"
-            v-model="item.value"
-            type="number" >
-          </q-input>
+             <q-editor v-else-if="isTextType(item.dataType)"
+              v-model="item.value"
+              :placeholder="item.description" >
+            </q-editor>
 
-          <CFile v-else-if="isAttachmentType(item.dataType)"
-           v-model="item.value"
-           @input="(data)=>{
-            item.value = data.url;
-           }"></CFile>
-
-          <q-input
-            v-else
-            :placeholder="item.description"
-            v-model="item.value"
-            :type="item.isPwd ? 'password' : 'text'" >
-            <template v-slot:append v-if="!item.isText" >
-              <q-icon
-                :name="item.isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="item.isPwd = !item.isPwd"
-              />
-            </template>
-          </q-input>
+            <q-input
+              v-else
+              :placeholder="item.description"
+              v-model="item.value"
+              :type="item.isPwd ? 'password' : 'text'" >
+              <template v-slot:append v-if="!item.isText" >
+                <q-icon
+                  :name="item.isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="item.isPwd = !item.isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
         </div>
       </div>
     </form>
@@ -200,7 +348,8 @@ export default {
       insertColumns: [],
       relationMap: {},
       oneToOneMainToSubTables: [],
-      oneToManySubTables: []
+      oneToManySubTables: [],
+      selectedList: []
     };
   },
 
@@ -262,6 +411,14 @@ export default {
          }
        } 
        return ret ? ret : value;
+    },
+    classFormat: function(formElement) {
+      let value = "";
+      if (formElement.width) {
+        value = "col-" + formElement.width;
+      }
+
+      return value;
     }
   },
   computed: {},
@@ -270,6 +427,15 @@ export default {
       this.insertColumns = [];
 
       await this.loadMeta();
+    },
+
+    isTextType: function(dataType) {
+      if (dataType === "TEXT"
+        || dataType === "LONGTEXT" ) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     isStringType: function(dataType) {
@@ -533,6 +699,23 @@ export default {
         }
 
         this.insertColumns = insertColumns;
+        
+        //formBuilder
+        let query = {
+          tableId:table.id
+        };
+        const formBuilders = await tableService.list("tableFormBuilder", 0, 999, null, query, null);
+        let formBuilder = formBuilders.find(t => t.device === 'pc' 
+          && t.type === 'update');
+        let selectedList = [];
+        if (formBuilder != null) {
+          selectedList = JSON.parse(formBuilder.body);
+          selectedList.forEach((formElement) => {
+            formElement.column = table.columns.find(t => t.id === formElement.columnId);
+          });
+        }
+
+        this.selectedList = selectedList;
 
         this.loading = false;
       } catch (error) {
