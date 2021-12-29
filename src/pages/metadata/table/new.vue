@@ -132,6 +132,14 @@
             label="添加字段"
           />
 
+          <p class="q-px-sm"  v-show="!reverse"/>
+          <q-btn v-show="!reverse"
+            unelevated
+            @click="onBatchNewClickAction()"
+            color="positive"
+            label="批量添加字段"
+          />
+
           <q-space />
 
           <q-btn
@@ -291,6 +299,30 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="showBatchDialog"  persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">批量添加</div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section>
+          <q-input  style="width:500px;"
+            v-model="columnNames"
+            filled
+            type="textarea"
+            label="逗号或者换行隔开"
+          />
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn label="取消" unelevated color="negative" v-close-popup />
+          <q-btn @click="onConfirmBatchClick" label="确定" unelevated color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -319,6 +351,8 @@ export default {
         rowsPerPage: 9999
       },
       showIndexDialog: false,
+      showBatchDialog: false,
+      columnNames: "",
       visibleColumns: [
         "dataClickAction",
         "displayOrder",
@@ -807,6 +841,10 @@ export default {
       this.addRow();
     },
 
+    onBatchNewClickAction() {
+      this.showBatchDialog = true;
+    },
+    
     indexsGroupBy(indexs) {
       const groups = {};
       indexs.forEach(function (t) {
@@ -999,6 +1037,31 @@ export default {
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
     },
 
+    addRow2(columnRaw) {
+      const columns = this.table.columns;
+      const index = columns.length + 1;
+      const newRow = {
+        id: (new Date()).valueOf(),
+        autoIncrement: false,
+        displayOrder: columns.length,
+        insertable: true,
+        nullable: true,
+        queryable: true,
+        displayable: false,
+        unsigned: false,
+        updatable: true,
+        dataType : columnRaw.dataType,
+        name: "col" + columns.length,
+        caption: columnRaw.caption,
+        description: columnRaw.caption,
+        length: columnRaw.length,
+        precision: columnRaw.precision,
+        scale: columnRaw.scale,
+        systemable: false
+      };
+      this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
+    },
+
     removeRow(id) {
       const columns = this.table.columns;
       const index = columns.findIndex(t => t.id === id);
@@ -1170,6 +1233,23 @@ export default {
         this.indexCount = this.table.indexs.length;
       } else {
         this.indexCount = 0;
+      }
+    },
+    onConfirmBatchClick: function() {
+      console.info(this.columnNames);
+      const that = this;
+      if (this.columnNames) {
+        let columnNames = this.columnNames
+        .replaceAll("\r\n", ",")
+        .replaceAll("\n", ",")
+        .replaceAll("，", ",")
+        .split(",");
+        columnNames.forEach((t) => {
+          that.addRow2({
+            length: 200,
+            caption: t.trim()
+          })
+        });
       }
     }
   }
