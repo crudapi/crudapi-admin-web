@@ -128,6 +128,14 @@
             label="添加字段"
           />
 
+          <p class="q-px-sm"/>
+          <q-btn 
+            unelevated
+            @click="onBatchNewClickAction()"
+            color="positive"
+            label="批量添加字段"
+          />
+
           <q-space />
 
           <q-btn
@@ -271,6 +279,30 @@
         </div>
       </div>
     </div>
+
+    <q-dialog v-model="showBatchDialog"  persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">批量添加</div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section>
+          <q-input  style="width:500px;"
+            v-model="columnNames"
+            filled
+            type="textarea"
+            label="逗号或者换行隔开"
+          />
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn label="取消" unelevated color="negative" v-close-popup />
+          <q-btn @click="onConfirmBatchClick" label="确定" unelevated color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -560,7 +592,9 @@ export default {
         }
       ],
       sequenceLongOptions: [],
-      sequenceStringOptions: []
+      sequenceStringOptions: [],
+      showBatchDialog: false,
+      columnNames: ""
     }
   },
 
@@ -826,6 +860,51 @@ export default {
 
       if (index != columns.length - 1){
         columns.push(columns.splice(index, 1)[0]);
+      }
+    },
+    addRow2(columnRaw) {
+      const columns = this.table.columns;
+      const index = columns.length + 1;
+      const newRow = {
+        id: (new Date()).valueOf(),
+        autoIncrement: false,
+        displayOrder: columns.length,
+        insertable: true,
+        nullable: true,
+        queryable: true,
+        displayable: false,
+        unsigned: false,
+        updatable: true,
+        dataType : columnRaw.dataType,
+        name: "col" + columns.length,
+        caption: columnRaw.caption,
+        description: columnRaw.caption,
+        length: columnRaw.length,
+        precision: columnRaw.precision,
+        scale: columnRaw.scale,
+        systemable: false,
+        isNewRow: true
+      };
+      this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
+    },
+    onBatchNewClickAction() {
+      this.showBatchDialog = true;
+    },
+    onConfirmBatchClick: function() {
+      console.info(this.columnNames);
+      const that = this;
+      if (this.columnNames) {
+        let columnNames = this.columnNames
+        .replaceAll("\r\n", ",")
+        .replaceAll("\n", ",")
+        .replaceAll("，", ",")
+        .split(",");
+        columnNames.forEach((t) => {
+          that.addRow2({
+            length: 200,
+            caption: t.trim()
+          })
+        });
       }
     }
   }
