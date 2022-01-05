@@ -15,14 +15,14 @@
 
     <div class="text-h6">价格</div>
     <div class="q-pa-md">
-      <div>个人版免费使用，购买商业版，送所有源码，包括前端Vue源码和后台Java源码.</div>
+      <div>个人版免费使用，购买商业版，送所有Jar包，购买源码版，送所有源码，包括前端Vue源码和后台Java源码.</div>
       <img width="450" alt="logo" src="price.png" />
     </div>
 
     <div class="q-pt-md text-h6">联系方式</div>
       <div class="q-pa-md">
       
-      添加客服微信（暗号crudapi），加入crudapi交流群可享商业版5折限时优惠！
+      添加客服微信（暗号crudapi），加入crudapi交流群可享个人版免费扩容，商业版和源码版5折限时优惠！
       <div align="left">
         <img width = "200" src="crudapiweixin.jpeg">
       </div>
