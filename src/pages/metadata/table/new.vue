@@ -1037,11 +1037,11 @@ export default {
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
     },
 
-    addRow2(columnRaw) {
+    addRow2(id, columnRaw) {
       const columns = this.table.columns;
       const index = columns.length + 1;
       const newRow = {
-        id: (new Date()).valueOf(),
+        id: id,
         autoIncrement: false,
         displayOrder: columns.length,
         insertable: true,
@@ -1244,8 +1244,10 @@ export default {
         .replaceAll("\n", ",")
         .replaceAll("，", ",")
         .split(",");
+
+        const baseId = (new Date()).valueOf();
         columnNames.forEach((t) => {
-          that.addRow2({
+          that.addRow2(baseId++, {
             length: 200,
             caption: t.trim()
           })
