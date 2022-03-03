@@ -1245,7 +1245,7 @@ export default {
         .replaceAll("，", ",")
         .split(",");
 
-        const baseId = (new Date()).valueOf();
+        let baseId = (new Date()).valueOf();
         columnNames.forEach((t) => {
           that.addRow2(baseId++, {
             length: 200,
