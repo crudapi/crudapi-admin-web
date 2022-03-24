@@ -445,9 +445,9 @@ export default {
             message: "确认删除吗？",
             options: {
               type: 'toggle',
-              model: [true],
+              model: [],
               items: [
-                { label: '是否删除物理表', value: true }
+                { label: '是否删除物理表', value: 'isDropPhysicalTable' }
               ]
             },
             ok: {
@@ -461,11 +461,17 @@ export default {
           })
           .onOk(async (data) => {
             console.log(data);
+            let isDropPhysicalTable = false;
+            if (data && data[0] === 'isDropPhysicalTable') {
+              isDropPhysicalTable = true;
+            }
+
+            console.log("isDropPhysicalTable = " + isDropPhysicalTable);
             if (id) {
               await metadataTableService.delete(id, data[0]);
             } else if (ids.length > 0) {
               await metadataTableService.batchDelete(ids, data[0]);
-            } 
+            }
 
             this.$q.notify("删除成功");
             this.$root.$emit("updateMenuTree");

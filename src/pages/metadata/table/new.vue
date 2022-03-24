@@ -689,6 +689,7 @@ export default {
               "dataType": "BIGINT",
               "description": "主键",
               "displayOrder": 0,
+              "indexName": "primary_key",
               "indexType": "PRIMARY",
               "insertable": false,
               "length": 20,
