@@ -468,6 +468,7 @@ export default {
             } 
 
             this.$q.notify("删除成功");
+            this.$root.$emit("updateMenuTree");
             this.reload();
           })
           .onCancel((data) => {
