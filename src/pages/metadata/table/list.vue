@@ -468,13 +468,12 @@ export default {
 
             console.log("isDropPhysicalTable = " + isDropPhysicalTable);
             if (id) {
-              await metadataTableService.delete(id, data[0]);
+              await metadataTableService.delete(id, isDropPhysicalTable);
             } else if (ids.length > 0) {
-              await metadataTableService.batchDelete(ids, data[0]);
+              await metadataTableService.batchDelete(ids, isDropPhysicalTable);
             }
 
             this.$q.notify("删除成功");
-            this.$root.$emit("updateMenuTree");
             this.reload();
           })
           .onCancel((data) => {
