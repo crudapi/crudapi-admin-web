@@ -64,12 +64,26 @@ const metadataTable = {
     );
   },
   getMetadata: function(name) {
-    return axiosInstance.get("/api/metadata/tables/metadata/" + name,
+    return axiosInstance.get("/api/metadata/tables/metadatas/" + name,
       {
         params: {
         }
       }
     );
+  },
+  getMetadatas: function() {
+    return axiosInstance.get("/api/metadata/tables/metadatas",
+      {
+        params: {
+        }
+      }
+    );
+  },
+  reverse: function(tableName) {
+    return axiosInstance.post("/api/metadata/tables/metadatas/reverse/" + tableName);
+  },
+  batchReverse: function(tableNames) {
+    return axiosInstance.post("/api/metadata/tables/metadatas/reverse", tableNames);
   },
   repairMeataData: function(name, columnNameLsit) {
     return axiosInstance.patch("/api/metadata/tables/metadata/" + name,

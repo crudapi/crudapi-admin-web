@@ -85,6 +85,13 @@
             <p class="q-px-sm"/>
             <q-btn
               unelevated
+              @click="onReverseClickAction()"
+              color="orange"
+              label="批量逆向"
+            />
+            <p class="q-px-sm"/>
+            <q-btn
+              unelevated
               @click="onNewClickAction()"
               color="primary"
               label="添加"
@@ -407,6 +414,11 @@ export default {
 
     onImportClickAction() {
       this.$router.push("/metadata/tables/import");
+    },
+
+
+    onReverseClickAction() {
+      this.$router.push("/metadata/tables/reverse");
     },
 
     async onDeleteClickAction(id) {

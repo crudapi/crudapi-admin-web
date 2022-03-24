@@ -2,7 +2,7 @@
    <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
       <q-breadcrumbs-el label="表管理" />
-      <q-breadcrumbs-el label="批量导入" />
+      <q-breadcrumbs-el label="批量逆向" />
     </q-breadcrumbs>
 
     <q-separator />

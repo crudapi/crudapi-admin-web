@@ -29,6 +29,18 @@ const metadataTableService = {
     var res = await metadataTable.getMetadata(name);
     return res.data;
   },
+  getMetadatas: async function() {
+    var res = await metadataTable.getMetadatas(name);
+    return res.data;
+  },
+  reverse: async function(tableName) {
+    var res = await metadataTable.reverse(tableName);
+    return res.data;
+  },
+  batchReverse: async function(tableNames) {
+    var res = await metadataTable.batchReverse(tableNames);
+    return res.data;
+  },
   repairMeataData: async function(name, columnNameLsit) {
     var res = await metadataTable.repairMeataData(name, columnNameLsit);
     return res.data;
