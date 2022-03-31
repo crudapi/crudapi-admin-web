@@ -356,6 +356,8 @@ export default {
         return "字符串";
       } else if (value === "LONG") {
         return "数字";
+      } else if (value === "GUID") {
+        return "GUID";
       } else {
         return value;
       }

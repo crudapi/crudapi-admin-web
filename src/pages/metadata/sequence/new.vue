@@ -44,66 +44,69 @@
           />
       </div>
 
-      <div class="row items-center content-center justify-start">
-        <div class="col-3 text-right required text-subtitle2 q-pr-md">时间戳:</div>
-        <q-toggle class="col-7" v-model="sequence.currentTime"/>
-      </div>
 
-      <div v-if="isHasFormat" class="row items-baseline content-center justify-start q-py-md">
-        <div class="col-3 text-right text-subtitle2 q-pr-md">格式:</div>
-        <q-input
-            class="col-7"
-            placeholder="请输入格式，如ROLE_%09d、'SO'yyyyMMddHHmmssSSS"
-            ref="sequence.format"
-            v-model="sequence.format"
-          />
-      </div>
+      <div v-if="isNotGuid">
+        <div class="row items-center content-center justify-start">
+          <div class="col-3 text-right required text-subtitle2 q-pr-md">时间戳:</div>
+          <q-toggle class="col-7" v-model="sequence.currentTime"/>
+        </div>
 
-      <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
-        <div class="col-3 text-right text-subtitle2 q-pr-md">最小值:</div>
-        <q-input
-            class="col-7"
-            type="number"
-            placeholder="请输入最小值，如1"
-            ref="sequence.minValue"
-            v-model="sequence.minValue"
-          />
-      </div>
+        <div v-if="isHasFormat" class="row items-baseline content-center justify-start q-py-md">
+          <div class="col-3 text-right text-subtitle2 q-pr-md">格式:</div>
+          <q-input
+              class="col-7"
+              placeholder="请输入格式，如ROLE_%09d、'SO'yyyyMMddHHmmssSSS"
+              ref="sequence.format"
+              v-model="sequence.format"
+            />
+        </div>
+
+        <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
+          <div class="col-3 text-right text-subtitle2 q-pr-md">最小值:</div>
+          <q-input
+              class="col-7"
+              type="number"
+              placeholder="请输入最小值，如1"
+              ref="sequence.minValue"
+              v-model="sequence.minValue"
+            />
+        </div>
 
 
-      <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
-        <div class="col-3 text-right text-subtitle2 q-pr-md">最大值:</div>
-        <q-input
-            class="col-7"
-            type="number"
-            placeholder="请输入最大值，如999999999"
-            ref="sequence.maxValue"
-            v-model="sequence.maxValue"
-          />
-      </div>
+        <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
+          <div class="col-3 text-right text-subtitle2 q-pr-md">最大值:</div>
+          <q-input
+              class="col-7"
+              type="number"
+              placeholder="请输入最大值，如999999999"
+              ref="sequence.maxValue"
+              v-model="sequence.maxValue"
+            />
+        </div>
 
-      <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
-        <div class="col-3 text-right text-subtitle2 q-pr-md">下一个值:</div>
-        <q-input
-            class="col-7"
-            type="number"
-            placeholder="请输入下一个值，如1"
-            ref="sequence.nextValue"
-            v-model="sequence.nextValue"
-          />
-      </div>
+        <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
+          <div class="col-3 text-right text-subtitle2 q-pr-md">下一个值:</div>
+          <q-input
+              class="col-7"
+              type="number"
+              placeholder="请输入下一个值，如1"
+              ref="sequence.nextValue"
+              v-model="sequence.nextValue"
+            />
+        </div>
 
-      <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
-        <div class="col-3 text-right text-subtitle2 q-pr-md">步长:</div>
-        <q-input
-            class="col-7"
-            type="number"
-            placeholder="请输入步长，如1"
-            ref="sequence.incrementBy"
-            v-model="sequence.incrementBy"
-          />
+        <div v-if="!sequence.currentTime" class="row items-baseline content-center justify-start q-py-md">
+          <div class="col-3 text-right text-subtitle2 q-pr-md">步长:</div>
+          <q-input
+              class="col-7"
+              type="number"
+              placeholder="请输入步长，如1"
+              ref="sequence.incrementBy"
+              v-model="sequence.incrementBy"
+            />
+        </div>
       </div>
-      <div class="row justify-center">
+      <div class="row justify-center q-py-md">
         <q-btn unelevated type="submit" color="primary" label="保存" />
       </div>
     </form>
@@ -133,6 +136,10 @@ export default {
         {
           value: "STRING",
           label: "字符串"
+        },
+        {
+          value: "GUID",
+          label: "GUID"
         }
       ],
       sequence: {
@@ -184,6 +191,9 @@ export default {
   computed: {
     isHasFormat() {
       return this.sequence.sequenceType === "STRING" ? true : false;
+    },
+    isNotGuid () {
+      return this.sequence.sequenceType === "GUID" ? false : true;
     }
   },
   methods: {

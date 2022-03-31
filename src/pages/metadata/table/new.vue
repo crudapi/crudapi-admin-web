@@ -787,7 +787,8 @@ export default {
         let sequences = await metadataSequenceService.list(1, 999);
 
         let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
-        let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
+        let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING"
+          || t.sequenceType === "GUID");
         sequenceLongOptions.unshift({
           "id": null,
           "caption": "无"
