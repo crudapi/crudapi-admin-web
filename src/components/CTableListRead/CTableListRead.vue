@@ -404,7 +404,9 @@ export default {
       });
 
       try {
-        const url = await tableService.export(this.tableName);
+        let query = this.getQuery();
+
+        const url = await tableService.export(this.tableName, this.search, query);
         this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
         window.open(url, "_blank");

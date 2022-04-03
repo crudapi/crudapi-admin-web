@@ -99,10 +99,12 @@ const table = {
       }
     );
   },
-  export: function(tableName) {
+  export: function(tableName, search, query) {
     return axiosInstance.get("/api/business/" + tableName + "/export",
       {
         params: {
+          search: search,
+          ...query
         }
       }
     );
