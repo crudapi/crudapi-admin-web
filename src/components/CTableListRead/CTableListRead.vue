@@ -153,6 +153,7 @@ import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
 import { date } from "../../utils";
 import { extend } from "quasar";
+import CDownloadDialog from '../CDownload/CDownloadDialog'
 
 export default {
   name: "CTableListRead",
@@ -407,9 +408,32 @@ export default {
         let query = this.getQuery();
 
         const url = await tableService.export(this.tableName, this.search, query);
-        this.$q.notify("数据导出成功，请等待下载完成后查看！");
+        //this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
-        window.open(url, "_blank");
+        this.$q.dialog({
+          component: CDownloadDialog,
+
+          // optional if you want to have access to
+          // Router, Vuex store, and so on, in your
+          // custom component:
+          parent: this, // becomes child of this Vue node
+                        // ("this" points to your Vue component)
+                      // (prop was called "root" in < 1.1.0 and
+                      // still works, but recommending to switch
+                      // to data: the more appropriate "parent" name)
+
+          // props forwarded to component
+          // (everything except "component" and "parent" props above):
+          url: url,
+          data: {}
+          // ...more.props...
+        }).onOk((data) => {
+          item.value = data;
+        }).onCancel(() => {
+          console.log('Cancel')
+        }).onDismiss(() => {
+          console.log('Called on OK or Cancel')
+        });
 
         this.$q.loading.hide();
       } catch (error) {
