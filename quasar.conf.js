@@ -92,10 +92,20 @@ module.exports = function ( ctx ) {
       port: 8080,
       open: true, // opens browser window automatically
       proxy: {
+        //crudapi demo env
         "/api/*": {
           target: "https://demo.crudapi.cn",
           changeOrigin: true
         }
+        //local env
+        // "/api/*": {
+        //   target: "http://127.0.0.1:8888",
+        //   changeOrigin: true
+        // },
+        // "/download/*": {
+        //   target: "http://127.0.0.1:8888",
+        //   changeOrigin: true
+        // }
       }
     },
 
