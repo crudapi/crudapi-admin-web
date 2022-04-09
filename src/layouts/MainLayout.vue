@@ -44,6 +44,11 @@
             </a>
           </div>
           <div class="q-px-md">
+            <a class="text-white" href="/about">
+              联系我们
+            </a>
+          </div>
+          <div class="q-px-md">
             <a class="text-white" target="_blank"  href="https://demo.crudapi.cn/swagger-ui.html">
               Swagger API
             </a>

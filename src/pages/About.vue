@@ -21,7 +21,11 @@
 
     <div class="q-pt-md text-h6">联系方式</div>
       <div class="q-pa-md">
-      添加客服微信（暗号crudapi），加入crudapi开发者群可享源码版5折限时优惠！
+        QQ群：632034576<br/>
+        QQ客服：1440737304
+      </div>
+      <div class="q-pa-md">
+      添加微信客服（暗号crudapi），加入crudapi开发者群可享源码版5折限时优惠！
       <div align="left">
         <img width = "200" src="crudapiweixin.jpeg">
       </div>
