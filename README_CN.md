@@ -7,9 +7,7 @@
 名称 | 类型 | 授权 | GitHub仓库 | Gitee仓库
 --- | --- | --- | --- | ---
 crudapi-admin-web | Vue Qusar源码 | 开源 | [crudapi-admin-web](https://github.com/crudapi/crudapi-admin-web) | [crudapi-admin-web](https://gitee.com/crudapi/crudapi-admin-web)
-crudapi-example| 个人版Java集成SDK | 免费| [crudapi-example](https://github.com/crudapi/crudapi-example) | [crudapi-example](https://gitee.com/crudapi/crudapi-example)
-crudapi-pro-example | 商用版Java集成SDK  | 商用 | [crudapi-pro-example](https://github.com/crudapi/crudapi-pro-example) | [crudapi-pro-example](https://gitee.com/crudapi/crudapi-pro-example)
-
+crudapi-example| Java集成SDK | 永久免费 | [crudapi-example](https://github.com/crudapi/crudapi-example) | [crudapi-example](https://gitee.com/crudapi/crudapi-example)
 
 ## 安装npm依赖包
 ```bash

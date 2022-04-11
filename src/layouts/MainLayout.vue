@@ -35,56 +35,108 @@
         <q-space />
           <div class="q-px-md">
             <a class="text-white" target="_blank"  href="https://crudapi.cn">
-              crudapi官网
+              官网
             </a>
           </div>
-          <div class="q-px-md">
-            <a class="text-white" target="_blank"  href="https://help.crudapi.cn">
-              帮助文档
-            </a>
-          </div>
-          <div class="q-px-md">
-            <a class="text-white" href="/about">
-              联系我们
-            </a>
-          </div>
-          <div class="q-px-md">
-            <a class="text-white" target="_blank"  href="https://demo.crudapi.cn/swagger-ui.html">
-              Swagger API
-            </a>
-          </div>
-          <div class="q-px-md">
-            <a class="text-white" target="_blank"  href="https://github.com/crudapi/crudapi-admin-web">
-              Github源码
-            </a>
-          </div>
-          <div class="q-px-md">
-            <a class="text-white" target="_blank"  href="https://gitee.com/crudapi/crudapi-admin-web">
-              Gitee源码
-            </a>
-          </div>
+          <q-btn
+            unelevated
+            label="帮助"
+            flat
+            no-caps
+            icon-right="help_outline"
+            class="q-mx-xs"
+          >
+            <q-menu transition-show="scale" transition-hide="scale">
+              <div class="column bg-layoutcolor text-white profile-menu">
+                <a class="text-white" target="_blank"  href="https://help.crudapi.cn">
+                  <q-item
+                    clickable
+                    class="row items-center q-px-lg"
+                  >
+                     <q-icon name="article" />
+                      <q-item-label class="q-pl-md menu-label">文档</q-item-label>
 
-         <q-btn
-          unelevated
-          :label="userInfo.realname"
-          flat
-          no-caps
-          icon-right="arrow_drop_down"
-          class="q-mx-xs"
-        >
-          <q-menu transition-show="scale" transition-hide="scale">
-            <div class="column bg-layoutcolor text-white profile-menu">
-              <q-item
-                clickable
-                @click="logout"
-                class="row items-center q-px-lg"
-              >
-                <q-icon name="exit_to_app" />
-                <q-item-label class="q-pl-md menu-label">退出登录</q-item-label>
-              </q-item>
-            </div>
-          </q-menu>
-        </q-btn>
+                  </q-item>
+                </a>
+
+                <a class="text-white" target="_blank"  href="https://demo.crudapi.cn/swagger-ui.html">
+                  <q-item
+                    clickable
+                    class="row items-center q-px-lg"
+                  >
+                     <q-icon name="api" />
+                      <q-item-label class="q-pl-md menu-label">Swagger API</q-item-label>
+                  </q-item>
+                </a>
+
+                <a class="text-white" href="/crudapi/about">
+                  <q-item
+                    clickable
+                    class="row items-center q-px-lg"
+                  >
+                     <q-icon name="contact_support" />
+                      <q-item-label class="q-pl-md menu-label">联系我们</q-item-label>
+                  </q-item>
+                </a>
+              </div>
+            </q-menu>
+          </q-btn>
+
+          <q-btn
+            unelevated
+            label="源码"
+            flat
+            no-caps
+            icon-right="code"
+            class="q-mx-xs"
+          >
+            <q-menu transition-show="scale" transition-hide="scale">
+              <div class="column bg-layoutcolor text-white profile-menu">
+                <a class="text-white" target="_blank"  href="https://gitee.com/crudapi/crudapi-admin-web">
+                  <q-item
+                    clickable
+                    class="row items-center q-px-lg"
+                  >
+                     <q-icon name="code" />
+                      <q-item-label class="q-pl-md menu-label">Gitee</q-item-label>
+
+                  </q-item>
+                </a>
+
+                <a class="text-white" target="_blank"  href="https://github.com/crudapi/crudapi-admin-web">
+                  <q-item
+                    clickable
+                    class="row items-center q-px-lg"
+                  >
+                     <q-icon name="code" />
+                      <q-item-label class="q-pl-md menu-label">Github</q-item-label>
+                  </q-item>
+                </a>
+              </div>
+            </q-menu>
+          </q-btn>
+
+          <q-btn
+            unelevated
+            :label="userInfo.realname"
+            flat
+            no-caps
+            icon-right="arrow_drop_down"
+            class="q-mx-xs"
+          >
+            <q-menu transition-show="scale" transition-hide="scale">
+              <div class="column bg-layoutcolor text-white profile-menu">
+                <q-item
+                  clickable
+                  @click="logout"
+                  class="row items-center q-px-lg"
+                >
+                  <q-icon name="exit_to_app" />
+                  <q-item-label class="q-pl-md menu-label">退出登录</q-item-label>
+                </q-item>
+              </div>
+            </q-menu>
+          </q-btn>
       </q-toolbar>
     </q-header>
 
