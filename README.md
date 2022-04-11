@@ -56,6 +56,7 @@ Visit [ http://127.0.0.1/crudapi ](http://127.0.0.1/crudapi)
 13. [ 基于Vue和Quasar的前端SPA项目实战之数据导出（十三）](https://help.crudapi.cn/crudapi-admin-web/export.html)
 14. [ 基于Vue和Quasar的前端SPA项目实战之模块管理（十四）](https://help.crudapi.cn/crudapi-admin-web/module.html)
 15. [ 基于Vue和Quasar的前端SPA项目实战之元数据导出导入（十五）](https://help.crudapi.cn/crudapi-admin-web/metadataexportimport.html)
+16. [ 基于Vue和Quasar的前端SPA项目实战之拖拽表单定制（十六）](https://help.crudapi.cn/crudapi-admin-web/formbuilder.html)
 
 Ongoing updates...
 
@@ -84,6 +85,9 @@ admin@crudapi.cn
 
 #### QQ
 1440737304
+
+#### QQQun
+632034576
 
 #### Weixin
 undefinedneqnull

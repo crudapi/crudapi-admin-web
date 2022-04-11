@@ -57,6 +57,7 @@ docker run -d -p 80:80 --name crudapi-admin-web crudapi-admin-web:latest
 13. [ 基于Vue和Quasar的前端SPA项目实战之数据导出（十三）](https://help.crudapi.cn/crudapi-admin-web/export.html)
 14. [ 基于Vue和Quasar的前端SPA项目实战之模块管理（十四）](https://help.crudapi.cn/crudapi-admin-web/module.html)
 15. [ 基于Vue和Quasar的前端SPA项目实战之元数据导出导入（十五）](https://help.crudapi.cn/crudapi-admin-web/metadataexportimport.html)
+16. [ 基于Vue和Quasar的前端SPA项目实战之拖拽表单定制（十六）](https://help.crudapi.cn/crudapi-admin-web/formbuilder.html)
 
 持续更新中。。。
 
@@ -87,6 +88,9 @@ admin@crudapi.cn
 #### QQ
 1440737304
 
+#### QQ群
+632034576
+
 #### 微信
 undefinedneqnull
 
@@ -94,7 +98,7 @@ undefinedneqnull
   <img width = "200" src="./img/crudapiweixin.jpeg">
 </div>
 
-#### WeixinQun
+#### 微信群
 <div align="left">
   <img width = "200" src="./img/weixinqun.png">
 </div>
