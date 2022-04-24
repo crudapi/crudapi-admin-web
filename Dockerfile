@@ -15,18 +15,18 @@ RUN npm run build
 
 RUN version=`cat package.json | jq .version | sed 's/\"//g'` && \
     echo $version && \
-    mkdir -p /opt/crudapi/crudapi-admin-web/release/$version && \
+    mkdir -p /opt/crudapi/crudapi-admin-web/$version && \
     npm run build && \
     cd ./dist/spa && \
     tar -zcvf crudapi-admin-web-$version.tar.gz crudapi && \
-    cp ./crudapi-admin-web-$version.tar.gz /opt/crudapi/crudapi-admin-web/release/$version
+    cp ./crudapi-admin-web-$version.tar.gz /opt/crudapi/crudapi-admin-web/$version
 
 FROM nginx:latest
 
 WORKDIR /crudapi-admin-web
 
 COPY --from=builder /crudapi-admin-web/dist/spa .
-COPY --from=builder /opt/crudapi/crudapi-admin-web/release /opt/crudapi/crudapi-admin-web/release/
+COPY --from=builder /opt/crudapi/crudapi-admin-web /opt/crudapi/crudapi-admin-web/
 
 COPY ./docker/default.conf  /etc/nginx/conf.d/default.conf
 
