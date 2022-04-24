@@ -11,22 +11,21 @@ COPY . /crudapi-admin-web/
 
 WORKDIR /crudapi-admin-web
 
-RUN npm run build
-
-RUN version=`cat package.json | jq .version | sed 's/\"//g'` && \
+RUN npm run build && \
+    version=`cat package.json | jq .version | sed 's/\"//g'` && \
     echo $version && \
-    mkdir -p /opt/crudapi/crudapi-admin-web/$version && \
-    npm run build && \
+    mkdir -p /crudapi/dist/crudapi-admin-web/$version && \
     cd ./dist/spa && \
     tar -zcvf crudapi-admin-web-$version.tar.gz crudapi && \
-    cp ./crudapi-admin-web-$version.tar.gz /opt/crudapi/crudapi-admin-web/$version
+    cp ./crudapi-admin-web-$version.tar.gz /crudapi/dist/crudapi-admin-web/$version && \
+    rm -rf crudapi-admin-web-$version.tar.gz
 
 FROM nginx:latest
 
 WORKDIR /crudapi-admin-web
 
 COPY --from=builder /crudapi-admin-web/dist/spa .
-COPY --from=builder /opt/crudapi/crudapi-admin-web /opt/crudapi/crudapi-admin-web/
+COPY --from=builder /crudapi/dist /crudapi/dist/
 
 COPY ./docker/default.conf  /etc/nginx/conf.d/default.conf
 
