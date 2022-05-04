@@ -258,6 +258,9 @@
             <q-td key="displayable" :props="props">
               <span><q-toggle v-model="props.row.displayable"/></span>
             </q-td>
+            <q-td key="multipleValue" :props="props">
+              <span><q-toggle v-model="props.row.multipleValue"/></span>
+            </q-td>
             <q-td key="createdDate" :props="props">
               <span>{{ props.row.createdDate | dateTimeFormat }}</span>
             </q-td>
@@ -453,6 +456,12 @@ export default {
           align: "left",
           label: "显示",
           field: "displayable",
+          sortable: false
+        }, {
+          name: "multipleValue",
+          align: "left",
+          label: "多值",
+          field: "multipleValue",
           sortable: false
         }, {
           name: "createdDate",
@@ -711,6 +720,7 @@ export default {
         description: "描述" + columns.length,
         length: 200,
         systemable: false,
+        multipleValue: false,
         isNewRow: true
       };
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
@@ -883,6 +893,7 @@ export default {
         precision: columnRaw.precision,
         scale: columnRaw.scale,
         systemable: false,
+        multipleValue: false,
         isNewRow: true
       };
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];

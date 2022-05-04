@@ -259,8 +259,11 @@
             <q-td key="queryable" :props="props">
               <span><q-toggle v-model="props.row.queryable"/></span>
             </q-td>
-            <q-td key="displayable" :props="props">
-              <span><q-toggle v-model="props.row.displayable"/></span>
+            <q-td key="queryable" :props="props">
+              <span><q-toggle v-model="props.row.queryable"/></span>
+            </q-td>
+            <q-td key="multipleValue" :props="props">
+              <span><q-toggle v-model="props.row.multipleValue"/></span>
             </q-td>
           </q-tr>
         </template>
@@ -374,6 +377,7 @@ export default {
         "updatable",
         "queryable",
         "displayable",
+        "multipleValue",
         "description"
       ],
       columns: [
@@ -503,6 +507,12 @@ export default {
           align: "left",
           label: "显示",
           field: "displayable",
+          sortable: false
+        }, {
+          name: "multipleValue",
+          align: "left",
+          label: "多值",
+          field: "multipleValue",
           sortable: false
         }
       ],
@@ -699,7 +709,8 @@ export default {
               "displayable": false,
               "unsigned": true,
               "updatable": false,
-              "systemable": false
+              "systemable": false,
+              "multipleValue": false
           }, {
               "id": 2,
               "autoIncrement": false,
@@ -715,7 +726,8 @@ export default {
               "displayable": true,
               "unsigned": false,
               "updatable": true,
-              "systemable": false
+              "systemable": false,
+              "multipleValue": false
           },{
               "id": 3,
               "autoIncrement": false,
@@ -732,7 +744,8 @@ export default {
               "displayable": false,
               "unsigned": false,
               "updatable": false,
-              "systemable": false
+              "systemable": false,
+              "multipleValue": false
           }, {
               "id": 4,
               "autoIncrement": false,
@@ -747,7 +760,8 @@ export default {
               "displayable": false,
               "unsigned": false,
               "updatable": false,
-              "systemable": false
+              "systemable": false,
+              "multipleValue": false
           }, {
               "id": 5,
               "autoIncrement": false,
@@ -762,7 +776,8 @@ export default {
               "displayable": false,
               "unsigned": false,
               "updatable": false,
-              "systemable": false
+              "systemable": false,
+              "multipleValue": false
           }];
     },
 
@@ -1010,7 +1025,8 @@ export default {
         length: length,
         precision: precision,
         scale: scale,
-        systemable: false
+        systemable: false,
+        multipleValue: false
       };
       //console.dir(newRow);
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
@@ -1034,7 +1050,8 @@ export default {
         caption: "列" + columns.length,
         description: "描述" + columns.length,
         length: 200,
-        systemable: false
+        systemable: false,
+        multipleValue: false
       };
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
     },
@@ -1059,7 +1076,8 @@ export default {
         length: columnRaw.length,
         precision: columnRaw.precision,
         scale: columnRaw.scale,
-        systemable: false
+        systemable: false,
+        multipleValue: false
       };
       this.table.columns  = [ ...columns.slice(0, index), newRow, ...columns.slice(index) ];
     },

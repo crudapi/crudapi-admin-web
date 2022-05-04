@@ -234,24 +234,49 @@ export default {
       const find = cols.find(t => t.name === key);
       if (find) {
         if (find.relationTableName) {
-          let ret = value;
-          if (value) {
-           if (find.relationDisplayColumns.length > 0) {
-              let displayValues = [];
-              find.relationDisplayColumns.forEach((t) => {
-                  value[t.name] && displayValues.push(value[t.name]);
-              });
+          const dicFormat = function(v) {
+            let data = null;
 
-              if (displayValues.length > 0) {
-                ret = displayValues.join("|");
-              } else {
-                ret = value[find.relationColumnName];
-              }
-           } else {
-              ret = value[find.relationColumnName];
-           }
-         } 
-         return ret ? ret : value;
+            if (v) {
+             if (find.relationDisplayColumns.length > 0) {
+                let displayValues = [];
+                find.relationDisplayColumns.forEach((t) => {
+                    v[t.name] && displayValues.push(v[t.name]);
+                });
+
+
+                if (displayValues.length > 0) {
+                  data = displayValues.join("|");
+                } else {
+                  data = v[find.relationColumnName];
+                }
+             } else {
+                data = v[find.relationColumnName];
+             }
+            }
+
+            return data;
+          }
+
+          let ret = value;
+
+          if (value) {
+            if (Array.isArray(value)) {
+               let values = [];
+               value.forEach((t) => {
+                  const subV = dicFormat(t);
+                  if (subV) {
+                    values.push(subV);
+                  }
+               });
+
+               ret = values.join(",");
+            } else {
+              ret = dicFormat(value);
+            }
+          }
+
+          return (ret != null && ret != undefined) ? ret : value;
         } else if (find.dataType === "DATETIME") {
           return date.dateTimeFormat(value);
         } else if (find.dataType === "DATE") {
@@ -352,10 +377,32 @@ export default {
       console.log("onSelection");
       console.dir(rows);
       console.dir(added);
-      if (added) {
-        this.$emit("input", rows[0]);
+
+      if (this.selectionProp === 'multiple') {
+
+        let allRows = [];
+        this.selected.forEach((t) => {
+          allRows.push(t);
+        });
+
+        if (added) {
+          allRows = allRows.concat(rows);
+        } else {
+          rows.forEach((r) => {
+            const index = allRows.findIndex(t => t.id === r.id);
+            if (index >= 0) {
+              allRows = [ ...allRows.slice(0, index), ...allRows.slice(index + 1) ];
+            }
+          });
+        }
+
+        this.$emit("input", allRows);
       } else {
-        this.$emit("input", null);
+        if (added) {
+          this.$emit("input", rows[0]);
+        } else {
+          this.$emit("input", null);
+        }
       }
     },
 
@@ -475,13 +522,25 @@ export default {
 
         this.data = newData;
 
-        const selectedRecId = this.getRecId(this.value);
-        console.log(selectedRecId);
+
+        let selectedRecIds = [];
+        if (Array.isArray(this.value)) {
+          this.value.forEach((t) => {
+              const selectedRecId = this.getRecId(t);
+              console.log(selectedRecId);
+              selectedRecIds.push(selectedRecId);
+          });
+        } else {
+          const selectedRecId = this.getRecId(this.value);
+          console.log(selectedRecId);
+          selectedRecIds.push(selectedRecId);
+        }
 
         let selected = [];
         for (let i = 0; i < this.data.length; i++) {
           const recId = this.getRecId(this.data[i]);
-          if (selectedRecId === recId) {
+          const index = selectedRecIds.findIndex(t => t  === recId);
+          if (index >= 0) {
             selected.push(this.data[i]);
           }
         }

@@ -322,17 +322,37 @@ export default {
   },
   filters: {
     relationDataFormat: function(value, item) {
-       if (value) {
-         if (item.relationDisplayColumns.length > 0) {
-            let displayValues = [];
-            item.relationDisplayColumns.forEach((t) => {
-                displayValues.push(value[t.name]);
-            });
-            return displayValues.join("|");
-         } else {
-            return value[item.relationColumnName];
-         }
+       const dicFormat = function(v) {
+          if (v) {
+           if (item.relationDisplayColumns.length > 0) {
+              let displayValues = [];
+              item.relationDisplayColumns.forEach((t) => {
+                  v[t.name] && displayValues.push(v[t.name]);
+              });
+              return displayValues.join("|");
+           } else {
+              return v[item.relationColumnName] || v;
+           }
+          }
+          return null;
        }
+
+       if (Array.isArray(value)) {
+         let values = [];
+         value.forEach((t) => {
+            const subV = dicFormat(t);
+            if (subV) {
+              values.push(subV);
+            }
+         });
+
+         return values.join(",");
+       }
+
+       if (value) {
+         return dicFormat(value);
+       }
+
        return null;
     },
     classFormat: function(formElement) {
@@ -430,7 +450,19 @@ export default {
 
         const relation = this.relationMap[columnName];
         if (relation) {
-          data[columnName] = insertColumn.value && insertColumn.value[insertColumn.relationColumnName];
+          if (insertColumn.value) {
+            if (insertColumn.multipleValue) {
+              let valueArr = [];
+              insertColumn.value.forEach((t) => {
+                valueArr.push(t[insertColumn.relationColumnName]);
+              });
+
+              data[columnName] = valueArr.join(",");
+            } else {
+              data[columnName] = insertColumn.value[insertColumn.relationColumnName];
+            }
+          }
+
           data[relation.name] = insertColumn.value;
         } else {
           if (insertColumn.value != undefined
@@ -480,6 +512,7 @@ export default {
         // props forwarded to component
         // (everything except "component" and "parent" props above):
         tableName: item.relationTableName,
+        selectionProp: item.multipleValue ? 'multiple': 'single',
         data: item.value
         // ...more.props...
       }).onOk((data) => {

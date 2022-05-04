@@ -6,7 +6,7 @@
         v-model="selected"
         :tableName="tableName"
         readOnly="true"
-        selectionProp="single" >
+        :selectionProp="selection" >
       </CTableListRead>
       <q-card-actions align="center">
         <q-btn color="primary" label="确定" unelevated no-caps @click="onOKClick" />
@@ -22,6 +22,9 @@ export default {
     tableName: {
       required: true
     },
+    selectionProp: {
+      required: false
+    },
     data: {
       required: false
     }
@@ -29,7 +32,8 @@ export default {
 
   data () {
     return {
-      selected: []
+      selected: [],
+      selection: 'single'
     }
   },
 
@@ -37,7 +41,13 @@ export default {
     // following method is REQUIRED
     // (don't change its name --> "show")
     show () {
+      console.log(this.selectionProp);
       this.selected = this.data;
+
+      if (this.selectionProp) {
+        this.selection =  this.selectionProp;
+      }
+
       this.$refs.dialog.show()
     },
 
