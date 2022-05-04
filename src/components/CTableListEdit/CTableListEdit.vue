@@ -315,26 +315,49 @@ export default {
       return value;
     },
     relationDataFormat: function(value, colKey, cols) {
-       console.log("relationDataFormat:" +  JSON.stringify(value));
-       const item = cols.find(t => t.name === colKey);
-       let ret = value;
-       if (value) {
-         if (item.relationDisplayColumns.length > 0) {
-            let displayValues = [];
-            item.relationDisplayColumns.forEach((t) => {
-                value[t.name] && displayValues.push(value[t.name]);
-            });
+        const col = cols.find(t => t.name === colKey);
 
-            if (displayValues.length > 0) {
-              ret = displayValues.join("|");
-            } else {
-              ret = value[item.relationColumnName];
-            }
-         } else {
-            ret = value[item.relationColumnName];
-         }
-       } 
-       return ret ? ret : value;
+        const dicFormat = function(v) {
+          let data = null;
+
+          if (v) {
+           if (col.relationDisplayColumns.length > 0) {
+              let displayValues = [];
+              col.relationDisplayColumns.forEach((t) => {
+                  v[t.name] && displayValues.push(v[t.name]);
+              });
+
+
+              if (displayValues.length > 0) {
+                data = displayValues.join("|");
+              } else {
+                data = v[col.relationColumnName];
+              }
+           } else {
+              data = v[col.relationColumnName];
+           }
+          }
+
+          return data;
+       }
+
+        let ret = value;
+        if (col && value) {
+          if (Array.isArray(value)) {
+             let values = [];
+             value.forEach((t) => {
+                const subV = dicFormat(t);
+                if (subV) {
+                  values.push(subV);
+                }
+             });
+
+             ret = values.join(",");
+          } else {
+            ret = dicFormat(value);
+          }
+        }
+        return (ret != null && ret != undefined) ? ret : value;
     }
   },
   computed: {},
@@ -536,7 +559,10 @@ export default {
     addRow() {
       console.log("CTableListEdit-> addRow");
       const index = this.qTableData.length + 1;
-      const newRow = { isNewRow: true };
+      const newRow = {
+        id: (new Date()).valueOf(),
+        isNewRow: true
+      };
 
       this.insertColumns.forEach((column) => {
         newRow[column.name] = column.value;
@@ -587,17 +613,31 @@ export default {
       let newData = [];
       let index = 0;
       let that = this;
+      const colums = this.qTableColums;
+
       this.qTableData.forEach((t) => {
           //const newDataItem = extend(false, t);
-
+          //console.dir(t);
           let newDataItem = {};
           let relationNames = [];
           for (let columnName in t) {
             const value = t[columnName];
             const relation = this.relationMap[columnName];
-            if (relation) {
+            if (value && relation) {
+              const col = colums.find(t => t.name === columnName);
+              if (col.multipleValue) {
+                let valueArr = [];
+                value.forEach((v) => {
+                  valueArr.push(v[relation.toColumn.name]);
+                });
+
+                newDataItem[columnName] = valueArr.join(",");
+              } else {
+                newDataItem[columnName] = value && value[relation.toColumn.name];
+              }
+
+              console.log(relation.name);
               newDataItem[relation.name] = value;
-              newDataItem[columnName] = value && value[relation.toColumn.name];
             } else {
               if (value != undefined
               && value != null
@@ -628,6 +668,7 @@ export default {
           });
 
           if (newDataItem.isNewRow) {
+            delete newDataItem.id;
             delete newDataItem.isNewRow;
           }
 
@@ -716,10 +757,12 @@ export default {
         // props forwarded to component
         // (everything except "component" and "parent" props above):
         tableName: col.relationTableName,
+        selectionProp: col.multipleValue ? 'multiple': 'single',
         data: row[colKey]
         // ...more.props...
       }).onOk((data) => {
         row[colKey] = data;
+        row[col.relationName] = data;
       }).onCancel(() => {
         console.log('Cancel')
       }).onDismiss(() => {
@@ -862,6 +905,7 @@ export default {
 
           const relation = this.relationMap[columnName];
           if (relation) {
+            column.relationName = relation.name;
             column.relationTableName = relation.toTable.name;
             column.relationColumnName = relation.toColumn.name;
             column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
@@ -903,9 +947,11 @@ export default {
             sortable: false,
             placeHolder: column.description,
             updatable: column.updatable,
+            relationName: column.relationName,
             relationTableName: column.relationTableName,
             relationColumnName: column.relationColumnName,
             relationDisplayColumns: column.relationDisplayColumns,
+            multipleValue: column.multipleValue,
             isPwd: column.isPwd,
             isText: column.isText
           });

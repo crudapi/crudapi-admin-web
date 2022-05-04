@@ -264,18 +264,47 @@ export default {
   filters: {
     relationDataFormat: function(value, colKey, cols) {
        const col = cols.find(t => t.name === colKey);
-       if (col && value) {
-         if (col.relationDisplayColumns.length > 0) {
-            let displayValues = [];
-            col.relationDisplayColumns.forEach((t) => {
-                displayValues.push(value[t.name]);
-            });
-            return displayValues.join("|");
-         } else {
-            return value[col.relationColumnName];
-         }
-       }
-       return null;
+       const dicFormat = function(v) {
+          let data = null;
+
+          if (v) {
+           if (col.relationDisplayColumns.length > 0) {
+              let displayValues = [];
+              col.relationDisplayColumns.forEach((t) => {
+                  v[t.name] && displayValues.push(v[t.name]);
+              });
+
+
+              if (displayValues.length > 0) {
+                data = displayValues.join("|");
+              } else {
+                data = v[col.relationColumnName];
+              }
+           } else {
+              data = v[col.relationColumnName];
+           }
+          }
+
+          return data;
+        }
+
+        let ret = value;
+        if (col && value) {
+          if (Array.isArray(value)) {
+             let values = [];
+             value.forEach((t) => {
+                const subV = dicFormat(t);
+                if (subV) {
+                  values.push(subV);
+                }
+             });
+
+             ret = values.join(",");
+          } else {
+            ret = dicFormat(value);
+          }
+        }
+        return (ret != null && ret != undefined) ? ret : value;
     }
   },
   computed: {
@@ -390,7 +419,9 @@ export default {
     addRow() {
       console.log("CTableList-> addRow");
       const index = this.qTableData.length + 1;
-      const newRow = { };
+      const newRow = {
+        id: (new Date()).valueOf()
+      };
 
       this.insertColumns.forEach((column) => {
         newRow[column.name] = column.value;
@@ -405,6 +436,7 @@ export default {
 
     removeRow(id) {
       const index = this.qTableData.findIndex(t => this.getRecId(t) === id);
+      console.log(index);
       if (index >= 0) {
         this.qTableData = [ ...this.qTableData.slice(0, index), ...this.qTableData.slice(index + 1) ];
       }
@@ -440,14 +472,26 @@ export default {
       let newData = [];
       let index = 0;
       let that = this;
+      const colums = this.qTableColums;
       this.qTableData.forEach((t) => {
           let newDataItem = {};
           for (let columnName in t) {
             const value = t[columnName];
             const relation = this.relationMap[columnName];
-            if (relation) {
+            if (value && relation) {
+              const col = colums.find(t => t.name === columnName);
+              if (col.multipleValue) {
+                let valueArr = [];
+                value.forEach((v) => {
+                  valueArr.push(v[relation.toColumn.name]);
+                });
+
+                newDataItem[columnName] = valueArr.join(",");
+              } else {
+                newDataItem[columnName] = value && value[relation.toColumn.name];
+              }
+
               newDataItem[relation.name] = value;
-              newDataItem[columnName] = value && value[relation.toColumn.name];
             } else {
               if (value != undefined
                 && value != null
@@ -572,6 +616,7 @@ export default {
         // props forwarded to component
         // (everything except "component" and "parent" props above):
         tableName: col.relationTableName,
+        selectionProp: col.multipleValue ? 'multiple': 'single',
         data: row[colKey]
         // ...more.props...
       }).onOk((data) => {
@@ -660,8 +705,7 @@ export default {
             if (relation) {
               column.relationTableName = relation.toTable.name;
               column.relationColumnName = relation.toColumn.name;
-              column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
-        
+              column.relationDisplayColumns = that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
               insertColumns.push(column);
             } else {
               insertColumns.push(column);
@@ -696,6 +740,7 @@ export default {
             relationTableName: column.relationTableName,
             relationColumnName: column.relationColumnName,
             relationDisplayColumns: column.relationDisplayColumns,
+            multipleValue: column.multipleValue,
             isPwd: column.isPwd,
             isText: column.isText
           });

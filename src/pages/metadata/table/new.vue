@@ -259,8 +259,8 @@
             <q-td key="queryable" :props="props">
               <span><q-toggle v-model="props.row.queryable"/></span>
             </q-td>
-            <q-td key="queryable" :props="props">
-              <span><q-toggle v-model="props.row.queryable"/></span>
+            <q-td key="displayable" :props="props">
+              <span><q-toggle v-model="props.row.displayable"/></span>
             </q-td>
             <q-td key="multipleValue" :props="props">
               <span><q-toggle v-model="props.row.multipleValue"/></span>
