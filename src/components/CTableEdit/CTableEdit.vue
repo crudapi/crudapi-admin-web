@@ -525,7 +525,7 @@ export default {
 
         const relation = this.relationMap[columnName];
         if (relation) {
-          if (insertColumn.multipleValue) {
+          if (insertColumn.value && insertColumn.multipleValue) {
             let valueArr = [];
             insertColumn.value.forEach((t) => {
               valueArr.push(t[insertColumn.relationColumnName]);
