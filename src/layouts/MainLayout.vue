@@ -284,7 +284,7 @@ export default {
           const dataSourceName = dataSource.name;
           const dataSourceMenu = {
             label: dataSource.caption,
-            labelKey: dataSourceName,
+            labelKey: "/dataSource/" + dataSourceName,
             icon: "o_table_rows",
             children: []
           };

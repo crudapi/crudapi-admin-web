@@ -14,6 +14,7 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
+      { path: 'dataSource/:dataSource', component: () => import('pages/Index.vue') },
       {
         name: "about",
         path: "about",

@@ -162,14 +162,21 @@ export default {
   destroyed: function() {
     console.info("home->destroyed");
   },
+
+  async beforeRouteUpdate (to, from, next) {
+    console.info('beforeRouteUpdate');
+    await this.init(to.params.dataSource);
+    next();
+  },
+
   methods: {
-    async init() {
+    async init(dataSource) {
       console.info("home->init");
       this.$store.commit(
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
-
+      this.dataSource = dataSource || this.$route.params.dataSource || "primary";
       await this.loadData();
     },
 
