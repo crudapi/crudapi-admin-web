@@ -3,12 +3,18 @@ import { axiosInstance } from "boot/axios";
 const metadataSequence = {
   create: function(dataSource, data) {
     return axiosInstance.post("/api/metadata/sequences",
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
   update: function(dataSource, id, data) {
     return axiosInstance.patch("/api/metadata/sequences/" + id,
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
   list: function(dataSource, page, rowsPerPage, search, query) {
@@ -27,7 +33,8 @@ const metadataSequence = {
           limit: rowsPerPage,
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
@@ -37,7 +44,8 @@ const metadataSequence = {
         params: {
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
@@ -45,16 +53,23 @@ const metadataSequence = {
     return axiosInstance.get("/api/metadata/sequences/" + id,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
   delete: function(dataSource, id) {
-    return axiosInstance.delete("/api/metadata/sequences/" + id);
+    return axiosInstance.delete("/api/metadata/sequences/" + id,
+      {
+        dataSource: dataSource
+      });
   },
   batchDelete: function(dataSource, ids) {
     return axiosInstance.delete("/api/metadata/sequences",
-      {data: ids}
+      {
+        data: ids,
+        dataSource: dataSource
+      }
     );
   }
 };

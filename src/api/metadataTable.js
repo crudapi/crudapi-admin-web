@@ -8,12 +8,18 @@ const HEADERS = {
 const metadataTable = {
   create: function(dataSource, data) {
     return axiosInstance.post("/api/metadata/tables",
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
   update: function(dataSource, id, data) {
     return axiosInstance.patch("/api/metadata/tables/" + id,
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
   list: function(dataSource, page, rowsPerPage, search, query) {
@@ -32,7 +38,8 @@ const metadataTable = {
           limit: rowsPerPage,
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
         //permission: ["ROLE_META_TABLE_R"]
       }
     );
@@ -43,7 +50,8 @@ const metadataTable = {
         params: {
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
@@ -51,7 +59,8 @@ const metadataTable = {
     return axiosInstance.get("/api/metadata/tables/" + id,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
@@ -59,7 +68,8 @@ const metadataTable = {
     return axiosInstance.get("/api/metadata/tables/name/" + name,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
@@ -67,7 +77,8 @@ const metadataTable = {
     return axiosInstance.get("/api/metadata/tables/metadatas/" + name,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
@@ -75,26 +86,38 @@ const metadataTable = {
     return axiosInstance.get("/api/metadata/tables/metadatas",
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
   reverse: function(dataSource, tableName) {
-    return axiosInstance.post("/api/metadata/tables/metadatas/reverse/" + tableName);
+    return axiosInstance.post("/api/metadata/tables/metadatas/reverse/" + tableName,
+      {},
+      {
+        dataSource: dataSource
+      });
   },
   batchReverse: function(dataSource, tableNames) {
-    return axiosInstance.post("/api/metadata/tables/metadatas/reverse", tableNames);
+    return axiosInstance.post("/api/metadata/tables/metadatas/reverse", tableNames,
+    {
+      dataSource: dataSource
+    });
   },
   repairMeataData: function(dataSource, name, columnNameLsit) {
     return axiosInstance.patch("/api/metadata/tables/metadata/" + name,
-      columnNameLsit
+      columnNameLsit,
+      {
+        dataSource: dataSource
+      }
     );
   },
   delete: function(dataSource, id, isDropPhysicalTable) {
     return axiosInstance.delete("/api/metadata/tables/" + id, {
       params: {
         isDropPhysicalTable: isDropPhysicalTable
-      }
+      },
+      dataSource: dataSource
     });
   },
   batchDelete: function(dataSource, ids, isDropPhysicalTable) {
@@ -103,7 +126,8 @@ const metadataTable = {
         data:  ids,
         params: {
           isDropPhysicalTable: isDropPhysicalTable
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
@@ -115,12 +139,16 @@ const metadataTable = {
           if (progressCallback) {
             progressCallback(progressEvent)
           }
-        }
+        },
+        dataSource: dataSource
     });
   },
   export: function(dataSource, ids) {
     return axiosInstance.post("/api/metadata/tables/export",
-      ids
+      ids,
+      {
+        dataSource: dataSource
+      }
     );
   },
   listDataSource: function() {
