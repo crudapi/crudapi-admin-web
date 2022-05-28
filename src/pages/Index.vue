@@ -138,7 +138,8 @@ export default {
       metadataExpand: true,
       businessExpand: true,
       modules:[],
-      active: true
+      active: true,
+      dataSource: "primary"
     }
   },
 
@@ -174,7 +175,7 @@ export default {
 
     async loadData() {
       try {
-        const modules = await tableService.list("module", 0, 9999, null, null, null);
+        const modules = await tableService.list(this.dataSource, "module", 0, 9999, null, null, null);
         
         for (let i = 0; i < modules.length; i++) {
             modules[i].expanded = true;
@@ -186,19 +187,19 @@ export default {
       }
     },
     onConfigClick(module) {
-       this.$router.push("/business/module/" + module.id);
+       this.$router.push("/dataSource/" + this.dataSource + "/business/module/" + module.id);
     },
     onModuleLineClick(moduleLine) {
-       this.$router.push("/business/" + moduleLine.table.name);
+       this.$router.push("/dataSource/" + this.dataSource + "/business/" + moduleLine.table.name);
     },
     onMetadataSeqClick() {
-       this.$router.push("/metadata/sequences");
+       this.$router.push("/dataSource/" + this.dataSource + "/metadata/sequences");
     },
     onMetadataTableClick() {
-       this.$router.push("/metadata/tables");
+       this.$router.push("/dataSource/" + this.dataSource + "/metadata/tables");
     },
     onMetadataRelationClick() {
-       this.$router.push("/metadata/relations");
+       this.$router.push("/dataSource/" + this.dataSource + "/metadata/relations");
     }
   }
 };

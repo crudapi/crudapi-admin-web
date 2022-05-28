@@ -6,17 +6,17 @@ const HEADERS = {
 
 
 const metadataTable = {
-  create: function(data) {
+  create: function(dataSource, data) {
     return axiosInstance.post("/api/metadata/tables",
        data
     );
   },
-  update: function(id, data) {
+  update: function(dataSource, id, data) {
     return axiosInstance.patch("/api/metadata/tables/" + id,
        data
     );
   },
-  list: function(page, rowsPerPage, search, query) {
+  list: function(dataSource, page, rowsPerPage, search, query) {
     if (!page) {
       page = 1
     }
@@ -37,7 +37,7 @@ const metadataTable = {
       }
     );
   },
-  count: function(search, query) {
+  count: function(dataSource, search, query) {
     return axiosInstance.get("/api/metadata/tables/count",
       {
         params: {
@@ -47,7 +47,7 @@ const metadataTable = {
       }
     );
   },
-  get: function(id) {
+  get: function(dataSource, id) {
     return axiosInstance.get("/api/metadata/tables/" + id,
       {
         params: {
@@ -55,7 +55,7 @@ const metadataTable = {
       }
     );
   },
-  getByName: function(name) {
+  getByName: function(dataSource, name) {
     return axiosInstance.get("/api/metadata/tables/name/" + name,
       {
         params: {
@@ -63,7 +63,7 @@ const metadataTable = {
       }
     );
   },
-  getMetadata: function(name) {
+  getMetadata: function(dataSource, name) {
     return axiosInstance.get("/api/metadata/tables/metadatas/" + name,
       {
         params: {
@@ -71,7 +71,7 @@ const metadataTable = {
       }
     );
   },
-  getMetadatas: function() {
+  getMetadatas: function(dataSource) {
     return axiosInstance.get("/api/metadata/tables/metadatas",
       {
         params: {
@@ -79,25 +79,25 @@ const metadataTable = {
       }
     );
   },
-  reverse: function(tableName) {
+  reverse: function(dataSource, tableName) {
     return axiosInstance.post("/api/metadata/tables/metadatas/reverse/" + tableName);
   },
-  batchReverse: function(tableNames) {
+  batchReverse: function(dataSource, tableNames) {
     return axiosInstance.post("/api/metadata/tables/metadatas/reverse", tableNames);
   },
-  repairMeataData: function(name, columnNameLsit) {
+  repairMeataData: function(dataSource, name, columnNameLsit) {
     return axiosInstance.patch("/api/metadata/tables/metadata/" + name,
       columnNameLsit
     );
   },
-  delete: function(id, isDropPhysicalTable) {
+  delete: function(dataSource, id, isDropPhysicalTable) {
     return axiosInstance.delete("/api/metadata/tables/" + id, {
       params: {
         isDropPhysicalTable: isDropPhysicalTable
       }
     });
   },
-  batchDelete: function(ids, isDropPhysicalTable) {
+  batchDelete: function(dataSource, ids, isDropPhysicalTable) {
     return axiosInstance.delete("/api/metadata/tables",
       {
         data:  ids,
@@ -107,7 +107,7 @@ const metadataTable = {
       }
     );
   },
-  import: async function(data, progressCallback) {
+  import: async function(dataSource, data, progressCallback) {
     return axiosInstance.post("/api/metadata/tables/import", data,
       {
         headers: HEADERS,
@@ -118,7 +118,7 @@ const metadataTable = {
         }
     });
   },
-  export: function(ids) {
+  export: function(dataSource, ids) {
     return axiosInstance.post("/api/metadata/tables/export",
       ids
     );

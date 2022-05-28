@@ -1,17 +1,17 @@
 import { axiosInstance } from "boot/axios";
 
 const metadataRelation = {
-  create: function(data) {
+  create: function(dataSource, data) {
     return axiosInstance.post("/api/metadata/tablerelations",
        data
     );
   },
-  update: function(id, data) {
+  update: function(dataSource, id, data) {
     return axiosInstance.patch("/api/metadata/tablerelations/" + id,
        data
     );
   },
-  list: function(page, rowsPerPage, search, query) {
+  list: function(dataSource, page, rowsPerPage, search, query) {
     if (!page) {
       page = 1
     }
@@ -31,7 +31,7 @@ const metadataRelation = {
       }
     );
   },
-  count: function(search, query) {
+  count: function(dataSource, search, query) {
     return axiosInstance.get("/api/metadata/tablerelations/count",
       {
         params: {
@@ -41,7 +41,7 @@ const metadataRelation = {
       }
     );
   },
-  get: function(id) {
+  get: function(dataSource, id) {
     return axiosInstance.get("/api/metadata/tablerelations/" + id,
       {
         params: {
@@ -49,7 +49,7 @@ const metadataRelation = {
       }
     );
   },
-  getFromTableById: function(id) {
+  getFromTableById: function(dataSource, id) {
     return axiosInstance.get("/api/metadata/tablerelations/fromTable/" + id,
       {
         params: {
@@ -57,7 +57,7 @@ const metadataRelation = {
       }
     );
   },
-  getFromTableByName: function(name) {
+  getFromTableByName: function(dataSource, name) {
     return axiosInstance.get("/api/metadata/tablerelations/fromTable/name/" + name,
       {
         params: {
@@ -65,10 +65,10 @@ const metadataRelation = {
       }
     );
   },
-  delete: function(id) {
+  delete: function(dataSource, id) {
     return axiosInstance.delete("/api/metadata/tablerelations/" + id);
   },
-  batchDelete: function(ids) {
+  batchDelete: function(dataSource, ids) {
     return axiosInstance.delete("/api/metadata/tablerelations",
       {data: ids}
     );

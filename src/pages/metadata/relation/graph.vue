@@ -25,6 +25,7 @@ import G6 from '@antv/g6';
 export default {
   data () {
     return {
+      dataSource: "",
       relations: []
     }
   },
@@ -78,8 +79,9 @@ export default {
         this.$route.meta.isAllowBack
       );
 
+      this.dataSource = this.$route.params.dataSource;
       try {
-        const relations = await metadataRelationService.list();
+        const relations = await metadataRelationService.list(this.dataSource);
         this.relations = relations;
 
         let nodes = [];

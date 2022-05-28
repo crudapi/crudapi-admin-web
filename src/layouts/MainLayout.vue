@@ -281,9 +281,10 @@ export default {
         const dataSources = await metadataTableService.listDataSource();
         for (let i = 0; i < dataSources.length; i++) {
           const dataSource = dataSources[i];
+          const dataSourceName = dataSource.name;
           const dataSourceMenu = {
             label: dataSource.caption,
-            labelKey: dataSource.name,
+            labelKey: dataSourceName,
             icon: "o_table_rows",
             children: []
           };
@@ -312,19 +313,19 @@ export default {
             children: [
               {
                 label: "序列号",
-                labelKey: "/dataSource/" + dataSource.name + "/metadata/sequences",
+                labelKey: "/dataSource/" + dataSourceName + "/metadata/sequences",
                 icon: "format_list_numbered",
                 children: [
                 ]
               }, {
                 label: "表",
-                labelKey: "/dataSource/" + dataSource.name + "/metadata/tables",
+                labelKey: "/dataSource/" + dataSourceName+ "/metadata/tables",
                 icon: "o_table_rows",
                 children: [
                 ]
               }, {
                 label: "关系",
-                labelKey: "/dataSource/" + dataSource.name + "/metadata/relations",
+                labelKey: "/dataSource/" + dataSourceName + "/metadata/relations",
                 icon: "content_copy",
                 children: [
                 ]
@@ -332,19 +333,19 @@ export default {
             ]
           };
 
-          const tables = await metadataTableService.list(1,99999);
+          const tables = await metadataTableService.list(dataSourceName, 1,99999);
           for (let i = 0; i < tables.length; i++) {
             let table = tables[i];
             if (table.systemable) {
               systemBusinessMenu.children.push({
                   label: table.caption,
-                  labelKey: this.getBussinessPath(dataSource.name, table.name),
+                  labelKey: this.getBussinessPath(dataSourceName, table.name),
                   icon: "insert_chart_outlined"
               });
             } else {
               businessMenu.children.push({
                   label: table.caption,
-                  labelKey: this.getBussinessPath(dataSource.name, table.name),
+                  labelKey: this.getBussinessPath(dataSourceName, table.name),
                   icon: "insert_chart_outlined"
               });
             }
@@ -388,7 +389,7 @@ export default {
     },
 
     updateMenuTreeCb: function() {
-      this.updateMenu();
+      //this.updateMenu();
     },
 
     getBussinessPath: function(dataSourceName, tableName) {

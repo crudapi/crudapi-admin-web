@@ -444,9 +444,9 @@ export default {
           })
           .onOk(async () => {
             if (id) {
-              await metadataRelationService.delete(id);
+              await metadataRelationService.delete(this.dataSource, id);
             } else {
-              await metadataRelationService.batchDelete(ids);
+              await metadataRelationService.batchDelete(this.dataSource, ids);
             }
 
             this.$q.notify("删除成功");
@@ -471,9 +471,10 @@ export default {
       try {
         let query = this.getQuery();
 
-        this.pagination.count = await metadataRelationService.count(this.search, query);
+        this.pagination.count = await metadataRelationService.count(this.dataSource, this.search, query);
 
         let data = await metadataRelationService.list(
+          this.dataSource,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,

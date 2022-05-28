@@ -1,17 +1,17 @@
 import { axiosInstance } from "boot/axios";
 
 const metadataSequence = {
-  create: function(data) {
+  create: function(dataSource, data) {
     return axiosInstance.post("/api/metadata/sequences",
        data
     );
   },
-  update: function(id, data) {
+  update: function(dataSource, id, data) {
     return axiosInstance.patch("/api/metadata/sequences/" + id,
        data
     );
   },
-  list: function(page, rowsPerPage, search, query) {
+  list: function(dataSource, page, rowsPerPage, search, query) {
     if (!page) {
       page = 1
     }
@@ -31,7 +31,7 @@ const metadataSequence = {
       }
     );
   },
-  count: function(search, query) {
+  count: function(dataSource, search, query) {
     return axiosInstance.get("/api/metadata/sequences/count",
       {
         params: {
@@ -41,7 +41,7 @@ const metadataSequence = {
       }
     );
   },
-  get: function(id) {
+  get: function(dataSource, id) {
     return axiosInstance.get("/api/metadata/sequences/" + id,
       {
         params: {
@@ -49,10 +49,10 @@ const metadataSequence = {
       }
     );
   },
-  delete: function(id) {
+  delete: function(dataSource, id) {
     return axiosInstance.delete("/api/metadata/sequences/" + id);
   },
-  batchDelete: function(ids) {
+  batchDelete: function(dataSource, ids) {
     return axiosInstance.delete("/api/metadata/sequences",
       {data: ids}
     );

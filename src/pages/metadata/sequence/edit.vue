@@ -158,7 +158,8 @@ export default {
           label: "GUID"
         }
       ],
-      sequence: {}
+      sequence: {},
+      dataSource: ""
     }
   },
 
@@ -212,13 +213,13 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
-
+      this.dataSource = this.$route.params.dataSource;
       await this.loadData(id);
     },
 
     async loadData(id) {
       try {
-        const sequence = await metadataSequenceService.get(id || this.$route.params.id);
+        const sequence = await metadataSequenceService.get(this.dataSource, id || this.$route.params.id);
         console.info(sequence);
 
         this.sequence = sequence;
@@ -240,7 +241,7 @@ export default {
           delete sequence.incrementBy;
         }
 
-        await metadataSequenceService.update(this.$route.params.id, sequence);
+        await metadataSequenceService.update(this.dataSource, this.$route.params.id, sequence);
         this.$q.loading.hide();
         this.$q.notify("修改成功");
         this.loadData();

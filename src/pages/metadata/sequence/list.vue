@@ -437,9 +437,9 @@ export default {
           })
           .onOk(async () => {
             if (id) {
-              await metadataSequenceService.delete(id);
+              await metadataSequenceService.delete(this.dataSource, id);
             } else {
-              await metadataSequenceService.batchDelete(ids);
+              await metadataSequenceService.batchDelete(this.dataSource, ids);
             }
 
             this.$q.notify("删除成功");
@@ -462,9 +462,10 @@ export default {
 
         console.info("query" + JSON.stringify(query));
 
-        this.pagination.count = await metadataSequenceService.count(this.search, query);
+        this.pagination.count = await metadataSequenceService.count(this.dataSource, this.search, query);
 
         let data = await metadataSequenceService.list(
+          this.dataSource,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,

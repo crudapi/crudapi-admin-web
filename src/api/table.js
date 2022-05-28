@@ -7,17 +7,17 @@ const HEADERS = {
 
 
 const table = {
-  create: function(tableName, data) {
+  create: function(dataSource, tableName, data) {
     return axiosInstance.post("/api/business/" + tableName,
        data
     );
   },
-  update: function(tableName, id, data) {
+  update: function(dataSource, tableName, id, data) {
     return axiosInstance.patch("/api/business/" + tableName + "/" + id,
        data
     );
   },
-  list: function(tableName, page, rowsPerPage, search, query, filter) {
+  list: function(dataSource, tableName, page, rowsPerPage, search, query, filter) {
     if (!page) {
       page = 1
     }
@@ -44,7 +44,7 @@ const table = {
       }
     );
   },
-  listAllByIds: function(tableName, ids) {
+  listAllByIds: function(dataSource, tableName, ids) {
     return axiosInstance.post("/api/business/" + tableName + "/all",
       ids,
       {
@@ -52,7 +52,7 @@ const table = {
       }
     );
   },
-  count: function(tableName, search, query) {
+  count: function(dataSource, tableName, search, query) {
     return axiosInstance.get("/api/business/" + tableName + "/count",
       {
         params: {
@@ -62,7 +62,7 @@ const table = {
       }
     );
   },
-  get: function(tableName, id) {
+  get: function(dataSource, tableName, id) {
     return axiosInstance.get("/api/business/" + tableName + "/" + id,
       {
         params: {
@@ -70,15 +70,15 @@ const table = {
       }
     );
   },
-  delete: function(tableName, id) {
+  delete: function(dataSource, tableName, id) {
     return axiosInstance.delete("/api/business/" + tableName + "/" + id);
   },
-  batchDelete: function(tableName, ids) {
+  batchDelete: function(dataSource, tableName, ids) {
     return axiosInstance.delete("/api/business/" + tableName,
       {data: ids}
     );
   },
-  import: async function(tableName, data, progressCallback) {
+  import: async function(dataSource, tableName, data, progressCallback) {
     console.log("table->import")
     console.log(data)
     return axiosInstance.post("/api/business/" + tableName + "/import", data,
@@ -91,7 +91,7 @@ const table = {
         }
     });
   },
-  getImportTemplate: function(tableName) {
+  getImportTemplate: function(dataSource, tableName) {
     return axiosInstance.get("/api/business/" + tableName + "/import/template",
       {
         params: {
@@ -99,7 +99,7 @@ const table = {
       }
     );
   },
-  export: function(tableName, search, query) {
+  export: function(dataSource, tableName, search, query) {
     return axiosInstance.get("/api/business/" + tableName + "/export",
       {
         params: {
