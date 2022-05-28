@@ -10,7 +10,9 @@
     <CTableListRead
       v-if="isShow"
       ref="rTablelistRead"
-      :tableName="tableName" ></CTableListRead>
+      :tableName="tableName"
+      :dataSource="dataSource">
+    </CTableListRead>
   </div>
 </template>
 
@@ -23,6 +25,7 @@ import { date } from "../../../utils";
 export default {
   data () {
     return {
+      dataSource: "",
       tableName: "",
       tableCaption: "",
       listUrl: "",
@@ -69,6 +72,7 @@ export default {
         this.$route.meta.isAllowBack
       );
       this.isShow = false;
+      this.dataSource = this.$route.params.dataSource;
       this.tableName = tableName || this.$route.params.tableName;
       this.$nextTick(() => {
         this.isShow= true;
@@ -79,7 +83,7 @@ export default {
     async loadMeta() {
       this.loading = true;
       try {
-        const table = await metadataTableService.getByName(this.tableName);
+        const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.tableCaption = table.caption;
         this.listUrl = "/business/" + this.tableName;
 

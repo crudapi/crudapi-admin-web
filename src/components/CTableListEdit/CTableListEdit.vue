@@ -173,12 +173,14 @@
                   :recId="getCTableEditRecId(item.recIdMap, props.row)"
                   :fkColumnName="item.fkColumnName"
                   :ref="getRefName('rTableNewOrEditRef', item.relationName, props.row)"
+                  :dataSource="dataSource"
                   :tableName="item.tableName" >
                 </CTableEdit>
 
                 <CTableNew v-else
                   :fkColumnName="item.fkColumnName"
                   :ref="getRefName('rTableNewOrEditRef', item.relationName, props.row)"
+                  :dataSource="dataSource"
                   :tableName="item.tableName" >
                 </CTableNew>
               </div>
@@ -189,12 +191,14 @@
                   :recIds="getCTableListEditRecIds(item.recIdsMap, props.row)"
                   :fkColumnName="item.fkColumnName"
                   :ref="getRefName('rTableListRef', item.relationName, props.row)"
+                  :dataSource="dataSource"
                   :tableName="item.tableName">
                 </CTableListEdit>
 
                 <CTableList  v-else
                   :fkColumnName="item.fkColumnName"
                   :ref="getRefName('rTableListRef', item.relationName, props.row)"
+                  :dataSource="dataSource"
                   :tableName="item.tableName">
                 </CTableList>
               </div>
@@ -225,6 +229,9 @@ import CTableListReadDialog from '../../components/CTableListRead/CTableListRead
 export default {
   name: "CTableListEdit",
   props: {
+    dataSource: {
+      required: true
+    },
     tableName: {
       required: true
     },
@@ -775,23 +782,23 @@ export default {
       this.loading = true;
       try {
         /* 主表元数据 */
-        const table = await metadataTableService.getByName(this.tableName);
+        const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.tableCaption = table.caption;
         this.primaryNames = table.primaryNames;
 
         /* 关联关系 */
-        const tableRelations = await metadataRelationService.getByName(this.tableName);
+        const tableRelations = await metadataRelationService.getByName(this.dataSource, this.tableName);
 
         /* 关联表元数据 */
         let relationMetadataMap = {};
         await Promise.all(tableRelations.map(async (tableRelation) => {
-            const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+            const relationTable = await metadataTableService.getByName(this.dataSource, tableRelation.toTable.name);
             relationMetadataMap[tableRelation.toTable.name] = relationTable;
         }));
         this.relationMetadataMap = relationMetadataMap;
 
         /* 主表业务数据 */
-        let tableDatas = await tableService.listByIds(this.tableName, this.recIds);
+        let tableDatas = await tableService.listByIds(this.dataSource, this.tableName, this.recIds);
         console.dir(tableDatas);
 
         let relationMap = {};

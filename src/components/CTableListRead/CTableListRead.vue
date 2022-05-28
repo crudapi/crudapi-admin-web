@@ -158,6 +158,9 @@ import CDownloadDialog from '../CDownload/CDownloadDialog'
 export default {
   name: "CTableListRead",
   props: {
+    dataSource: {
+      required: true
+    },
     tableName: {
       required: true
     },
@@ -340,18 +343,18 @@ export default {
 
 
     onNewClickAction() {
-      this.$router.push("/business/" + this.tableName + "/new",);
+      this.$router.push("/dataSource/" + this.dataSource + "/business/" + this.tableName + "/new",);
     },
 
     onEditClickAction(row) {
       const recId = this.getRecId(row);
       console.log(recId);
 
-      this.$router.push("/business/" + this.tableName + "/" + recId);
+      this.$router.push("/dataSource/" + this.dataSource + "/business/" + this.tableName + "/" + recId);
     },
 
     onImportClickAction() {
-      this.$router.push("/business/" + this.tableName + "/import");
+      this.$router.push("/dataSource/" + this.dataSource + "/business/" + this.tableName + "/import");
     },
 
     getRecId(row) {
@@ -428,9 +431,9 @@ export default {
           })
           .onOk(async () => {
             if (row) {
-              await tableService.delete(this.tableName, this.getRecId(row));
+              await tableService.delete(this.dataSource, this.tableName, this.getRecId(row));
             } else {
-              await tableService.batchDelete(this.tableName, ids);
+              await tableService.batchDelete(this.dataSource, this.tableName, ids);
             }
 
             this.$q.notify("删除成功");
@@ -454,7 +457,7 @@ export default {
       try {
         let query = this.getQuery();
 
-        const url = await tableService.export(this.tableName, this.search, query);
+        const url = await tableService.export(this.dataSource, this.tableName, this.search, query);
         //this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
         this.$q.dialog({
@@ -495,9 +498,9 @@ export default {
       try {
         let query = this.getQuery();
 
-        this.pagination.count = await tableService.count(this.tableName, this.search,  query);
+        this.pagination.count = await tableService.count(this.dataSource, this.tableName, this.search,  query);
 
-        let data = await tableService.list(this.tableName,
+        let data = await tableService.list(this.dataSource, this.tableName,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,
@@ -579,17 +582,17 @@ export default {
       const that = this;
       this.loading = true;
       try {
-        const table = await metadataTableService.getByName(this.tableName);
+        const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.table = table;
         this.tableCaption = table.caption;
         this.primaryNames = table.primaryNames;
        
-        const tableRelations = await metadataRelationService.getByName(this.tableName);
+        const tableRelations = await metadataRelationService.getByName(this.dataSource, this.tableName);
 
         /* 关联表元数据 */
         let relationMetadataMap = {};
         await Promise.all(tableRelations.map(async (tableRelation) => {
-          const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+          const relationTable = await metadataTableService.getByName(this.dataSource, tableRelation.toTable.name);
           relationMetadataMap[tableRelation.toTable.name] = relationTable;
         }));
         this.relationMetadataMap = relationMetadataMap;

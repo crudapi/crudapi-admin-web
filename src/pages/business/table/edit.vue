@@ -11,6 +11,7 @@
       <CTableEdit
       :recId="recId"
       ref="rTableEditRef"
+      :dataSource="dataSource"
       :tableName="tableName" ></CTableEdit>
       <div class="row justify-center q-py-md">
         <q-btn unelevated @click="onSubmit" color="primary" label="保存" />
@@ -34,6 +35,7 @@ export default {
   data() {
     return {
       listUrl: "",
+      dataSource: "",
       tableName: "",
       tableCaption: "",
       oldData: {},
@@ -60,7 +62,7 @@ export default {
   },
   async beforeRouteUpdate (to, from, next) {
     console.info('beforeRouteUpdate');
-    await this.init(to.params.tableName, to.params.recId);
+    await this.init(to.params.dataSource, to.params.tableName, to.params.recId);
     next();
   },
   filters: {
@@ -78,12 +80,13 @@ export default {
     }
   },
   methods: {
-    async init(tableName, recId) {
+    async init(dataSource, tableName, recId) {
       this.$store.commit(
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
 
+      this.dataSource = dataSource || this.$route.params.dataSource;
       this.tableName = tableName || this.$route.params.tableName;
       this.recId = recId || this.$route.params.recId;
 
@@ -96,7 +99,7 @@ export default {
       });
       const data = this.$refs.rTableEditRef.getData();
       try {
-        await tableService.update(this.tableName, this.recId, data);
+        await tableService.update(this.dataSource, this.tableName, this.recId, data);
         this.$q.loading.hide();
         this.$q.notify("修改成功");
         this.$router.go(-1);
@@ -109,7 +112,7 @@ export default {
     async loadMeta() {
       this.loading = true;
       try {
-        const table = await metadataTableService.getByName(this.tableName);
+        const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.tableCaption = table.caption;
         this.listUrl = "/business/" + this.tableName;
         this.loading = false;

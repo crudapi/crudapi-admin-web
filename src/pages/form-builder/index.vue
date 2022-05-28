@@ -365,7 +365,7 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
-      console.log(this.$route.params.dataSource);
+
       this.dataSource = this.$route.params.dataSource;
       await this.loadData(id);
     },

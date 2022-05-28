@@ -41,6 +41,7 @@ export default {
   data() {
     return {
       listUrl: "",
+      dataSource: "",
       tableName: "",
       tableCaption: "",
       localFile: null
@@ -68,13 +69,14 @@ export default {
   filters: {},
   computed: {},
   methods: {
-     async init(tableName) {
+     async init(dataSource, tableName) {
       console.info("import->init");
       this.$store.commit(
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
 
+      this.tableName = dataSource || this.$route.params.tableName;
       this.tableName = tableName || this.$route.params.tableName;
 
       this.loadMeta();
@@ -83,7 +85,7 @@ export default {
     async loadMeta() {
       this.loading = true;
       try {
-        const table = await metadataTableService.getByName(this.tableName);
+        const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.tableCaption = table.caption;
         this.listUrl = "/business/" + this.tableName;
         console.info(this.listUrl);
@@ -105,7 +107,7 @@ export default {
         let form = new FormData()
         form.append('file', this.localFile);
 
-        this.fileInfo = await tableService.import(this.tableName, form, (e)=> {
+        this.fileInfo = await tableService.import(this.dataSource, this.tableName, form, (e)=> {
           console.info(e);
         });
         this.$q.notify("导入成功");
@@ -128,7 +130,7 @@ export default {
         let form = new FormData()
         form.append('file', this.localFile);
 
-        const url = await tableService.getImportTemplate(this.tableName);
+        const url = await tableService.getImportTemplate(this.dataSource, this.tableName);
         this.$q.notify("模板生成成功，请等待下载完成后查看！");
 
         window.open(url, "_blank");
