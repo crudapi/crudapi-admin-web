@@ -122,6 +122,14 @@ const metadataTable = {
     return axiosInstance.post("/api/metadata/tables/export",
       ids
     );
+  },
+  listDataSource: function() {
+    return axiosInstance.get("/api/metadata/dataSources",
+      {
+        params: {
+        }
+      }
+    );
   }
 };
 

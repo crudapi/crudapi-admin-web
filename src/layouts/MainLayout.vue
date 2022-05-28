@@ -159,10 +159,9 @@
         selected-color="primary"
         :nodes="allMenu"
         :selected.sync="selected"
-        @update:selected="onMenuClickAction()"
+        @update:selected="onMenuClickAction"
         ref="qTreeProxy"
         node-key="labelKey"
-        default-expand-all
         no-connectors
       />
     </q-drawer>
@@ -226,49 +225,6 @@ export default {
 
       selected: null,
 
-      metadataMenu: {
-        label: "元数据",
-        labelKey: "metadata",
-        icon: "work_outline",
-        children: [
-          {
-            label: "序列号",
-            labelKey: "/metadata/sequences",
-            icon: "format_list_numbered",
-            children: [
-            ]
-          }, {
-            label: "表",
-            labelKey: "/metadata/tables",
-            icon: "o_table_rows",
-            children: [
-            ]
-          }, {
-            label: "关系",
-            labelKey: "/metadata/relations",
-            icon: "content_copy",
-            children: [
-            ]
-          }
-        ]
-      },
-
-      businessMenu: {
-        label: "业务数据",
-        labelKey: "business",
-        icon: "business",
-        children: [
-        ]
-      },
-
-      systemBusinessMenu: {
-        label: "内置数据",
-        labelKey: "systemBusiness",
-        icon: "tab",
-        children: [
-        ]
-      },
-
       systemMenu: {
         label: "系统",
         labelKey: "system",
@@ -321,37 +277,90 @@ export default {
     async init() {
       console.info("init");
       try {
-        const tables = await metadataTableService.list(1, 9999);
-        for (let i = 0; i < tables.length; i++) {
-          let table = tables[i];
-          // if (table.name === "table") {
-          //   continue;
-          // }
+        const that = this;
+        const dataSources = await metadataTableService.listDataSource();
+        for (let i = 0; i < dataSources.length; i++) {
+          const dataSource = dataSources[i];
+          const dataSourceMenu = {
+            label: dataSource.caption,
+            labelKey: dataSource.name,
+            icon: "o_table_rows",
+            children: []
+          };
 
-          if (table.systemable) {
-            this.systemBusinessMenu.children.push({
-                label: table.caption,
-                labelKey: this.getBussinessPath(table.name),
-                icon: "insert_chart_outlined"
-            });
-          } else {
-            this.businessMenu.children.push({
-                label: table.caption,
-                labelKey: this.getBussinessPath(table.name),
-                icon: "insert_chart_outlined"
-            });
+          const businessMenu = {
+            label: "业务数据",
+            labelKey: "business",
+            icon: "business",
+            children: [
+            ]
+          };
+
+          const systemBusinessMenu = {
+            label: "内置数据",
+            labelKey: "systemBusiness",
+            icon: "tab",
+            children: [
+            ]
+          };
+
+
+          const metadataMenu = {
+            label: "元数据",
+            labelKey: "metadata",
+            icon: "work_outline",
+            children: [
+              {
+                label: "序列号",
+                labelKey: "/dataSource/" + dataSource.name + "/metadata/sequences",
+                icon: "format_list_numbered",
+                children: [
+                ]
+              }, {
+                label: "表",
+                labelKey: "/dataSource/" + dataSource.name + "/metadata/tables",
+                icon: "o_table_rows",
+                children: [
+                ]
+              }, {
+                label: "关系",
+                labelKey: "/dataSource/" + dataSource.name + "/metadata/relations",
+                icon: "content_copy",
+                children: [
+                ]
+              }
+            ]
+          };
+
+          const tables = await metadataTableService.list(1,99999);
+          for (let i = 0; i < tables.length; i++) {
+            let table = tables[i];
+            if (table.systemable) {
+              systemBusinessMenu.children.push({
+                  label: table.caption,
+                  labelKey: this.getBussinessPath(dataSource.name, table.name),
+                  icon: "insert_chart_outlined"
+              });
+            } else {
+              businessMenu.children.push({
+                  label: table.caption,
+                  labelKey: this.getBussinessPath(dataSource.name, table.name),
+                  icon: "insert_chart_outlined"
+              });
+            }
           }
+
+          dataSourceMenu.children.push(businessMenu);
+          dataSourceMenu.children.push(systemBusinessMenu);
+          dataSourceMenu.children.push(metadataMenu);
+
+          this.allMenu.push(dataSourceMenu);
         }
 
-        this.allMenu.push(this.businessMenu);
-        this.allMenu.push(this.systemBusinessMenu);
-        this.allMenu.push(this.metadataMenu);
+
         this.allMenu.push(this.systemMenu);
 
-        this.$refs.qTreeProxy.setExpanded("business", true);
-        this.$refs.qTreeProxy.setExpanded("systemBusiness", true);
-        this.$refs.qTreeProxy.setExpanded("metadata", true);
-        this.$refs.qTreeProxy.setExpanded("system", true);
+        //this.$refs.qTreeProxy.setExpanded("system", true);
       } catch (error) {
         console.error(error);
       }
@@ -361,7 +370,7 @@ export default {
       console.info("updateMenu");
       try {
         this.businessMenu.children.splice(0, this.businessMenu.children.length);
-        const tables = await metadataTableService.list(1, 9999);
+        const tables = await metadataTableService.list();
         for (let i = 0; i < tables.length; i++) {
           let table = tables[i];
           if (!table.systemable) {
@@ -382,20 +391,12 @@ export default {
       this.updateMenu();
     },
 
-    getBussinessPath: function(tableName) {
-      return "/business/" + tableName
+    getBussinessPath: function(dataSourceName, tableName) {
+      return "/dataSource/" + dataSourceName + "/business/" + tableName
     },
 
-    getTablePath: function(id) {
-      return "/metadata/tables/" + id
-    },
-
-    getSequencePath: function(id) {
-      return "/metadata/sequences/" + id
-    },
-
-    onMenuClickAction() {
-      console.info("onMenuClickAction");
+    onMenuClickAction(target) {
+      console.dir(target);
       if (this.selected) {
         if (this.selected && this.selected.indexOf("/") === 0) {
           if (this.$router.currentRoute.fullPath !== this.selected) {

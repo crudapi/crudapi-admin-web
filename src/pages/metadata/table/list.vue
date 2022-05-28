@@ -182,6 +182,7 @@ export default {
   data () {
     return {
       data: [],
+      dataSource: "",
       tableName: "",
       tableCaption: "",
       listUrl: "",
@@ -378,15 +379,15 @@ export default {
 
 
     onNewClickAction() {
-      this.$router.push("/metadata/tables/new");
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/new");
     },
 
     onEditClickAction(id) {
-      this.$router.push("/metadata/tables/" + id);
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/" + id);
     },
 
     onFormBuilderClickAction(id) {
-       this.$router.push("/metadata/tables/" +  id +   "/formBuilder");
+       this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/" +  id +   "/formBuilder");
     },
     async onExportClickAction(id) {
       let ids = [];
@@ -403,7 +404,7 @@ export default {
         const fileName = await metadataTableService.export(ids);
         this.$q.notify("元数据表生成成功，请等待下载完成后查看！");
 
-        window.open("/api/file/" + fileName, "_blank");
+        window.open("/api/file/" + fileName + "?dataSource=" + this.dataSource, "_blank");
 
         this.$q.loading.hide();
       } catch (error) {
@@ -413,12 +414,12 @@ export default {
     },
 
     onImportClickAction() {
-      this.$router.push("/metadata/tables/import");
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/import");
     },
 
 
     onReverseClickAction() {
-      this.$router.push("/metadata/tables/reverse");
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/reverse");
     },
 
     async onDeleteClickAction(id) {
@@ -523,6 +524,7 @@ export default {
 
       this.selected =[];
       this.search = "";
+      this.dataSource = this.$route.params.dataSource;
     }
   }
 }

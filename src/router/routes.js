@@ -28,107 +28,107 @@ const routes = [
       },
       {
         name: "form-builder",
-        path: "metadata/tables/:id/formBuilder",
+        path: "dataSource/:dataSource/metadata/tables/:id/formBuilder",
         meta: { isAllowBack: true },
         component: () => import("pages/form-builder/index.vue")
       },
       {
         name: "sequenceList",
-        path: "metadata/sequences",
+        path: "dataSource/:dataSource/metadata/sequences",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/sequence/list.vue")
       },
       {
         name: "sequenceNew",
-        path: "metadata/sequences/new",
+        path: "dataSource/:dataSource/metadata/sequences/new",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/sequence/new.vue")
       },
       {
         name: "sequenceEdit",
-        path: "metadata/sequences/:id",
+        path: "dataSource/:dataSource/metadata/sequences/:id",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/sequence/edit.vue")
       },
       {
         name: "tables",
-        path: "metadata/tables",
+        path: "dataSource/:dataSource/metadata/tables",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/table/list.vue")
       },
       {
         name: "tableImport",
-        path: "metadata/tables/import",
+        path: "dataSource/:dataSource/metadata/tables/import",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/table/import.vue")
       },
       {
         name: "tableReverse",
-        path: "metadata/tables/reverse",
+        path: "dataSource/:dataSource/metadata/tables/reverse",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/table/reverse.vue")
       },
       {
         name: "tableNew",
-        path: "metadata/tables/new",
+        path: "dataSource/:dataSource/metadata/tables/new",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/table/new.vue")
       },
       {
         name: "tableEdit",
-        path: "metadata/tables/:id",
+        path: "dataSource/:dataSource/metadata/tables/:id",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/table/edit.vue")
       },
       {
         name: "tableIndexs",
-        path: "metadata/tables/:id/indexs",
+        path: "dataSource/:dataSource/metadata/tables/:id/indexs",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/table/indexList.vue")
       },
       {
         name: "relationGraph",
-        path: "metadata/relations/graph",
+        path: "dataSource/:dataSource/metadata/relations/graph",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/relation/graph.vue")
       },
       {
         name: "relations",
-        path: "metadata/relations",
+        path: "dataSource/:dataSource/metadata/relations",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/relation/list.vue")
       },{
         name: "relationNew",
-        path: "metadata/relations/new",
+        path: "dataSource/:dataSource/metadata/relations/new",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/relation/new.vue")
       },{
         name: "relationEdit",
-        path: "metadata/relations/:id",
+        path: "dataSource/:dataSource/metadata/relations/:id",
         meta: { isAllowBack: true },
         component: () => import("pages/metadata/relation/edit.vue")
       },
       {
         name: "business",
-        path: "business/:tableName",
+        path: "dataSource/:dataSource/business/:tableName",
         meta: { isAllowBack: true },
         component: () => import("pages/business/table/list.vue")
       },
       {
         name: "businessNew",
-        path: "business/:tableName/new",
+        path: "dataSource/:dataSource/business/:tableName/new",
         meta: { isAllowBack: true },
         component: () => import("pages/business/table/new.vue")
       },
       {
         name: "businessImport",
-        path: "business/:tableName/import",
+        path: "dataSource/:dataSource/business/:tableName/import",
         meta: { isAllowBack: true },
         component: () => import("pages/business/table/import.vue")
       },
       {
         name: "businessEdit",
-        path: "business/:tableName/:recId",
+        path: "dataSource/:dataSource/business/:tableName/:recId",
         meta: { isAllowBack: true },
         component: () => import("pages/business/table/edit.vue")
       }

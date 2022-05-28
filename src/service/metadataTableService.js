@@ -62,6 +62,10 @@ const metadataTableService = {
   export: async function(ids) {
     var res = await metadataTable.export(ids);
     return res.data;
+  },
+  listDataSource: async function() {
+    var res = await metadataTable.listDataSource();
+    return res.data;
   }
 };
 

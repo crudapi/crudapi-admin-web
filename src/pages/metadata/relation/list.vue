@@ -193,6 +193,7 @@ export default {
   data () {
     return {
       data: [],
+      dataSource: "",
       tableName: "",
       tableCaption: "",
       listUrl: "",
@@ -400,24 +401,24 @@ export default {
 
 
     onNewClickAction() {
-      this.$router.push("/metadata/relations/new");
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/relations/new");
     },
 
     onEditClickAction(id) {
-      this.$router.push("/metadata/relations/" + id);
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/relations/" + id);
     },
 
 
     onGraphClickAction(id) {
-      this.$router.push("/metadata/relations/graph");
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/relations/graph");
     },
 
     onTableClickAction(table) {
-      this.$router.push("/metadata/tables/" + table.id);
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/" + table.id);
     },
 
     onExportClickAction(id) {
-      window.open("/api/metadata/tablerelations/export", "_blank");
+      window.open("/api/metadata/tablerelations/export" + "?dataSource=" + this.dataSource, "_blank");
     },
 
     async onDeleteClickAction(id) {
@@ -497,6 +498,7 @@ export default {
 
       this.selected =[];
       this.search = "";
+      this.dataSource = this.$route.params.dataSource;
     }
   }
 }

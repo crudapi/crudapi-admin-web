@@ -324,6 +324,7 @@ import { extend } from 'quasar'
 export default {
   data () {
     return {
+      dataSource: "",
       selected: [],
       loading: true,
       tablePagination: {
@@ -659,6 +660,7 @@ export default {
         this.$route.meta.isAllowBack
       );
 
+      this.dataSource = this.$route.params.dataSource;
       await this.loadData(id);
     },
 
@@ -754,11 +756,11 @@ export default {
     },
 
     onIndexClickAction() {
-      this.$router.push("/metadata/tables/" +  this.$route.params.id +   "/indexs");
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/" +  this.$route.params.id +   "/indexs");
     },
 
     onFormBuilderClick() {
-       this.$router.push("/metadata/tables/" +  this.$route.params.id +   "/formBuilder");
+       this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/" +  this.$route.params.id +   "/formBuilder");
     },
 
     async onSubmitClick() {

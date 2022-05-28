@@ -175,6 +175,7 @@ export default {
       loading: true,
       selected: [],
       search: "",
+      dataSource: "",
       queryColumns: [],
       pagination: {
         page: 1,
@@ -402,15 +403,15 @@ export default {
     },
 
     onNewClickAction() {
-      this.$router.push("/metadata/sequences/new",);
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/sequences/new",);
     },
 
     onEditClickAction(id) {
-      this.$router.push("/metadata/sequences/" + id);
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/sequences/" + id);
     },
 
     onExportClickAction(id) {
-      window.open("/api/metadata/sequences/export", "_blank");
+      window.open("/api/metadata/sequences/export?dataSource=" + this.dataSource , "_blank");
     },
 
     async onDeleteClickAction(id) {
@@ -486,6 +487,7 @@ export default {
 
       this.selected =[];
       this.search = "";
+      this.dataSource = this.$route.params.dataSource;
     }
   }
 }
