@@ -38,6 +38,7 @@ import { tableService } from "../../../service";
 export default {
   data() {
     return {
+      dataSource: "",
       localFile: null
     };
   },
@@ -69,6 +70,8 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
+
+      this.dataSource = this.$route.params.dataSource;
     },
 
     async onSubmitClick() {
@@ -82,7 +85,7 @@ export default {
         let form = new FormData()
         form.append('file', this.localFile);
 
-        this.fileInfo = await metadataTableService.import(form, (e)=> {
+        this.fileInfo = await metadataTableService.import(this.dataSource, form, (e)=> {
           console.info(e);
         });
         this.$q.notify("导入成功");

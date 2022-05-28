@@ -401,7 +401,7 @@ export default {
       });
 
       try {
-        const fileName = await metadataTableService.export(ids);
+        const fileName = await metadataTableService.export(this.dataSource, ids);
         this.$q.notify("元数据表生成成功，请等待下载完成后查看！");
 
         window.open("/api/file/" + fileName + "?dataSource=" + this.dataSource, "_blank");
@@ -469,9 +469,9 @@ export default {
 
             console.log("isDropPhysicalTable = " + isDropPhysicalTable);
             if (id) {
-              await metadataTableService.delete(id, isDropPhysicalTable);
+              await metadataTableService.delete(this.dataSource, id, isDropPhysicalTable);
             } else if (ids.length > 0) {
-              await metadataTableService.batchDelete(ids, isDropPhysicalTable);
+              await metadataTableService.batchDelete(this.dataSource, ids, isDropPhysicalTable);
             }
 
             this.$q.notify("删除成功");
@@ -497,9 +497,9 @@ export default {
       try {
         let query = this.getQuery();
 
-        this.pagination.count = await metadataTableService.count(this.search, query);
+        this.pagination.count = await metadataTableService.count(this.dataSource, this.search, query);
 
-        let data = await metadataTableService.list(
+        let data = await metadataTableService.list(this.dataSource,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,

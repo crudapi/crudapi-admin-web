@@ -345,6 +345,7 @@ import { extend } from 'quasar'
 export default {
   data () {
     return {
+      dataSource: "",
       reverse: false,
       indexCount: 0,
       isLoadMetadataValid: true,
@@ -687,7 +688,7 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
-
+      this.dataSource = this.$route.params.dataSource;
       await this.fetchFromServer();
     },
 
@@ -786,7 +787,7 @@ export default {
         message: "加载中"
       });
       try {
-        const tableCount = await metadataTableService.count();
+        const tableCount = await metadataTableService.count(this.dataSource);
         console.info(tableCount);
         let table = {};
         table.caption = "新建表" + tableCount;
@@ -799,7 +800,7 @@ export default {
           table.columns = this.getInitColumn();
         }
         this.table = table;
-        let sequences = await metadataSequenceService.list(1, 999);
+        let sequences = await metadataSequenceService.list(this.dataSource, 1, 999);
 
         let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
         let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING"
@@ -826,7 +827,7 @@ export default {
     async onLoadMetadataClickAction() {
       try {
         this.$q.loading.show();
-        let metadata = await metadataTableService.getMetadata(this.table.tableName);
+        let metadata = await metadataTableService.getMetadata(this.dataSource, this.table.tableName);
         console.dir(metadata);
 
         this.table.name = this.table.tableName;
@@ -1175,7 +1176,7 @@ export default {
         });
 
         table.reverse = this.reverse;
-        await metadataTableService.create(table);
+        await metadataTableService.create(this.dataSource, table);
         this.$q.loading.hide();
         this.$q.notify("添加成功");
         this.$root.$emit("updateMenuTree");

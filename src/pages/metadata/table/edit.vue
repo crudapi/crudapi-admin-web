@@ -670,10 +670,10 @@ export default {
       });
       try {
         this.loading = true;
-        const table = await metadataTableService.get(id || this.$route.params.id);
+        const table = await metadataTableService.get(this.dataSource, id || this.$route.params.id);
         this.table = table;
 
-        let sequences = await metadataSequenceService.list(1, 999);
+        let sequences = await metadataSequenceService.list(this.dataSource, 1, 999);
         let sequenceLongOptions = sequences.filter(t => t.sequenceType === "LONG");
         let sequenceStringOptions = sequences.filter(t => t.sequenceType === "STRING");
         sequenceLongOptions.unshift({
@@ -811,7 +811,7 @@ export default {
               delete column.isNewRow;
             }
         });
-        await metadataTableService.update(this.$route.params.id, table);
+        await metadataTableService.update(this.dataSource, this.$route.params.id, table);
         this.$q.loading.hide();
         this.$q.notify("修改成功");
         this.$root.$emit("updateMenuTree");

@@ -45,6 +45,7 @@ import { extend } from 'quasar'
 export default {
   data () {
     return {
+      dataSource: "",
       loading: true,
       table: {}
     }
@@ -87,7 +88,7 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
-
+      this.dataSource = this.$route.params.dataSource;
       await this.loadData(id);
     },
 
@@ -99,7 +100,7 @@ export default {
 
         this.table = {};
 
-        const table = await metadataTableService.get(id || this.$route.params.id);
+        const table = await metadataTableService.get(this.dataSource, id || this.$route.params.id);
 
         this.table = table;
         this.loading = false;
@@ -155,7 +156,7 @@ export default {
           }
         });
 
-        await metadataTableService.update(this.$route.params.id, indexData);
+        await metadataTableService.update(this.dataSource, this.$route.params.id, indexData);
 
         this.$q.notify("修改成功");
         this.$q.loading.hide();
