@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
       <q-breadcrumbs-el :label="tableCaption" clickable :to="listUrl" />
       <q-breadcrumbs-el label="添加" />
     </q-breadcrumbs>
@@ -32,6 +33,7 @@ export default {
     return {
       listUrl: "",
       dataSource: "",
+      dataSourceUrl: "",
       tableName: "",
       tableCaption: "",
       tableData: {}
@@ -70,7 +72,7 @@ export default {
 
       this.dataSource = dataSource || this.$route.params.dataSource;
       this.tableName = tableName || this.$route.params.tableName;
-
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       this.loadMeta();
     },
 
@@ -79,7 +81,7 @@ export default {
       try {
         const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.tableCaption = table.caption;
-        this.listUrl = "/business/" + this.tableName;
+        this.listUrl = "/dataSource/" + this.dataSource + "/business/" + this.tableName;
         console.info(this.listUrl);
         this.loading = false;
       } catch (error) {

@@ -277,6 +277,7 @@ export default {
     async init() {
       console.info("init");
       try {
+        this.allMenu = [];
         const that = this;
         const dataSources = await metadataTableService.listDataSource();
         for (let i = 0; i < dataSources.length; i++) {
@@ -369,27 +370,11 @@ export default {
 
     async updateMenu() {
       console.info("updateMenu");
-      try {
-        this.businessMenu.children.splice(0, this.businessMenu.children.length);
-        const tables = await metadataTableService.list();
-        for (let i = 0; i < tables.length; i++) {
-          let table = tables[i];
-          if (!table.systemable) {
-            this.businessMenu.children.push({
-                label: table.caption,
-                labelKey: this.getBussinessPath(table.name),
-                icon: "insert_chart_outlined"
-            });
-          }
-        }
-      } catch (error) {
-        console.error(error);
-        this.$q.notify(error);
-      }
+      await this.init();
     },
 
     updateMenuTreeCb: function() {
-      //this.updateMenu();
+      this.updateMenu();
     },
 
     getBussinessPath: function(dataSourceName, tableName) {

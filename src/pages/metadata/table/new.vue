@@ -692,7 +692,7 @@ export default {
       await this.fetchFromServer();
     },
 
-    getInitColumn() {
+    getInitColumn(tableCount) {
       return [{
               "id": 1,
               "autoIncrement": true,
@@ -700,7 +700,7 @@ export default {
               "dataType": "BIGINT",
               "description": "主键",
               "displayOrder": 0,
-              "indexName": "primary_key",
+              "indexName": "primary_key_" + tableCount,
               "indexType": "PRIMARY",
               "insertable": false,
               "length": 20,
@@ -736,7 +736,7 @@ export default {
               "dataType": "TEXT",
               "description": "全文索引",
               "displayOrder": 2,
-              "indexName": "ft_fulltext_body",
+              "indexName": "ft_fulltext_body_" + tableCount,
               "indexType": "FULLTEXT",
               "insertable": false,
               "name": "fullTextBody",
@@ -797,7 +797,7 @@ export default {
         table.tableName = "ca_newtable" + tableCount;
         table.engine = "INNODB";
         if (!this.reverse) {
-          table.columns = this.getInitColumn();
+          table.columns = this.getInitColumn(tableCount);
         }
         this.table = table;
         let sequences = await metadataSequenceService.list(this.dataSource, 1, 999);
