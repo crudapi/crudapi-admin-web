@@ -320,7 +320,7 @@ export default {
 
   async beforeRouteUpdate (to, from, next) {
     console.info('beforeRouteUpdate');
-    await this.init();
+    await this.init(to.params.dataSource);
     await this.onRefresh();
     next();
   },
@@ -515,7 +515,7 @@ export default {
       }
     },
 
-    async init() {
+    async init(dataSource) {
       console.info("init");
       this.$store.commit(
         "config/updateIsAllowBack",
@@ -524,7 +524,7 @@ export default {
 
       this.selected =[];
       this.search = "";
-      this.dataSource = this.$route.params.dataSource;
+      this.dataSource = dataSource || this.$route.params.dataSource;
     }
   }
 }
