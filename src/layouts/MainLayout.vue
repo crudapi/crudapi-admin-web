@@ -362,7 +362,7 @@ export default {
 
         this.allMenu.push(this.systemMenu);
 
-        //this.$refs.qTreeProxy.setExpanded("system", true);
+        this.$refs.qTreeProxy.setExpanded("system", true);
       } catch (error) {
         console.error(error);
       }
