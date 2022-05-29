@@ -78,7 +78,7 @@ export default {
         this.$route.meta.isAllowBack
       );
 
-      this.dataSource = dataSource || this.$route.params.tableName;
+      this.dataSource = dataSource || this.$route.params.dataSource;
       this.tableName = tableName || this.$route.params.tableName;
       this.dataSourceUrl = "/dataSource/" + this.dataSource;
       this.loadMeta();

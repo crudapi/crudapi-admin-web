@@ -64,7 +64,7 @@ export default {
   filters: {},
   computed: {},
   methods: {
-     async init(tableName) {
+     async init() {
       console.info("import->init");
       this.$store.commit(
         "config/updateIsAllowBack",
