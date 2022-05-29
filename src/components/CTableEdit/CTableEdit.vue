@@ -283,11 +283,13 @@
       :recId="item.recId"
       :fkColumnName="item.fkColumnName"
       :ref="'rTableNewOrEditRef' + item.relationName"
+      :dataSource="dataSource"
       :tableName="item.tableName" ></CTableEdit>
 
       <CTableNew v-else
       :fkColumnName="item.fkColumnName"
       :ref="'rTableNewOrEditRef' + item.relationName"
+      :dataSource="dataSource"
       :tableName="item.tableName" ></CTableNew>
     </div>
 
@@ -297,12 +299,14 @@
       :recIds="item.recIds"
       :fkColumnName="item.fkColumnName"
       :ref="'rTableListRef' + item.relationName"
+      :dataSource="dataSource"
       :tableName="item.tableName"
        ></CTableListEdit>
 
       <CTableList v-else
       :fkColumnName="item.fkColumnName"
       :ref="'rTableListRef' + item.relationName"
+      :dataSource="dataSource"
       :tableName="item.tableName"
        ></CTableList>
     </div>
@@ -326,6 +330,9 @@ import CTableListReadDialog from '../../components/CTableListRead/CTableListRead
 export default {
   name: "CTableEdit",
   props: {
+    dataSource: {
+      required: true
+    },
     tableName: {
       required: true
     },
@@ -621,21 +628,21 @@ export default {
       this.insertColumns = [];
       try {
         /* 主表元数据 */
-        const table = await metadataTableService.getByName(this.tableName);
+        const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.tableCaption = table.caption;
 
         /* 关联关系 */
-        const tableRelations = await metadataRelationService.getByName(this.tableName);
+        const tableRelations = await metadataRelationService.getByName(this.dataSource, this.tableName);
 
         /* 关联表元数据 */
         let relationMetadataMap = {};
         await Promise.all(tableRelations.map(async (tableRelation) => {
-          const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+          const relationTable = await metadataTableService.getByName(this.dataSource, tableRelation.toTable.name);
           relationMetadataMap[tableRelation.toTable.name] = relationTable;
         }));
 
         /* 主表业务数据 */
-        let tableData = await tableService.get(this.tableName, this.recId);
+        let tableData = await tableService.get(this.dataSource, this.tableName, this.recId);
         this.tableData = tableData;
 
         let relationMap = {};
@@ -728,7 +735,7 @@ export default {
         let query = {
           tableId:table.id
         };
-        const formBuilders = await tableService.list("tableFormBuilder", 0, 999, null, query, null);
+        const formBuilders = await tableService.list(this.dataSource, "tableFormBuilder", 0, 999, null, query, null);
         let formBuilder = formBuilders.find(t => t.device === 'pc' 
           && t.type === 'update');
         let selectedList = [];

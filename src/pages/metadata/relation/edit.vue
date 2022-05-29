@@ -135,6 +135,7 @@ import { date } from "../../../utils";
 export default {
   data () {
     return {
+      dataSource: "",
       loading : true,
       tableOptions: [],
       relationTypeOptions: [
@@ -205,7 +206,7 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
-
+      this.dataSource = this.$route.params.dataSource;
       await this.loadData(id);
     },
 
@@ -248,10 +249,10 @@ export default {
     async loadData(id) {
       try {
         this.loading = true;
-        const metadataRelation = await metadataRelationService.get(id || this.$route.params.id);
+        const metadataRelation = await metadataRelationService.get(this.dataSource, id || this.$route.params.id);
 
         this.metadataRelation = metadataRelation;
-        const tables = await metadataTableService.list(1, 999);
+        const tables = await metadataTableService.list(this.dataSource, 1, 999);
 
         this.tableOptions = tables;
 
@@ -312,7 +313,7 @@ export default {
             id: this.toColumn.id
           }
         }
-        await metadataRelationService.update(this.$route.params.id, data);
+        await metadataRelationService.update(this.dataSource, this.$route.params.id, data);
         this.$q.loading.hide();
         this.$q.notify("修改成功");
         this.loadData();

@@ -119,6 +119,7 @@ import { date } from "../../../utils";
 export default {
   data () {
     return {
+      dataSource: "",
       loading : true,
       tableOptions: [],
       relationTypeOptions: [
@@ -190,6 +191,7 @@ export default {
         this.$route.meta.isAllowBack
       );
 
+      this.dataSource = this.$route.params.dataSource;
       await this.loadData();
     },
 
@@ -232,7 +234,7 @@ export default {
     async loadData() {
       try {
         this.loading = true;
-        const tables = await metadataTableService.list(1, 9999);
+        const tables = await metadataTableService.list(this.dataSource, 1, 9999);
         console.info(tables);
         this.tableOptions = tables;
         this.loading = false;
@@ -266,7 +268,7 @@ export default {
             id: this.toColumn.id
           }
         }
-        await metadataRelationService.create(data);
+        await metadataRelationService.create(this.dataSource, data);
         this.$q.loading.hide();
         this.$q.notify("添加成功");
         this.$router.go(-1);

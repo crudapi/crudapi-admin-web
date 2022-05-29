@@ -249,6 +249,7 @@
       <CTableNew
       :fkColumnName="item.fkColumnName"
       :ref="'rTableNewRef' + item.relationName"
+      :dataSource="dataSource"
       :tableName="item.tableName" ></CTableNew>
     </div>
 
@@ -256,6 +257,7 @@
       <CTableList
       :fkColumnName="item.fkColumnName"
       :ref="'rTableListRef' + item.relationName"
+      :dataSource="dataSource"
       :tableName="item.tableName"
        ></CTableList>
     </div>
@@ -278,6 +280,9 @@ import CTableListReadDialog from '../../components/CTableListRead/CTableListRead
 export default {
   name: "CTableNew",
   props: {
+    dataSource: {
+      required: true
+    },
     tableName: {
       required: true
     },
@@ -528,17 +533,17 @@ export default {
       const that = this;
       this.loading = true;
       try {
-        const table = await metadataTableService.getByName(this.tableName);
+        const table = await metadataTableService.getByName(this.dataSource, this.tableName);
         this.tableCaption = table.caption;
 
-        const tableRelations = await metadataRelationService.getByName(this.tableName);
+        const tableRelations = await metadataRelationService.getByName(this.dataSource, this.tableName);
 
         /* 关联表元数据 */
         let relationMetadataMap = {};
         await Promise.all(tableRelations.map(async (tableRelation) => {
            if (tableRelation.relationType === "ManyToOne"
             || tableRelation.relationType === "OneToOneSubToMain") {
-            const relationTable = await metadataTableService.getByName(tableRelation.toTable.name);
+            const relationTable = await metadataTableService.getByName(this.dataSource, tableRelation.toTable.name);
 
             relationMetadataMap[tableRelation.toTable.name] = relationTable;
            }
@@ -622,7 +627,7 @@ export default {
         let query = {
           tableId:table.id
         };
-        const formBuilders = await tableService.list("tableFormBuilder", 0, 999, null, query, null);
+        const formBuilders = await tableService.list(this.dataSource, "tableFormBuilder", 0, 999, null, query, null);
         let formBuilder = formBuilders.find(t => t.device === 'pc' 
           && t.type === 'create');
         let selectedList = [];

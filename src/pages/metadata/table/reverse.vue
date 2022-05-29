@@ -74,6 +74,7 @@ import { metadataTableService } from "../../../service";
 export default {
   data () {
     return {
+      dataSource: "",
       data: [],
       loading: true,
       selected: [],
@@ -210,9 +211,9 @@ export default {
           })
           .onOk(async () => {
             if (tableName) {
-              await metadataTableService.reverse(tableName);
+              await metadataTableService.reverse(this.dataSource, tableName);
             } else {
-              await metadataTableService.batchReverse(tableNames);
+              await metadataTableService.batchReverse(this.dataSource, tableNames);
             }
 
             this.$q.notify("逆向成功");
@@ -236,7 +237,7 @@ export default {
 
         console.info("query" + JSON.stringify(query));
 
-        let data = await metadataTableService.getMetadatas(
+        let data = await metadataTableService.getMetadatas(this.dataSource,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,
@@ -261,6 +262,7 @@ export default {
 
       this.selected =[];
       this.search = "";
+      this.dataSource = this.$route.params.dataSource;
     }
   }
 }

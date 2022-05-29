@@ -203,6 +203,8 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
+
+      this.dataSource = this.$route.params.dataSource;
     },
 
     async onSubmit() {
@@ -218,7 +220,7 @@ export default {
           delete sequence.incrementBy;
         }
 
-        await metadataSequenceService.create(sequence);
+        await metadataSequenceService.create(this.dataSource, sequence);
         this.$q.loading.hide();
         this.$q.notify("添加成功");
         this.$router.go(-1);

@@ -175,6 +175,7 @@ export default {
       loading: true,
       selected: [],
       search: "",
+      dataSource: "",
       queryColumns: [],
       pagination: {
         page: 1,
@@ -402,15 +403,15 @@ export default {
     },
 
     onNewClickAction() {
-      this.$router.push("/metadata/sequences/new",);
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/sequences/new",);
     },
 
     onEditClickAction(id) {
-      this.$router.push("/metadata/sequences/" + id);
+      this.$router.push("/dataSource/" + this.dataSource +  "/metadata/sequences/" + id);
     },
 
     onExportClickAction(id) {
-      window.open("/api/metadata/sequences/export", "_blank");
+      window.open("/api/metadata/sequences/export?dataSource=" + this.dataSource , "_blank");
     },
 
     async onDeleteClickAction(id) {
@@ -436,9 +437,9 @@ export default {
           })
           .onOk(async () => {
             if (id) {
-              await metadataSequenceService.delete(id);
+              await metadataSequenceService.delete(this.dataSource, id);
             } else {
-              await metadataSequenceService.batchDelete(ids);
+              await metadataSequenceService.batchDelete(this.dataSource, ids);
             }
 
             this.$q.notify("删除成功");
@@ -461,9 +462,10 @@ export default {
 
         console.info("query" + JSON.stringify(query));
 
-        this.pagination.count = await metadataSequenceService.count(this.search, query);
+        this.pagination.count = await metadataSequenceService.count(this.dataSource, this.search, query);
 
         let data = await metadataSequenceService.list(
+          this.dataSource,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,
@@ -486,6 +488,7 @@ export default {
 
       this.selected =[];
       this.search = "";
+      this.dataSource = this.$route.params.dataSource;
     }
   }
 }

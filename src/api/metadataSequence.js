@@ -1,17 +1,23 @@
 import { axiosInstance } from "boot/axios";
 
 const metadataSequence = {
-  create: function(data) {
+  create: function(dataSource, data) {
     return axiosInstance.post("/api/metadata/sequences",
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
-  update: function(id, data) {
+  update: function(dataSource, id, data) {
     return axiosInstance.patch("/api/metadata/sequences/" + id,
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
-  list: function(page, rowsPerPage, search, query) {
+  list: function(dataSource, page, rowsPerPage, search, query) {
     if (!page) {
       page = 1
     }
@@ -27,34 +33,43 @@ const metadataSequence = {
           limit: rowsPerPage,
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  count: function(search, query) {
+  count: function(dataSource, search, query) {
     return axiosInstance.get("/api/metadata/sequences/count",
       {
         params: {
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  get: function(id) {
+  get: function(dataSource, id) {
     return axiosInstance.get("/api/metadata/sequences/" + id,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  delete: function(id) {
-    return axiosInstance.delete("/api/metadata/sequences/" + id);
+  delete: function(dataSource, id) {
+    return axiosInstance.delete("/api/metadata/sequences/" + id,
+      {
+        dataSource: dataSource
+      });
   },
-  batchDelete: function(ids) {
+  batchDelete: function(dataSource, ids) {
     return axiosInstance.delete("/api/metadata/sequences",
-      {data: ids}
+      {
+        data: ids,
+        dataSource: dataSource
+      }
     );
   }
 };

@@ -7,17 +7,23 @@ const HEADERS = {
 
 
 const table = {
-  create: function(tableName, data) {
+  create: function(dataSource, tableName, data) {
     return axiosInstance.post("/api/business/" + tableName,
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
-  update: function(tableName, id, data) {
+  update: function(dataSource, tableName, id, data) {
     return axiosInstance.patch("/api/business/" + tableName + "/" + id,
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
-  list: function(tableName, page, rowsPerPage, search, query, filter) {
+  list: function(dataSource, tableName, page, rowsPerPage, search, query, filter) {
     if (!page) {
       page = 1
     }
@@ -40,45 +46,55 @@ const table = {
           search: search,
           ...query,
           filter: filterStrEncode
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  listAllByIds: function(tableName, ids) {
+  listAllByIds: function(dataSource, tableName, ids) {
     return axiosInstance.post("/api/business/" + tableName + "/all",
       ids,
       {
-        params: {}
+        params: {},
+        dataSource: dataSource
       }
     );
   },
-  count: function(tableName, search, query) {
+  count: function(dataSource, tableName, search, query) {
     return axiosInstance.get("/api/business/" + tableName + "/count",
       {
         params: {
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  get: function(tableName, id) {
+  get: function(dataSource, tableName, id) {
     return axiosInstance.get("/api/business/" + tableName + "/" + id,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  delete: function(tableName, id) {
-    return axiosInstance.delete("/api/business/" + tableName + "/" + id);
+  delete: function(dataSource, tableName, id) {
+    return axiosInstance.delete("/api/business/" + tableName + "/" + id,
+    {
+      dataSource: dataSource
+    });
   },
-  batchDelete: function(tableName, ids) {
+  batchDelete: function(dataSource, tableName, ids) {
     return axiosInstance.delete("/api/business/" + tableName,
-      {data: ids}
+      {
+        data: ids,
+        dataSource: dataSource
+      }
     );
   },
-  import: async function(tableName, data, progressCallback) {
+  import: async function(dataSource, tableName, data, progressCallback) {
     console.log("table->import")
     console.log(data)
     return axiosInstance.post("/api/business/" + tableName + "/import", data,
@@ -88,24 +104,27 @@ const table = {
           if (progressCallback) {
             progressCallback(progressEvent)
           }
-        }
+        },
+        dataSource: dataSource
     });
   },
-  getImportTemplate: function(tableName) {
+  getImportTemplate: function(dataSource, tableName) {
     return axiosInstance.get("/api/business/" + tableName + "/import/template",
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  export: function(tableName, search, query) {
+  export: function(dataSource, tableName, search, query) {
     return axiosInstance.get("/api/business/" + tableName + "/export",
       {
         params: {
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   }

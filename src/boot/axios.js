@@ -42,6 +42,11 @@ axiosInstance.interceptors.request.use(
       };
     }
 
+    if (config.dataSource) {
+      console.log("config.dataSource = " + config.dataSource);
+      config.headers["dataSource"] = config.dataSource;
+    }
+
     return config;
   },
   function(error) {

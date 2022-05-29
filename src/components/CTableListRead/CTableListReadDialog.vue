@@ -4,6 +4,7 @@
       <CTableListRead
         ref="rTablelistRead"
         v-model="selected"
+        :dataSource="dataSource"
         :tableName="tableName"
         readOnly="true"
         :selectionProp="selection" >
@@ -19,6 +20,9 @@
 <script>
 export default {
   props: {
+    dataSource: {
+      required: true
+    },
     tableName: {
       required: true
     },

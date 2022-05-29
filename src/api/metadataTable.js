@@ -6,17 +6,23 @@ const HEADERS = {
 
 
 const metadataTable = {
-  create: function(data) {
+  create: function(dataSource, data) {
     return axiosInstance.post("/api/metadata/tables",
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
-  update: function(id, data) {
+  update: function(dataSource, id, data) {
     return axiosInstance.patch("/api/metadata/tables/" + id,
-       data
+       data,
+       {
+         dataSource: dataSource
+       }
     );
   },
-  list: function(page, rowsPerPage, search, query) {
+  list: function(dataSource, page, rowsPerPage, search, query) {
     if (!page) {
       page = 1
     }
@@ -32,82 +38,100 @@ const metadataTable = {
           limit: rowsPerPage,
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
         //permission: ["ROLE_META_TABLE_R"]
       }
     );
   },
-  count: function(search, query) {
+  count: function(dataSource, search, query) {
     return axiosInstance.get("/api/metadata/tables/count",
       {
         params: {
           search: search,
           ...query
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  get: function(id) {
+  get: function(dataSource, id) {
     return axiosInstance.get("/api/metadata/tables/" + id,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  getByName: function(name) {
+  getByName: function(dataSource, name) {
     return axiosInstance.get("/api/metadata/tables/name/" + name,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  getMetadata: function(name) {
+  getMetadata: function(dataSource, name) {
     return axiosInstance.get("/api/metadata/tables/metadatas/" + name,
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  getMetadatas: function() {
+  getMetadatas: function(dataSource) {
     return axiosInstance.get("/api/metadata/tables/metadatas",
       {
         params: {
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  reverse: function(tableName) {
-    return axiosInstance.post("/api/metadata/tables/metadatas/reverse/" + tableName);
+  reverse: function(dataSource, tableName) {
+    return axiosInstance.post("/api/metadata/tables/metadatas/reverse/" + tableName,
+      {},
+      {
+        dataSource: dataSource
+      });
   },
-  batchReverse: function(tableNames) {
-    return axiosInstance.post("/api/metadata/tables/metadatas/reverse", tableNames);
+  batchReverse: function(dataSource, tableNames) {
+    return axiosInstance.post("/api/metadata/tables/metadatas/reverse", tableNames,
+    {
+      dataSource: dataSource
+    });
   },
-  repairMeataData: function(name, columnNameLsit) {
+  repairMeataData: function(dataSource, name, columnNameLsit) {
     return axiosInstance.patch("/api/metadata/tables/metadata/" + name,
-      columnNameLsit
+      columnNameLsit,
+      {
+        dataSource: dataSource
+      }
     );
   },
-  delete: function(id, isDropPhysicalTable) {
+  delete: function(dataSource, id, isDropPhysicalTable) {
     return axiosInstance.delete("/api/metadata/tables/" + id, {
       params: {
         isDropPhysicalTable: isDropPhysicalTable
-      }
+      },
+      dataSource: dataSource
     });
   },
-  batchDelete: function(ids, isDropPhysicalTable) {
+  batchDelete: function(dataSource, ids, isDropPhysicalTable) {
     return axiosInstance.delete("/api/metadata/tables",
       {
         data:  ids,
         params: {
           isDropPhysicalTable: isDropPhysicalTable
-        }
+        },
+        dataSource: dataSource
       }
     );
   },
-  import: async function(data, progressCallback) {
+  import: async function(dataSource, data, progressCallback) {
     return axiosInstance.post("/api/metadata/tables/import", data,
       {
         headers: HEADERS,
@@ -115,12 +139,24 @@ const metadataTable = {
           if (progressCallback) {
             progressCallback(progressEvent)
           }
-        }
+        },
+        dataSource: dataSource
     });
   },
-  export: function(ids) {
+  export: function(dataSource, ids) {
     return axiosInstance.post("/api/metadata/tables/export",
-      ids
+      ids,
+      {
+        dataSource: dataSource
+      }
+    );
+  },
+  listDataSource: function() {
+    return axiosInstance.get("/api/metadata/dataSources",
+      {
+        params: {
+        }
+      }
     );
   }
 };

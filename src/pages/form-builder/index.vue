@@ -268,6 +268,7 @@ export default {
   },
   data () {
     return {
+      dataSource: "",
       left: true,
       right: true,
       unselectedList: [],
@@ -365,6 +366,7 @@ export default {
         this.$route.meta.isAllowBack
       );
 
+      this.dataSource = this.$route.params.dataSource;
       await this.loadData(id);
     },
 
@@ -473,13 +475,13 @@ export default {
       try {
         this.loading = true;
         const tableId = id || this.$route.params.id;
-        const table = await metadataTableService.get(tableId);
+        const table = await metadataTableService.get(this.dataSource, tableId);
         this.table = table;
 
         let query = {
           tableId:tableId
         };
-        this.formBuilders = await tableService.list("tableFormBuilder", 0, 999, null, query, null);
+        this.formBuilders = await tableService.list(this.dataSource, "tableFormBuilder", 0, 999, null, query, null);
 
         this.setFormBuilder();
 
@@ -575,9 +577,9 @@ export default {
         let formBuilder = this.formBuilders.find(t => t.device === this.device
           && t.type === this.type);
         if (!formBuilder) {
-          await tableService.create("tableFormBuilder", data);
+          await tableService.create(this.dataSource, "tableFormBuilder", data);
         } else {
-          await tableService.update("tableFormBuilder", formBuilder.id, data);
+          await tableService.update(this.dataSource, "tableFormBuilder", formBuilder.id, data);
         }
 
         this.$q.loading.hide();
@@ -595,7 +597,7 @@ export default {
       try {
         let formBuilder = this.formBuilders.find(t => t.type === this.type);
         if (formBuilder) {
-          await tableService.delete("tableFormBuilder", formBuilder.id);
+          await tableService.delete(this.dataSource, "tableFormBuilder", formBuilder.id);
           this.$q.loading.hide();
           this.$q.notify("删除成功");
           await this.loadData(this.table.id);
