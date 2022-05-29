@@ -292,7 +292,7 @@ export default {
 
           const businessMenu = {
             label: "业务数据",
-            labelKey: "business",
+            labelKey: "business_"+ dataSourceName,
             icon: "business",
             children: [
             ]
@@ -300,7 +300,7 @@ export default {
 
           const systemBusinessMenu = {
             label: "内置数据",
-            labelKey: "systemBusiness",
+            labelKey: "systemBusiness_"+ dataSourceName,
             icon: "tab",
             children: [
             ]
@@ -309,7 +309,7 @@ export default {
 
           const metadataMenu = {
             label: "元数据",
-            labelKey: "metadata",
+            labelKey: "metadata_"+ dataSourceName,
             icon: "work_outline",
             children: [
               {
