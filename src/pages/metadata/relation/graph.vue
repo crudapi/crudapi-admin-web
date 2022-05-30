@@ -26,6 +26,7 @@ export default {
   data () {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       relations: []
     }
   },
@@ -80,6 +81,7 @@ export default {
       );
 
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       try {
         const relations = await metadataRelationService.list(this.dataSource);
         this.relations = relations;

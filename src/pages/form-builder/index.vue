@@ -7,8 +7,10 @@
 
         <q-toolbar-title>
           <q-breadcrumbs>
+            <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+            <q-breadcrumbs-el label="表管理" :to="dataSourceUrl + '/metadata/tables'" />
+            <q-breadcrumbs-el :label="table.caption" :to="dataSourceUrl + '/metadata/tables/' + table.id"/>
             <q-breadcrumbs-el label="页面构建" />
-            <q-breadcrumbs-el :label="table.caption" />
           </q-breadcrumbs>
         </q-toolbar-title>
 
@@ -269,6 +271,7 @@ export default {
   data () {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       left: true,
       right: true,
       unselectedList: [],
@@ -367,6 +370,7 @@ export default {
       );
 
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       await this.loadData(id);
     },
 

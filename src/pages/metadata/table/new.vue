@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="表管理" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="表管理" :to="dataSourceUrl + '/metadata/tables'" />
       <q-breadcrumbs-el label="添加" />
     </q-breadcrumbs>
 
@@ -346,6 +347,7 @@ export default {
   data () {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       reverse: false,
       indexCount: 0,
       isLoadMetadataValid: true,
@@ -689,6 +691,7 @@ export default {
         this.$route.meta.isAllowBack
       );
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       await this.fetchFromServer();
     },
 

@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="序列号管理" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="序列号管理" :to="dataSourceUrl + '/metadata/sequences'" />
       <q-breadcrumbs-el label="列表" />
     </q-breadcrumbs>
 
@@ -176,6 +177,7 @@ export default {
       selected: [],
       search: "",
       dataSource: "",
+      dataSourceUrl: "",
       queryColumns: [],
       pagination: {
         page: 1,
@@ -489,6 +491,7 @@ export default {
       this.selected =[];
       this.search = "";
       this.dataSource = dataSource || this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
     }
   }
 }

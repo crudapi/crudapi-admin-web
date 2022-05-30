@@ -1,9 +1,10 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="序列号管理" />
-      <q-breadcrumbs-el label="编辑" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="序列号管理" :to="dataSourceUrl + '/metadata/sequences'" />
       <q-breadcrumbs-el :label="sequence.caption" />
+      <q-breadcrumbs-el label="编辑" />
     </q-breadcrumbs>
 
     <q-separator />
@@ -159,7 +160,8 @@ export default {
         }
       ],
       sequence: {},
-      dataSource: ""
+      dataSource: "",
+      dataSourceUrl: ""
     }
   },
 
@@ -214,6 +216,7 @@ export default {
         this.$route.meta.isAllowBack
       );
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       await this.loadData(id);
     },
 

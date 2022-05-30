@@ -1,9 +1,10 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="表关系管理" />
-      <q-breadcrumbs-el label="编辑" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="表关系" :to="dataSourceUrl + '/metadata/relations'" />
       <q-breadcrumbs-el :label="metadataRelation.caption" />
+      <q-breadcrumbs-el label="编辑" />
     </q-breadcrumbs>
 
     <q-separator />
@@ -136,6 +137,7 @@ export default {
   data () {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       loading : true,
       tableOptions: [],
       relationTypeOptions: [
@@ -207,6 +209,7 @@ export default {
         this.$route.meta.isAllowBack
       );
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       await this.loadData(id);
     },
 

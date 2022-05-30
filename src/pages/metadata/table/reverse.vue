@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="表管理" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="表管理" :to="dataSourceUrl + '/metadata/tables'" />
       <q-breadcrumbs-el label="数据库逆向" />
     </q-breadcrumbs>
 
@@ -75,6 +76,7 @@ export default {
   data () {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       data: [],
       loading: true,
       selected: [],
@@ -263,6 +265,7 @@ export default {
       this.selected =[];
       this.search = "";
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
     }
   }
 }

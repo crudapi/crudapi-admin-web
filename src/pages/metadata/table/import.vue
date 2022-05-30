@@ -1,7 +1,8 @@
 <template>
    <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="表管理" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="表管理" :to="dataSourceUrl + '/metadata/tables'" />
       <q-breadcrumbs-el label="批量逆向" />
     </q-breadcrumbs>
 
@@ -39,6 +40,7 @@ export default {
   data() {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       localFile: null
     };
   },
@@ -72,6 +74,7 @@ export default {
       );
 
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
     },
 
     async onSubmitClick() {

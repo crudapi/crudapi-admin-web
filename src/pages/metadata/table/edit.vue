@@ -1,9 +1,10 @@
 <template>
   <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="表管理" />
-      <q-breadcrumbs-el label="编辑" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="表管理" :to="dataSourceUrl + '/metadata/tables'" />
       <q-breadcrumbs-el :label="table.caption" />
+      <q-breadcrumbs-el label="编辑" />
     </q-breadcrumbs>
 
     <q-separator />
@@ -325,6 +326,7 @@ export default {
   data () {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       selected: [],
       loading: true,
       tablePagination: {
@@ -661,6 +663,7 @@ export default {
       );
 
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       await this.loadData(id);
     },
 

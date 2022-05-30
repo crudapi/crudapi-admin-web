@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="表关系管理" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="表关系" :to="dataSourceUrl + '/metadata/relations'" />
       <q-breadcrumbs-el label="添加" />
     </q-breadcrumbs>
 
@@ -120,6 +121,7 @@ export default {
   data () {
     return {
       dataSource: "",
+      dataSourceUrl: "",
       loading : true,
       tableOptions: [],
       relationTypeOptions: [
@@ -192,6 +194,7 @@ export default {
       );
 
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       await this.loadData();
     },
 

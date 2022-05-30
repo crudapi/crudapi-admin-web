@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-sm bg-page">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="表关系" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="表关系" :to="dataSourceUrl + '/metadata/relations'" />
       <q-breadcrumbs-el label="列表" />
     </q-breadcrumbs>
 
@@ -194,6 +195,7 @@ export default {
     return {
       data: [],
       dataSource: "",
+      dataSourceUrl: "",
       tableName: "",
       tableCaption: "",
       listUrl: "",
@@ -500,6 +502,7 @@ export default {
       this.selected =[];
       this.search = "";
       this.dataSource = dataSource || this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
     }
   }
 }

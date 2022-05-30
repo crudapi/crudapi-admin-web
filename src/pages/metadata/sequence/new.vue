@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="序列号管理" />
+      <q-breadcrumbs-el :label="dataSource" clickable :to="dataSourceUrl" />
+      <q-breadcrumbs-el label="序列号管理" :to="dataSourceUrl + '/metadata/sequences'" />
       <q-breadcrumbs-el label="添加" />
     </q-breadcrumbs>
 
@@ -149,7 +150,9 @@ export default {
         maxValue: 999999999,
         nextValue: 1,
         incrementBy:1
-      }
+      },
+      dataSource: "",
+      dataSourceUrl: ""
     }
   },
 
@@ -205,6 +208,7 @@ export default {
       );
 
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
     },
 
     async onSubmit() {
