@@ -279,7 +279,19 @@ export default {
       try {
         this.allMenu = [];
         const that = this;
-        const dataSources = await metadataTableService.listDataSource();
+        let dataSources = [];
+
+        try {
+          dataSources = await metadataTableService.listDataSource();
+        } catch (error) {
+          dataSources.push({
+            "name": "primary",
+            "caption": "主数据源",
+
+          });
+          console.warn("请升级前端版本，否则可能不兼容！");
+        }
+
         for (let i = 0; i < dataSources.length; i++) {
           const dataSource = dataSources[i];
           const dataSourceName = dataSource.name;
