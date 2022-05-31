@@ -33,7 +33,7 @@ const tableService = {
     var res = await table.batchDelete(dataSource, tableName, ids);
     return res.data;
   },
-  import: async function (tableName, fileObj, progressCallback) {
+  import: async function (dataSource, tableName, fileObj, progressCallback) {
     return table.import(dataSource, tableName, fileObj, progressCallback).then((res) => {
       console.log(res);
       return res.data;
