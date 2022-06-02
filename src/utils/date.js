@@ -25,6 +25,7 @@ export function dateTimeFormat(value) {
     return "";
   }
 
+
   let formattedString = this.covertToQDateTime(new Date(value));
 
   return formattedString;
@@ -33,6 +34,10 @@ export function dateTimeFormat(value) {
 export function timeFormat(value) {
   if (!value) {
     return "";
+  }
+
+  if ((value + "").indexOf(":") > 0) {
+    return value;
   }
 
   let formattedString = this.covertToQTime(new Date(value));
