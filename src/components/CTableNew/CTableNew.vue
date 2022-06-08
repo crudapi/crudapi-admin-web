@@ -518,8 +518,8 @@ export default {
         // (everything except "component" and "parent" props above):
         tableName: item.relationTableName,
         selectionProp: item.multipleValue ? 'multiple': 'single',
-        data: item.value
-        // ...more.props...
+        data: item.value,
+        dataSource: this.dataSource
       }).onOk((data) => {
         item.value = data;
       }).onCancel(() => {

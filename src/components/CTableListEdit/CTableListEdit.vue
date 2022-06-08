@@ -765,8 +765,8 @@ export default {
         // (everything except "component" and "parent" props above):
         tableName: col.relationTableName,
         selectionProp: col.multipleValue ? 'multiple': 'single',
-        data: row[colKey]
-        // ...more.props...
+        data: row[colKey],
+        dataSource: this.dataSource
       }).onOk((data) => {
         row[colKey] = data;
         row[col.relationName] = data;
