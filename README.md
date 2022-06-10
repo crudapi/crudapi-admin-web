@@ -29,6 +29,23 @@ npm run lint
 npm run build
 ```
 
+## Config
+update file quasar.conf.js, set devServer->proxy->target
+quasar.conf.js
+```javascript
+devServer: {
+  https: false,
+  port: 8080,
+  open: true,
+  proxy: {
+    "/api/*": {
+      target: "http://127.0.0.1:8888",
+      changeOrigin: true
+    }
+  }
+}
+```
+
 ## Docker
 ```bash
 docker build -t crudapi-admin-web:latest .
