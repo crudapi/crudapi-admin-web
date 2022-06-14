@@ -292,91 +292,104 @@ export default {
           console.warn("请升级前端版本，否则可能不兼容！");
         }
 
-        for (let i = 0; i < dataSources.length; i++) {
-          const dataSource = dataSources[i];
-          const dataSourceName = dataSource.name;
-          const dataSourceMenu = {
-            label: dataSource.caption,
-            labelKey: "/dataSource/" + dataSourceName,
-            icon: "o_table_rows",
-            children: []
-          };
-
-          const businessMenu = {
-            label: "业务数据",
-            labelKey: "business_"+ dataSourceName,
-            icon: "business",
-            children: [
-            ]
-          };
-
-          const systemBusinessMenu = {
-            label: "内置数据",
-            labelKey: "systemBusiness_"+ dataSourceName,
-            icon: "tab",
-            children: [
-            ]
-          };
-
-
-          const metadataMenu = {
-            label: "元数据",
-            labelKey: "metadata_"+ dataSourceName,
-            icon: "work_outline",
-            children: [
-              {
-                label: "序列号",
-                labelKey: "/dataSource/" + dataSourceName + "/metadata/sequences",
-                icon: "format_list_numbered",
-                children: [
-                ]
-              }, {
-                label: "表",
-                labelKey: "/dataSource/" + dataSourceName+ "/metadata/tables",
-                icon: "o_table_rows",
-                children: [
-                ]
-              }, {
-                label: "关系",
-                labelKey: "/dataSource/" + dataSourceName + "/metadata/relations",
-                icon: "content_copy",
-                children: [
-                ]
-              }
-            ]
-          };
-
-          const tables = await metadataTableService.list(dataSourceName, 1,99999);
-          for (let i = 0; i < tables.length; i++) {
-            let table = tables[i];
-            if (table.systemable) {
-              systemBusinessMenu.children.push({
-                  label: table.caption,
-                  labelKey: this.getBussinessPath(dataSourceName, table.name),
-                  icon: "insert_chart_outlined"
-              });
-            } else {
-              businessMenu.children.push({
-                  label: table.caption,
-                  labelKey: this.getBussinessPath(dataSourceName, table.name),
-                  icon: "insert_chart_outlined"
-              });
-            }
-          }
-
-          dataSourceMenu.children.push(businessMenu);
-          dataSourceMenu.children.push(systemBusinessMenu);
-          dataSourceMenu.children.push(metadataMenu);
-
-          this.allMenu.push(dataSourceMenu);
+        let dataSourceMenus = await this.getDataSourceMenu(dataSources);
+        for (let i = 0; i < dataSourceMenus.length; i++) {
+          this.allMenu.push(dataSourceMenus[i]);
         }
-
 
         this.allMenu.push(this.systemMenu);
 
         this.$refs.qTreeProxy.setExpanded("system", true);
       } catch (error) {
         console.error(error);
+      }
+    },
+
+    async getDataSourceMenu(dataSources) {
+      let dataSourceMenus = [];
+      for (let i = 0; i < dataSources.length; i++) {
+        const dataSource = dataSources[i];
+        const dataSourceName = dataSource.name;
+        const dataSourceMenu = {
+          label: dataSource.caption,
+          labelKey: "/dataSource/" + dataSourceName,
+          icon: "o_table_rows",
+          children: []
+        };
+
+        const businessMenu = {
+          label: "业务数据",
+          labelKey: "business_"+ dataSourceName,
+          icon: "business",
+          children: [
+          ]
+        };
+
+        const systemBusinessMenu = {
+          label: "内置数据",
+          labelKey: "systemBusiness_"+ dataSourceName,
+          icon: "tab",
+          children: [
+          ]
+        };
+
+
+        const metadataMenu = {
+          label: "元数据",
+          labelKey: "metadata_"+ dataSourceName,
+          icon: "work_outline",
+          children: [
+            {
+              label: "序列号",
+              labelKey: "/dataSource/" + dataSourceName + "/metadata/sequences",
+              icon: "format_list_numbered",
+              children: [
+              ]
+            }, {
+              label: "表",
+              labelKey: "/dataSource/" + dataSourceName+ "/metadata/tables",
+              icon: "o_table_rows",
+              children: [
+              ]
+            }, {
+              label: "关系",
+              labelKey: "/dataSource/" + dataSourceName + "/metadata/relations",
+              icon: "content_copy",
+              children: [
+              ]
+            }
+          ]
+        };
+
+        const tables = await metadataTableService.list(dataSourceName, 1,99999);
+        for (let i = 0; i < tables.length; i++) {
+          let table = tables[i];
+          if (table.systemable) {
+            systemBusinessMenu.children.push({
+                label: table.caption,
+                labelKey: this.getBussinessPath(dataSourceName, table.name),
+                icon: "insert_chart_outlined"
+            });
+          } else {
+            businessMenu.children.push({
+                label: table.caption,
+                labelKey: this.getBussinessPath(dataSourceName, table.name),
+                icon: "insert_chart_outlined"
+            });
+          }
+        }
+
+        dataSourceMenu.children.push(businessMenu);
+        dataSourceMenu.children.push(systemBusinessMenu);
+        dataSourceMenu.children.push(metadataMenu);
+
+        dataSourceMenus.push(dataSourceMenu);
+      }
+
+      if (dataSourceMenus.length === 1) {
+        return dataSourceMenus[0].children;
+      } else {
+        return dataSourceMenus;
       }
     },
 

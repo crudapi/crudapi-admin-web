@@ -246,7 +246,12 @@ export default {
           query);
 
         this.pagination.count = data.length;
-
+        let i = 0;
+        data.forEach((t) => {
+          if (!t.id) {
+            t.id = ++i;
+          }
+        });
         this.data = data;
         this.loading = false;
       } catch (error) {
