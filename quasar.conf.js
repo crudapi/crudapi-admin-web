@@ -96,6 +96,10 @@ module.exports = function ( ctx ) {
         "/api/*": {
           target: "https://demo.crudapi.cn",
           changeOrigin: true
+        },
+        "/download/*": {
+          target: "https://demo.crudapi.cn",
+          changeOrigin: true
         }
         //local env
         // "/api/*": {
