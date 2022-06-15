@@ -60,12 +60,19 @@ const table = {
       }
     );
   },
-  count: function(dataSource, tableName, search, query) {
+  count: function(dataSource, tableName, search, query, filter) {
+    let filterStrEncode;
+    if (filter) {
+      let filterStr = JSON.stringify(filter);
+      filterStrEncode = encodeURIComponent(filterStr);
+    }
+
     return axiosInstance.get("/api/business/" + tableName + "/count",
       {
         params: {
           search: search,
-          ...query
+          ...query,
+          filter: filterStrEncode
         },
         dataSource: dataSource
       }
@@ -117,12 +124,18 @@ const table = {
       }
     );
   },
-  export: function(dataSource, tableName, search, query) {
+  export: function(dataSource, tableName, search, query, filter) {
+    let filterStrEncode;
+    if (filter) {
+      let filterStr = JSON.stringify(filter);
+      filterStrEncode = encodeURIComponent(filterStr);
+    }
     return axiosInstance.get("/api/business/" + tableName + "/export",
       {
         params: {
           search: search,
-          ...query
+          ...query,
+          filter: filterStrEncode
         },
         dataSource: dataSource
       }

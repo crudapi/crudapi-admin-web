@@ -9,8 +9,8 @@ const tableService = {
     var res = await table.update(dataSource, tableName, id, data);
     return res.data;
   },
-  count: async function(dataSource, tableName, search, query) {
-    var res = await table.count(dataSource, tableName, search, query);
+  count: async function(dataSource, tableName, search, query, filter) {
+    var res = await table.count(dataSource, tableName, search, query, filter);
     return res.data;
   },
   list: async function(dataSource, tableName, page, rowsPerPage, search, query, filter) {
@@ -43,8 +43,8 @@ const tableService = {
     var res = await table.getImportTemplate(dataSource, tableName);
     return res.data;
   },
-  export: async function(dataSource, tableName, search, query) {
-    var res = await table.export(dataSource, tableName, search, query);
+  export: async function(dataSource, tableName, search, query, filter) {
+    var res = await table.export(dataSource, tableName, search, query, filter);
     return res.data;
   }
 };

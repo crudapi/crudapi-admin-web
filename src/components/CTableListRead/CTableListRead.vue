@@ -323,10 +323,53 @@ export default {
       for (let i = 0; i < this.queryColumns.length; i++) {
         const queryColumn = this.queryColumns[i];
         if (queryColumn.value && queryColumn.value.trim() !== "") {
+          let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
+          if (queryColumnValues.length > 1) {
+            continue;
+          }
           query[queryColumn.name] = queryColumn.value
         }
       }
       return query;
+    },
+
+    getConditon() {
+      let conditions = [];
+      for (let i = 0; i < this.queryColumns.length; i++) {
+        const queryColumn = this.queryColumns[i];
+        if (queryColumn.value && queryColumn.value.trim() !== "") {
+          let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
+          if (queryColumnValues.length <= 1) {
+            continue;
+          }
+
+          let values = [];
+          for (let j = 0; j < queryColumnValues.length; j++) {
+            values.push(queryColumnValues[j].trim());
+          }
+
+          const leafCondition = {
+            name: 'L',
+            columnName: queryColumn.name,
+            operatorType: 'IN',
+            values: values
+          }
+
+          conditions.push(leafCondition);
+        }
+      }
+
+      console.dir(conditions);
+
+      if (conditions.length > 0) {
+        return {
+          name: 'C',
+          conditionType: 'AND',
+          conditions: conditions
+        }
+      }
+
+      return null;
     },
 
     onQueryClickAction() {
@@ -456,8 +499,10 @@ export default {
 
       try {
         let query = this.getQuery();
+        let conditon = this.getConditon();
 
-        const url = await tableService.export(this.dataSource, this.tableName, this.search, query);
+        const url = await tableService.export(this.dataSource, this.tableName, this.search, query, conditon);
+        
         //this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
         this.$q.dialog({
@@ -497,14 +542,16 @@ export default {
       this.data = [];
       try {
         let query = this.getQuery();
+        let conditon = this.getConditon();
 
-        this.pagination.count = await tableService.count(this.dataSource, this.tableName, this.search,  query);
+        this.pagination.count = await tableService.count(this.dataSource, this.tableName, this.search, query, conditon);
 
         let data = await tableService.list(this.dataSource, this.tableName,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,
-          query);
+          query,
+          conditon);
         let newData = [];
         const relationMap = this.relationMap;
 
