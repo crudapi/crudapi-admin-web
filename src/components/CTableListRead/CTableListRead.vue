@@ -20,7 +20,21 @@
             <div class="q-px-md">
               <q-item-label class="query-cond">{{item.label}}:</q-item-label>
             </div>
-            <div class="q-pt-md">
+
+             <div v-if="item.relationColumnName" class="q-pt-md">
+              <q-select
+                style="min-width: 150px;"
+                outlined
+                v-model="item.value"
+                :options="item.options"
+                multiple
+                emit-value
+                :option-label="item.relationDisplayColumn"
+                :option-value="item.relationColumnName"
+              />
+            </div>
+
+            <div v-else class="q-pt-md">
               <q-input
               outlined
               v-model="item.value"
@@ -322,40 +336,59 @@ export default {
       let query = {};
       for (let i = 0; i < this.queryColumns.length; i++) {
         const queryColumn = this.queryColumns[i];
-        if (queryColumn.value && queryColumn.value.trim() !== "") {
-          let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
-          if (queryColumnValues.length > 1) {
-            continue;
+        if (Array.isArray(queryColumn.value)) {
+
+        } else {
+          if (queryColumn.value && queryColumn.value.trim() !== "") {
+            let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
+            if (queryColumnValues.length > 1) {
+              continue;
+            }
+
+            query[queryColumn.name] = queryColumn.value
           }
-          query[queryColumn.name] = queryColumn.value
         }
       }
       return query;
     },
 
+
     getConditon() {
       let conditions = [];
       for (let i = 0; i < this.queryColumns.length; i++) {
         const queryColumn = this.queryColumns[i];
-        if (queryColumn.value && queryColumn.value.trim() !== "") {
-          let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
-          if (queryColumnValues.length <= 1) {
-            continue;
-          }
+        if (Array.isArray(queryColumn.value)) {
+          if (queryColumn.value.length > 0) {
+            const leafCondition = {
+              name: 'L',
+              columnName: queryColumn.name,
+              operatorType: 'IN',
+              values: queryColumn.value
+            }
 
-          let values = [];
-          for (let j = 0; j < queryColumnValues.length; j++) {
-            values.push(queryColumnValues[j].trim());
+            conditions.push(leafCondition);
           }
+        }  else {
+          if (queryColumn.value && queryColumn.value.trim() !== "") {
+            let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
+            if (queryColumnValues.length <= 1) {
+              continue;
+            }
 
-          const leafCondition = {
-            name: 'L',
-            columnName: queryColumn.name,
-            operatorType: 'IN',
-            values: values
+            let values = [];
+            for (let j = 0; j < queryColumnValues.length; j++) {
+              values.push(queryColumnValues[j].trim());
+            }
+
+            const leafCondition = {
+              name: 'L',
+              columnName: queryColumn.name,
+              operatorType: 'IN',
+              values: values
+            }
+
+            conditions.push(leafCondition);
           }
-
-          conditions.push(leafCondition);
         }
       }
 
@@ -378,8 +411,13 @@ export default {
 
     onResetClickAction() {
       this.search = "";
-       for (let i = 0; i < this.queryColumns.length; i++) {
-         this.queryColumns[i].value = "";
+      for (let i = 0; i < this.queryColumns.length; i++) {
+         if (this.queryColumns[i].relationColumnName) {
+            this.queryColumns[i].value = [];
+         } else {
+            this.queryColumns[i].value = "";
+         }
+
       }
       this.onRefresh();
     },
@@ -646,11 +684,15 @@ export default {
 
 
         let relationMap = {};
+        let relationOptionMap = {};
+
         await Promise.all(tableRelations.map(async (tableRelation) => {
            if (tableRelation.relationType === "ManyToOne"
             || tableRelation.relationType === "OneToOneSubToMain") {
              const fromColumnName = tableRelation.fromColumn.name;
-             relationMap[fromColumnName] = tableRelation
+             relationMap[fromColumnName] = tableRelation;
+             let relationData = await tableService.list(this.dataSource, tableRelation.toTable.name);
+             relationOptionMap[fromColumnName] = relationData;
            }
         }));
         this.relationMap = relationMap;
@@ -673,7 +715,7 @@ export default {
             if (relation) {
               column.relationTableName = relation.toTable.name;
               column.relationColumnName = relation.toColumn.name;
-              column.relationDisplayColumns= that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
+              column.relationDisplayColumns = that.getDisplayableColumns(relationMetadataMap[column.relationTableName]);
 
               // tableDatas.forEach((tableData) => {
               //   tableData[columnName] = tableData[relation.name];
@@ -697,10 +739,20 @@ export default {
             visibleColumns.push(column.name);
 
             if (column.queryable) {
+              const relationDisplayColumns = column.relationDisplayColumns;
+              let relationDisplayColumn = column.relationColumnName;
+              if (relationDisplayColumns && relationDisplayColumns.length > 0) {
+                relationDisplayColumn = relationDisplayColumns[0].name;
+              }
+
               queryColumns.push({
                   name: column.name,
                   label: column.caption,
-                  value: ""
+                  value: column.relationColumnName ? [] : "",
+                  relationColumnName: column.relationColumnName,
+                  relationDisplayColumn: relationDisplayColumn,
+                  options: relationOptionMap[column.name] || []
+
               });
             }
           }
