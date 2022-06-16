@@ -131,8 +131,8 @@ const metadataTable = {
       }
     );
   },
-  import: async function(dataSource, data, progressCallback) {
-    return axiosInstance.post("/api/metadata/tables/import", data,
+  importFile: async function(dataSource, data, progressCallback) {
+    return axiosInstance.post("/api/metadata/tables/file/import", data,
       {
         headers: HEADERS,
         onUploadProgress:  (progressEvent) => {
@@ -141,6 +141,12 @@ const metadataTable = {
           }
         },
         dataSource: dataSource
+    });
+  },
+  import: async function(dataSource, data) {
+    return axiosInstance.post("/api/metadata/tables/import", data,
+      {
+       dataSource: dataSource
     });
   },
   export: function(dataSource, ids) {

@@ -243,8 +243,8 @@ export default {
       ],
       tableVisibleColumns: [
         "id",
-        "name",
         "caption",
+        "name",
         "pluralName",
         "tableName",
       ],
@@ -258,20 +258,20 @@ export default {
           sortable: true
         },
         {
-          name: "name",
-          required: true,
-          label: "名称",
-          align: "left",
-          field: row => row.name,
-          format: val => `${val}`,
-          sortable: true
-        },
-        {
           name: "caption",
           required: true,
           label: "中文名称",
           align: "left",
           field: row => row.caption,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: "name",
+          required: true,
+          label: "名称",
+          align: "left",
+          field: row => row.name,
           format: val => `${val}`,
           sortable: true
         },
@@ -450,12 +450,7 @@ export default {
       });
 
       try {
-        let form = new FormData()
-        form.append('file', this.localFile);
-
-        this.fileInfo = await metadataTableService.import(this.dataSource, form, (e)=> {
-          console.info(e);
-        });
+        this.fileInfo = await metadataTableService.import(this.dataSource, this.metadata);
         this.$q.notify("导入成功");
         this.$router.go(-1);
         this.$q.loading.hide();

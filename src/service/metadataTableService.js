@@ -53,11 +53,15 @@ const metadataTableService = {
     var res = await metadataTable.batchDelete(dataSource,ids, isDropPhysicalTable);
     return res.data;
   },
-  import: async function (dataSource, fileObj, progressCallback) {
+  importFile: async function (dataSource, fileObj, progressCallback) {
     return metadataTable.import(dataSource, fileObj, progressCallback).then((res) => {
       console.log(res);
       return res.data;
     })
+  },
+  import: async function (dataSource, data) {
+    var res = await metadataTable.import(dataSource, data);
+    return res.data;
   },
   export: async function(dataSource, ids) {
     var res = await metadataTable.export(dataSource, ids);
