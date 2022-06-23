@@ -69,6 +69,13 @@
             <template v-slot:action>
               <q-btn
                 unelevated
+                @click="onSoftDeleteClickAction()"
+                color="warning"
+                label="批量软删除"
+              />
+              <p class="q-px-sm"/>
+              <q-btn
+                unelevated
                 @click="onDeleteClickAction()"
                 color="negative"
                 label="批量删除"
@@ -118,18 +125,30 @@
                   <q-btn
                     v-if="!readOnly && !table.readOnly"
                     unelevated
-                    @click="onDeleteClickAction(props.row)"
-                    color="negative"
-                    label="删除"
-                    flat
-                    dense
-                  ></q-btn>
-                  <q-btn
-                    v-if="!readOnly && !table.readOnly"
-                    unelevated
                     @click="onEditClickAction(props.row)"
                     color="primary"
                     label="编辑"
+                    flat
+                    dense
+                  ></q-btn>
+
+                  <q-btn
+                    v-if="!readOnly && !table.readOnly"
+                    unelevated
+                    @click="onSoftDeleteClickAction(props.row)"
+                    color="warning"
+                    label="软删除"
+                    flat
+                    dense
+                  ></q-btn>
+
+
+                  <q-btn
+                    v-if="!readOnly && !table.readOnly"
+                    unelevated
+                    @click="onDeleteClickAction(props.row)"
+                    color="negative"
+                    label="删除"
                     flat
                     dense
                   ></q-btn>
@@ -527,6 +546,46 @@ export default {
       } catch (error) {
         console.error(error);
         this.$q.notify("删除失败");
+      }
+    },
+
+    async onSoftDeleteClickAction(row) {
+      let ids = [];
+      this.selected.forEach((item) => {
+          ids.push(this.getRecId(item));
+      });
+
+      try {
+        this.$q
+          .dialog({
+            title: "软删除",
+            message: "确认软删除吗？",
+            ok: {
+              unelevated: true
+            },
+            cancel: {
+              color: "negative",
+              unelevated: true
+            },
+            persistent: false
+          })
+          .onOk(async () => {
+            if (row) {
+              await tableService.delete(this.dataSource, this.tableName, this.getRecId(row), true);
+            } else {
+              await tableService.batchDelete(this.dataSource, this.tableName, ids, true);
+            }
+
+            this.$q.notify("软删除成功");
+            this.onRefresh();
+          })
+          .onCancel(() => {})
+          .onDismiss(() => {
+            console.info("I am triggered on both OK and Cancel");
+          });
+      } catch (error) {
+        console.error(error);
+        this.$q.notify("软删除失败");
       }
     },
 

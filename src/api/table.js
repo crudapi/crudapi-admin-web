@@ -87,16 +87,22 @@ const table = {
       }
     );
   },
-  delete: function(dataSource, tableName, id) {
+  delete: function(dataSource, tableName, id, isSoftDelete) {
     return axiosInstance.delete("/api/business/" + tableName + "/" + id,
     {
+      params: {
+        isSoftDelete: isSoftDelete
+      },
       dataSource: dataSource
     });
   },
-  batchDelete: function(dataSource, tableName, ids) {
+  batchDelete: function(dataSource, tableName, ids, isSoftDelete) {
     return axiosInstance.delete("/api/business/" + tableName,
       {
         data: ids,
+        params: {
+          isSoftDelete: isSoftDelete
+        },
         dataSource: dataSource
       }
     );

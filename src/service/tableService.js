@@ -25,12 +25,12 @@ const tableService = {
     var res = await table.get(dataSource, tableName, id);
     return res.data;
   },
-  delete: async function(dataSource, tableName, id) {
-    var res = await table.delete(dataSource, tableName, id);
+  delete: async function(dataSource, tableName, id, isSoftDelete) {
+    var res = await table.delete(dataSource, tableName, id, isSoftDelete);
     return res.data;
   },
-  batchDelete: async function(dataSource, tableName, ids) {
-    var res = await table.batchDelete(dataSource, tableName, ids);
+  batchDelete: async function(dataSource, tableName, ids, isSoftDelete) {
+    var res = await table.batchDelete(dataSource, tableName, ids, isSoftDelete);
     return res.data;
   },
   import: async function (dataSource, tableName, fileObj, progressCallback) {
