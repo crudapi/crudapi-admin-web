@@ -16,30 +16,45 @@
           </div>
 
           <div class="row justify-start items-baseline content-center items-center"
-            :key="item.name" v-for="item in queryColumns">
-            <div class="q-px-md">
+            :key="item.name" v-for="(item, index) in queryColumns">
+            <div v-show="expand || index < 15" class="q-px-md">
               <q-item-label class="query-cond">{{item.label}}:</q-item-label>
             </div>
 
-             <div v-if="item.relationColumnName" class="q-pt-md">
-              <q-select
-                style="min-width: 150px;"
+            <div v-show="expand || index < 15">
+              <div v-if="item.relationColumnName" class="q-pt-md">
+                <q-select
+                  style="min-width: 150px;"
+                  outlined
+                  v-model="item.value"
+                  :options="item.options"
+                  multiple
+                  emit-value
+                  :option-label="item.relationDisplayColumn"
+                  :option-value="item.relationColumnName"
+                />
+              </div>
+
+              <div v-else class="q-pt-md">
+                <q-input
                 outlined
                 v-model="item.value"
-                :options="item.options"
-                multiple
-                emit-value
-                :option-label="item.relationDisplayColumn"
-                :option-value="item.relationColumnName"
-              />
+                placeholder=""
+                v-on:keyup.enter="onQueryClickAction" />
+              </div>
             </div>
+          </div>
 
-            <div v-else class="q-pt-md">
-              <q-input
-              outlined
-              v-model="item.value"
-              placeholder=""
-              v-on:keyup.enter="onQueryClickAction" />
+          <div v-show="queryColumns.length > 15" class="row justify-start items-baseline content-center items-center">
+            <div class="q-px-md">
+              <q-btn
+                dense
+                flat
+                unelevated
+                round
+                color="primary"
+                @click="expand = !expand" :icon="expand ? 'expand_less' : 'expand_more'"
+              />
             </div>
           </div>
         </div>
@@ -215,6 +230,7 @@ export default {
       primaryNames: [],
       listUrl: "",
       loading: true,
+      expand: false,
       selected: [],
       selection: 'multiple',
       search: "",
