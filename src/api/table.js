@@ -121,6 +121,20 @@ const table = {
         dataSource: dataSource
     });
   },
+  multiImport: async function(dataSource, data, progressCallback) {
+    console.log("table->import")
+    console.log(data)
+    return axiosInstance.post("/api/business/import", data,
+      {
+        headers: HEADERS,
+        onUploadProgress:  (progressEvent) => {
+          if (progressCallback) {
+            progressCallback(progressEvent)
+          }
+        },
+        dataSource: dataSource
+    });
+  },
   getImportTemplate: function(dataSource, tableName) {
     return axiosInstance.get("/api/business/" + tableName + "/import/template",
       {

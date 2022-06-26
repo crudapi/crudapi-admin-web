@@ -39,6 +39,12 @@ const tableService = {
       return res.data;
     })
   },
+  multiImport: async function (dataSource, fileObj, progressCallback) {
+    return table.multiImport(dataSource, fileObj, progressCallback).then((res) => {
+      console.log(res);
+      return res.data;
+    })
+  },
   getImportTemplate: async function(dataSource, tableName) {
     var res = await table.getImportTemplate(dataSource, tableName);
     return res.data;

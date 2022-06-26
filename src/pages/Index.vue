@@ -71,6 +71,15 @@
       </q-banner>
 
       <div v-show="businessExpand">
+        <div v-show="metadataExpand" class="q-py-md q-pl-md row items-start q-gutter-md">
+          <q-card clickable v-ripple flat bordered class="my-card click-card col"
+              @click="onMultiImportClick()" >
+            <q-card-section class="bg-purple text-white">
+              <div class="text-h6">批量导入</div>
+              <div class="text-subtitle2">导入JSON数据</div>
+            </q-card-section>
+          </q-card>
+        </div>
         <div class="q-pt-md  q-pl-md " :key="item.id" v-for="item in modules">
           <q-banner clickable inline-actions class="text-black bg-listcolor">
               <span class="title">{{item.name}}</span>
@@ -207,6 +216,9 @@ export default {
     },
     onMetadataRelationClick() {
        this.$router.push("/dataSource/" + this.dataSource + "/metadata/relations");
+    },
+    onMultiImportClick() {
+       this.$router.push("/dataSource/" + this.dataSource + "/business/import");
     }
   }
 };

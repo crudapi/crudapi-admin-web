@@ -110,6 +110,12 @@ const routes = [
         component: () => import("pages/metadata/relation/edit.vue")
       },
       {
+        name: "businessMultiImport",
+        path: "dataSource/:dataSource/business/import",
+        meta: { isAllowBack: true },
+        component: () => import("pages/business/table/multiImport.vue")
+      },
+      {
         name: "business",
         path: "dataSource/:dataSource/business/:tableName",
         meta: { isAllowBack: true },
