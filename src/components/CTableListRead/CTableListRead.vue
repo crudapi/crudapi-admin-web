@@ -35,11 +35,15 @@
               </div>
 
               <div v-else class="q-pt-md">
-                <q-input
-                outlined
-                v-model="item.value"
-                placeholder=""
-                v-on:keyup.enter="onQueryClickAction" />
+                <q-toggle v-if="item.dataType === 'BOOL'"
+                  v-model="item.value" >
+                </q-toggle>
+                <q-input v-else
+                  outlined
+                  v-model="item.value"
+                  placeholder=""
+                  v-on:keyup.enter="onQueryClickAction">
+                </q-input>
               </div>
             </div>
           </div>
@@ -415,17 +419,21 @@ export default {
             query[queryColumn.name] = values.join(",");
           }
         } else {
-          if (queryColumn.value && queryColumn.value.trim() !== "") {
-            let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
-            if (queryColumnValues.length > 1) {
-              let values = [];
-              for (let j = 0; j < queryColumnValues.length; j++) {
-                values.push(queryColumnValues[j].trim());
-              }
-              console.dir(values);
-              query[queryColumn.name] = values.join(",");
-            } else {
+          if (queryColumn.value != null && (queryColumn.value + "").trim() !== "") {
+            if (queryColumn.value === true || queryColumn.value  === false) {
               query[queryColumn.name] = queryColumn.value
+            } else {
+              let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
+              if (queryColumnValues.length > 1) {
+                let values = [];
+                for (let j = 0; j < queryColumnValues.length; j++) {
+                  values.push(queryColumnValues[j].trim());
+                }
+                console.dir(values);
+                query[queryColumn.name] = values.join(",");
+              } else {
+                query[queryColumn.name] = queryColumn.value
+              }
             }
           }
         }
@@ -443,7 +451,11 @@ export default {
          if (this.queryColumns[i].relationColumnName) {
             this.queryColumns[i].value = [];
          } else {
-            this.queryColumns[i].value = "";
+            if (this.queryColumns[i].name === 'isDeleted') {
+              this.queryColumns[i].value = false;
+            } else {
+              this.queryColumns[i].value = "";
+            }
          }
       }
       this.onRefresh();
@@ -830,10 +842,15 @@ export default {
             visibleColumns.push(column.name);
 
             if (column.queryable) {
+              let defaultValue = column.relationColumnName ? [] : "";
+              if (column.name === 'isDeleted') {
+                defaultValue = false;
+              }
               queryColumns.push({
                   name: column.name,
                   label: column.caption,
-                  value: column.relationColumnName ? [] : "",
+                  dataType: column.dataType,
+                  value: defaultValue,
                   relationTableName: column.relationTableName,
                   relationColumnName: column.relationColumnName,
                   relationDisplayColumns: column.relationDisplayColumns
