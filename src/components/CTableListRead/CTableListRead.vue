@@ -22,17 +22,16 @@
             </div>
 
             <div v-show="expand || index < 15">
-              <div v-if="item.relationColumnName" class="q-pt-md">
-                <q-select
-                  style="min-width: 150px;"
-                  outlined
-                  v-model="item.value"
-                  :options="item.options"
-                  multiple
-                  emit-value
-                  :option-label="item.relationDisplayColumn"
-                  :option-value="item.relationColumnName"
-                />
+              <div class="q-px-md row items-baseline content-center"
+                  style="border-bottom: 1px solid rgba(0,0,0,0.12);width: 150px;"
+                  v-if="item.relationTableName">
+                <div class="col-11">
+                  <span>{{ item.value | relationDataFormat(item) }}</span>
+                </div>
+                <div class="col-1">
+                  <q-btn round dense flat icon="zoom_in"
+                  @click="openDialogClickAction(item)" />
+                </div>
               </div>
 
               <div v-else class="q-pt-md">
@@ -202,6 +201,7 @@ import { metadataRelationService } from "../../service";
 import { date } from "../../utils";
 import { extend } from "quasar";
 import CDownloadDialog from '../CDownload/CDownloadDialog'
+import CTableListReadDialog from '../../components/CTableListRead/CTableListReadDialog'
 
 export default {
   name: "CTableListRead",
@@ -282,6 +282,40 @@ export default {
     next();
   },
   filters: {
+    relationDataFormat: function(value, item) {
+       const dicFormat = function(v) {
+          if (v) {
+           if (item.relationDisplayColumns.length > 0) {
+              let displayValues = [];
+              item.relationDisplayColumns.forEach((t) => {
+                  v[t.name] && displayValues.push(v[t.name]);
+              });
+              return displayValues.join("|");
+           } else {
+              return v[item.relationColumnName] || v;
+           }
+          }
+          return null;
+       }
+
+       if (Array.isArray(value)) {
+         let values = [];
+         value.forEach((t) => {
+            const subV = dicFormat(t);
+            if (subV) {
+              values.push(subV);
+            }
+         });
+
+         return values.join(",");
+       }
+
+       if (value) {
+         return dicFormat(value);
+       }
+
+       return null;
+    },
     dataFormat: function(value, key, cols) {
       const find = cols.find(t => t.name === key);
       if (find) {
@@ -372,72 +406,31 @@ export default {
       for (let i = 0; i < this.queryColumns.length; i++) {
         const queryColumn = this.queryColumns[i];
         if (Array.isArray(queryColumn.value)) {
-
+          if (queryColumn.value.length > 0) {
+            let values = [];
+            queryColumn.value.forEach((t) => {
+              values.push(t[queryColumn.relationColumnName]);
+            });
+            console.dir(values);
+            query[queryColumn.name] = values.join(",");
+          }
         } else {
           if (queryColumn.value && queryColumn.value.trim() !== "") {
             let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
             if (queryColumnValues.length > 1) {
-              continue;
+              let values = [];
+              for (let j = 0; j < queryColumnValues.length; j++) {
+                values.push(queryColumnValues[j].trim());
+              }
+              console.dir(values);
+              query[queryColumn.name] = values.join(",");
+            } else {
+              query[queryColumn.name] = queryColumn.value
             }
-
-            query[queryColumn.name] = queryColumn.value
           }
         }
       }
       return query;
-    },
-
-
-    getConditon() {
-      let conditions = [];
-      for (let i = 0; i < this.queryColumns.length; i++) {
-        const queryColumn = this.queryColumns[i];
-        if (Array.isArray(queryColumn.value)) {
-          if (queryColumn.value.length > 0) {
-            const leafCondition = {
-              name: 'L',
-              columnName: queryColumn.name,
-              operatorType: 'IN',
-              values: queryColumn.value
-            }
-
-            conditions.push(leafCondition);
-          }
-        }  else {
-          if (queryColumn.value && queryColumn.value.trim() !== "") {
-            let queryColumnValues = queryColumn.value.replaceAll("，", ",").split(",");
-            if (queryColumnValues.length <= 1) {
-              continue;
-            }
-
-            let values = [];
-            for (let j = 0; j < queryColumnValues.length; j++) {
-              values.push(queryColumnValues[j].trim());
-            }
-
-            const leafCondition = {
-              name: 'L',
-              columnName: queryColumn.name,
-              operatorType: 'IN',
-              values: values
-            }
-
-            conditions.push(leafCondition);
-          }
-        }
-      }
-
-      console.dir(conditions);
-
-      if (conditions.length > 0) {
-        return {
-          name: 'C',
-          conditionType: 'AND',
-          conditions: conditions
-        }
-      }
-
-      return null;
     },
 
     onQueryClickAction() {
@@ -452,7 +445,6 @@ export default {
          } else {
             this.queryColumns[i].value = "";
          }
-
       }
       this.onRefresh();
     },
@@ -612,9 +604,8 @@ export default {
 
       try {
         let query = this.getQuery();
-        let conditon = this.getConditon();
 
-        const url = await tableService.export(this.dataSource, this.tableName, this.search, query, conditon);
+        const url = await tableService.export(this.dataSource, this.tableName, this.search, query, null);
         
         //this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
@@ -655,16 +646,14 @@ export default {
       this.data = [];
       try {
         let query = this.getQuery();
-        let conditon = this.getConditon();
-
-        this.pagination.count = await tableService.count(this.dataSource, this.tableName, this.search, query, conditon);
+        this.pagination.count = await tableService.count(this.dataSource, this.tableName, this.search, query, null);
 
         let data = await tableService.list(this.dataSource, this.tableName,
           this.pagination.page,
           this.pagination.rowsPerPage,
           this.search,
           query,
-          conditon);
+          null);
         let newData = [];
         const relationMap = this.relationMap;
 
@@ -716,6 +705,33 @@ export default {
       }
     },
 
+    openDialogClickAction(item) {
+      this.$q.dialog({
+        component: CTableListReadDialog,
+
+        // optional if you want to have access to
+        // Router, Vuex store, and so on, in your
+        // custom component:
+        parent: this, // becomes child of this Vue node
+                      // ("this" points to your Vue component)
+                      // (prop was called "root" in < 1.1.0 and
+                      // still works, but recommending to switch
+                      // to data: the more appropriate "parent" name)
+
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        tableName: item.relationTableName,
+        selectionProp: 'multiple',
+        data: item.value,
+        dataSource: this.dataSource
+      }).onOk((data) => {
+        item.value = data;
+      }).onCancel(() => {
+        console.log('Cancel')
+      }).onDismiss(() => {
+        console.log('Called on OK or Cancel')
+      });
+    },
     async init() {
       console.info("init");
       this.$store.commit(
@@ -814,20 +830,13 @@ export default {
             visibleColumns.push(column.name);
 
             if (column.queryable) {
-              const relationDisplayColumns = column.relationDisplayColumns;
-              let relationDisplayColumn = column.relationColumnName;
-              if (relationDisplayColumns && relationDisplayColumns.length > 0) {
-                relationDisplayColumn = relationDisplayColumns[0].name;
-              }
-
               queryColumns.push({
                   name: column.name,
                   label: column.caption,
                   value: column.relationColumnName ? [] : "",
+                  relationTableName: column.relationTableName,
                   relationColumnName: column.relationColumnName,
-                  relationDisplayColumn: relationDisplayColumn,
-                  options: relationOptionMap[column.name] || []
-
+                  relationDisplayColumns: column.relationDisplayColumns
               });
             }
           }
