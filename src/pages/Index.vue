@@ -1,17 +1,5 @@
 <template>
   <div class="q-pa-md home">
-    <div>
-        <q-banner inline-actions class="text-black bg-listcolor">
-          <span class="title">crudapi永久免费（包括个人和商业使用），无任何功能限制。</span>
-        </q-banner>
-        <div class="q-pa-md">
-          添加客服微信号：undefinedneqnull（验证暗号crudapi），加入crudapi开发者群
-          <div align="left">
-            <img width = "200" src="crudapiweixin.jpeg">
-          </div>
-        </div>
-    </div>
-
     <div class="q-pt-md">
       <q-banner inline-actions class="text-black bg-listcolor">
           <span class="title">元数据</span>
