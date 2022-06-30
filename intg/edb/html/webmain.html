@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+	<META HTTP-EQUIV="Expires" CONTENT="0">
+	<title>cti</title>
+	<link href="../css/cti.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="../js/jq/jquery.js"></script>
+	<script type="text/javascript" src="../moor/moor.js" djConfig="isDebug:false, parseOnLoad:false"></script>
+	<script type="text/javascript" src="../js/m7Util.js"></script>
+	<script type="text/javascript" src="../js/moortools.js"></script>
+	<script type="text/javascript" src="../js/m7PhoneBar.js"></script>
+    <script type="text/javascript" src="../js/objectDeclare.js"></script>
+    <script src="../js/webPhoneSdk/webrtcVendor.js"></script>
+    <script src="../js/webPhoneSdk/webPhoneSdk.js"></script>
+    <script src="../js/webPhoneSdk/socket.io.js"></script>
+    <script src="../js/webPhoneSdk/realTimeTransfer.js"></script>
+	<script type="text/javascript" src="../js/recordError.js"></script>
+	<script type="text/javascript" src="../js/m7Monitor.js"></script>
+    <script type="text/javascript" src="../js/crypto/md5.min.js"></script>
+    <script type="text/javascript" src="../js/crypto/base64.min.js"></script>
+    <style>
+        .numberPanel{
+          padding: 20px 20px 20px 20px;
+        }
+        .numberButton{
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            margin-left: 22px;
+            margin-bottom: 10px;
+            text-align: center;
+            display: inline-block;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 500;
+            border: solid 1px #999999;
+            cursor: pointer;
+        }
+        .numberButton p{
+            position: relative;
+            margin-top: 0;
+        }
+        .numberButton .numberABC {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            color: #999999;
+            font-size: 14px;
+            font-weight: 400;
+            width: 28px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="softphonebar" style="position: relative;">
+    <div class="mrg5" id="peerStatus">
+        <span id="phoneAgentStatus">
+            <a href="#" onclick="javascript:phone.m7SetBusy(false,'0')" id="IdleDisable" class="IdleDisable userStatus" style="color: #53d466;">
+                <span class="ponit" style="background-color: #53d466;"></span>空闲
+                <span class="line"></span>
+            </a>
+            <a href="#" onclick="javascript:phone.m7SetBusy(true,'2')" id="RestDisable" class="RestDisable userStatus">
+                <span class="ponit"></span>小休
+                <span class="line"></span>
+            </a>
+            <a href="#" onclick="javascript:phone.m7SetBusy(true,'1')" id="BusyDisable" class="BusyDisable userStatus">
+                <span class="ponit"></span>忙碌
+                <span class="line"></span>
+            </a>
+            <span id="phoneConfigStatus"></span>
+        </span>
+        <span class="softphone_timer">
+            <span id="softphonebar.peerState" style="margin-left: 10px"></span>
+            <span id="softphonebar.peerTimeState" class="peerTimeState">00:00:00</span>
+        </span>
+        <span id='webrtc_status'></span>
+        <span>
+          <button id='incomingcall' style='display:none'>接听</button>
+        </span>
+        <span>
+           自动接听：<input type="checkbox" id='autoAnswer'>
+        </span>
+        <span>
+           <button id='destroy'>销毁</button>
+        </span>
+        <span>
+            <button id='getBitrate'>设置比特率</button>
+         </span>
+        <span>
+            <button id='janusHangup'>挂机</button>
+         </span>
+        <span>
+            <button id='toggleMute' style='display:none'>静音</button>
+         </span>
+        <span>
+            <button id='Reconnect'>重连</button>
+         </span>
+         <img src="../imgs/xh/1.png" id='signalImg' style="width: 40px;">
+	</div>
+	<div class="mrg5" id="callStatus">
+		<input type="text" id="moorCall-dialout-input" placeholder="输入手机号" value=""
+			   onKeyDown="if(event.keyCode == 13){softphoneBar.dialout(m7$('#moorCall-dialout-input').val())}" class="ipt fl" />
+		<ul id="callStatusList">
+			<li>
+				<a href="#" class="DialEnable" id="DialEnable"
+                   onclick="softphoneBar.dialout(m7$('#moorCall-dialout-input').val(), '')">外呼
+                    <span class="icon outcallIcon"></span>
+                </a>
+                <!-- <a href="#" class="DialEnable" id="DialEnable">外呼
+                    <span class="icon outcallIcon"></span>
+                </a> -->
+                <a href="#" class="DialDisable disable" id="DialDisable" style="display: none">外呼
+                    <span class="icon outcallIcon"></span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="DialEnable" id="smallDialEnable" style="width: 102px;"
+                   onclick="softphoneBar.dialout(m7$('#moorCall-dialout-input').val(), 'smallPhone')">小号外呼
+                    <span class="icon outcallIcon"></span>
+                </a>
+                <a href="#" class="DialDisable disable" id="smallDialDisable" style="display: none;width: 102px;">小号外呼
+                    <span class="icon outcallIcon"></span>
+                </a>
+            </li>
+			<li>
+                <a href="#" class="HangupEnable" id="HangupEnable" style="display: none"
+                   onClick="javascript:phone.hangup()">挂机
+                    <span class="icon handupIcon"></span>
+                </a>
+                <a href="#" class="HangupDisable disable" id="HangupDisable">挂机
+                    <span class="icon handupIcon"></span>
+                </a>
+			</li>
+			<li>
+                <a href="#" class="HoldEnable" id="HoldEnable" style="display: none"
+                   onClick="phone.hold();">保持
+                    <span class="icon holdIcon"></span>
+                </a>
+                <a href="#" class="HoldDisable disable" id="HoldDisable">保持
+                    <span class="icon holdIcon"></span>
+                </a>
+                <a href="#" class="HoldGetEnable" id="HoldGetEnable" style="display: none"
+                   onClick="phone.unhold();">继续
+                    <span class="icon holdIcon"></span>
+                </a>
+			</li>
+			<li>
+                <a href="#" class="TransferEnable" id="TransferEnable" style="display: none"
+                   onClick="javascript:softphoneBar.m7ToTransfer();">
+                    转移<span class="icon transferIcon"></span>
+                </a>
+                <a href="#" class="TransferDisable disable" id="TransferDisable">
+                    转移<span class="icon transferIcon"></span>
+                </a>
+                <a href="#" class="TransferEnable" id="ConsultTransferEnable" style="display: none"
+                   onclick="javascript:phone.transfer('9333333','external', {})">
+                    转移<span class="icon transferIcon"></span>
+                </a>
+                <a href="#" class="TransferDisable" id="ConsultTransferDisable" style="display: none">
+                    转移<span class="icon transferIcon"></span>
+                </a>
+			</li>
+			<li>
+                <a href="#" class="ConsultEnable" id="ConsultEnable" style="display: none"
+                   onclick="javascript:softphoneBar.m7ToConsult();">
+                    咨询<span class="icon webchatIcon"></span>
+                </a>
+                <a href="#" class="ConsultDisable disable" id="ConsultDisable" >
+                    咨询<span class="icon webchatIcon"></span>
+                </a>
+			</li>
+			<li>
+				<a href="#" class="StopConsultEnable disable" id="StopConsultDisable" style="width: 102px">
+					结束咨询<span class="icon webchatIcon"></span>
+				</a>
+				<a href="#" class="StopConsultEnable" id="StopConsultEnable" style="width: 102px;display:none;"
+			     	onclick="javascript:phone.stopConsult();">
+					结束咨询<span class="icon webchatIcon"></span>
+				</a>
+			</li>
+			<li>
+                <a href="#" class="ThreeWayCallEnable" id="ThreeWayCallEnable" style="display: none;width: 102px"
+                   onclick="javascript:softphoneBar.toThreeWayCall();">
+                    三方通话<span class="icon threeWaycall"></span>
+                </a>
+                <a href="#" class="ThreeWayCallDisable disable" id="ThreeWayCallDisable" style="width: 102px">
+                    三方通话<span class="icon threeWaycall"></span>
+                </a>
+
+                <a href="#" class="ThreeWayCallEnable" id="ConsultThreeWayCallEnable" style="display: none;width: 102px"
+                   onclick="javascript:phone.threeWayCall('9333333')">
+                    三方通话<span class="icon threeWaycall"></span>
+                </a>
+                <a href="#" class="ThreeWayCallDisable" id="ConsultThreeWayCallDisable" style="display: none;width: 102px">
+                    三方通话<span class="icon threeWaycall"></span>
+                </a>
+            </a>
+			</li>
+            <li>
+                <a href="#" class="StopConsultEnable disable" id="transferIVR" style="width: 110px">
+                    转IVR菜单<span class="icon transferIcon"></span>
+                </a>
+                <a href="#" class="StopConsultEnable" id="transferIVREnable" style="width: 110px;display:none;"
+                   onclick="javascript:phone.m7Phone_toMenu('');">
+                    转IVR菜单<span class="icon transferIcon"></span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="transferSatisfaction disable" id="transferSatisfaction" style="width: 130px">
+                    转满意度评价<span class="icon transferSatisfactionIcon"></span>
+                </a>
+                <a href="#" class="transferSatisfaction" id="transferSatisfactionEnable" style="width: 130px;display:none;"
+                   onclick="javascript:phone.investigate();">
+                    转满意度评价<span class="icon transferSatisfactionIcon"></span>
+                </a>
+            </li>
+		</ul>
+	</div>
+    <div id="netMessage"></div>
+</div>
+<iframe id="moorCall.iframe" style="display: none"></iframe>
+<div id="moorCall_minitor">
+    <div class="task_title"></div>
+    <div class="task_content">
+        <div class='form_area' style="padding: 0px 10px 10px">
+            <div style="width:100%;padding-bottom:1px;" >
+                <div class="grid">
+                    <div class="gridhead" >
+                        <table width="100%" height="100%" border=0 cellSpacing=0 cellPadding=0>
+                            <colgroup>
+                                <col width="100%">
+                            </colgroup>
+                            <thead class="monitor_thead">
+                            <tr >
+                                <th colspan='4' align="left"><div class="monitor_thead_title">服务号监控列表</div></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td style="padding-left: 1px;">
+                                    <table border=0 cellSpacing=0 cellPadding=0 width=100% >
+                                        <colgroup>
+                                            <COL width="10%" span="4">
+                                        </colgroup>
+                                        <tr id="icc.monitor.serviceNos.thead">
+                                            <td align="center" style="cursor:pointer;" id="icc.monitor.serviceNosTd" onclick="tablesort.sortTable(this, 'icc.monitor.serviceNos', 0, 'string');" >
+                                                <span>服务号码</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" onclick="tablesort.sortTable(this, 'icc.monitor.serviceNos', 1, 'int');" >
+                                                <span>今日外部来电数</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" onclick="tablesort.sortTable(this, 'icc.monitor.serviceNos', 2, 'int');">
+                                                <span>今日未接外部来电</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" onclick="tablesort.sortTable(this, 'icc.monitor.serviceNos', 3, 'int');">
+                                                <span>今日已接外部来电</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="griddata" >
+                        <div >
+                            <table id="icc.monitor.serviceNos" width="100%" cellSpacing=0 cellPadding=0>
+                                <colgroup >
+                                    <col width="100%" />
+                                </colgroup>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="grid" style="width:100%;float:left;padding:20px 0 30px 0;">
+                    <div class="gridhead">
+                        <table width="100%" height="100%" cellSpacing=0 cellPadding=0>
+                            <colgroup>
+                                <col width="100%">
+                            </colgroup>
+                            <thead class="monitor_thead">
+                            <tr >
+                                <th colspan='5' align="left"><div class="monitor_thead_title">技能组监控列表</div></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td style="padding-left: 1px;">
+                                    <table border=0 cellSpacing=0 cellPadding=0 width=100% >
+                                        <colgroup>
+                                            <col width="10%" span="5">
+                                        </colgroup>
+                                        <tr id="icc.monitor.queues.thead">
+                                            <td align="center" style="cursor:pointer;" id="icc.monitor.queuesTd" onclick="tablesort.sortTable(this, 'icc.monitor.queues', 0, 'string');">
+                                                <span>技能组名称</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" onclick="tablesort.sortTable(this, 'icc.monitor.queues', 1, 'int');">
+                                                <span>空闲座席数</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" onclick="tablesort.sortTable(this, 'icc.monitor.queues', 2, 'int');">
+                                                <span>签入座席数</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" onclick="tablesort.sortTable(this, 'icc.monitor.queues', 3, 'int');">
+                                                <span>排队数</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" onclick="tablesort.sortTable(this, 'icc.monitor.queues', 4, 'int');">
+                                                <span>今日接通电话数</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="griddata" >
+                        <div >
+                            <table id="icc.monitor.queues" width="100%" cellSpacing=0 cellPadding=0>
+                                <colgroup >
+                                    <col width="100%">
+                                </colgroup>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid" style="width:100%;float:left;">
+                    <div class="gridhead">
+                        <table width="100%" height="100%" cellSpacing=0 cellPadding=0>
+                            <colgroup>
+                                <col width="100%" />
+                            </colgroup>
+                            <thead class="monitor_thead">
+                            <tr>
+                                <th colspan='10' align="left"><div class="monitor_thead_title" style="display:none">座席监控列表&nbsp;&nbsp;(坐席总量:<span id="icc.monitor.agents.totalPeer" style="color:#dc4f4f"></span>&nbsp;&nbsp;在线坐席:<span id="icc.monitor.agents.onlinePeer" style="color:#dc4f4f"></span>&nbsp;&nbsp;空闲坐席:<span id="icc.monitor.agents.idlePeer" style="color:#dc4f4f"></span>)</div></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th style="padding-left: 1px;">
+                                    <table border=0 cellSpacing=0 cellPadding=0 width=100% style="border: none">
+                                        <colgroup>
+                                            <col width="9%" />
+                                            <col width="7%" />
+                                            <col width="9%" />
+                                            <col width="9%" />
+                                            <col width="11%" />
+                                            <col width="9%" />
+                                            <col width="9%" />
+                                            <col width="9%" />
+                                            <col width="9%" />
+                                            <col width="19%" />
+                                        </colgroup>
+                                        <tr id="icc.monitor.agents.thead" class="first-tr">
+                                            <td align="center" style="cursor:pointer;" id="icc.monitor.agentsTd">
+                                                <span class="headTitle">座席姓名</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" >
+                                                <span class="headTitle">工号</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" >
+                                                <span class="headTitle">已接听数</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" >
+                                                <span class="headTitle">外呼成功数</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" class="headTitle">
+                                                客户号码
+                                            </td>
+                                            <td align="center" class="headTitle" >
+                                                接听方式
+                                            </td>
+                                            <td align="center" style="cursor:pointer;">
+                                                <span class="headTitle">状态</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" class="headTitle">
+                                                状态时长
+                                            </td>
+                                            <td align="center" style="cursor:pointer;" >
+                                                <span class="headTitle">网络延迟</span><span style="width:15px;">&nbsp;</span><span name="currentState"></span>
+                                            </td>
+                                            <td align="center" class="headTitle">
+                                                操作
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="griddata" >
+                        <div >
+                            <table id="icc.monitor.agents" width="100%" cellSpacing=0 cellPadding=0>
+                                <colgroup >
+                                    <col width="100%" />
+                                </colgroup>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height:10px;overflow: hidden;clear: both">&nbsp;</div>
+        </div>
+    </div>
+
+</div>
+<div id="cover" style="display: none"></div>
+<div style="display: none;">
+    <audio src="../imgs/sound/Incomingcall.mp3" loop="loop" style="display: none;" id="ringing-tone"></audio>
+    <audio src="../imgs/sound/hangup.mp3" loop="loop" style="display: none;" id="hangup-music"></audio>
+</div>
+<video class="rounded centered" id="myvideo" width=320 height=240 autoplay muted="muted"></video>
+<ul class="chat-thread">
+</ul>
+<div id='dial'>
+    <div class="numberPanel">
+        <div class="numberButton" value="1">
+            1
+        </div>
+        <div class="numberButton" value="2">
+            <p>2<span class="numberABC">ABC</span></p>
+        </div>
+        <div class="numberButton" value="3">
+            <p>3<span class="numberABC">DEF</span></p>
+        </div>
+        <div class="numberButton" value="4">
+            <p>4<span class="numberABC">GHI</span></p>
+        </div>
+        <div class="numberButton" value="5">
+            <p>5<span class="numberABC">JKL</span></p>
+        </div>
+        <div class="numberButton" value="6">
+            <p>6<span class="numberABC">MNO</span></p>
+        </div>
+        <div class="numberButton" value="7">
+            <p>7<span class="numberABC">PQRS</span></p>
+        </div>
+        <div class="numberButton" value="8">
+            <p>8<span class="numberABC">TUV</span></p>
+        </div>
+        <div class="numberButton" value="9">
+            <p>9<span class="numberABC">WXYZ</span></p>
+        </div>
+        <div class="numberButton" value="*">*</div>
+        <div class="numberButton" value="0">
+            <p>0<span class="numberABC">+</span></p>
+        </div>
+        <div class="numberButton" value="#">#</div>
+    </div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    var m7$=$.noConflict()
+    m7$(window).load(function(){
+        var loginName = moorCall.moortools.m7getUrlVal("loginName");
+        var password = moorCall.moortools.m7getUrlVal("password");
+        var loginType = moorCall.moortools.m7getUrlVal("loginType");
+        var agentStatus = moorCall.moortools.m7getUrlVal("agentStatus");
+        if(loginType != "") {
+            extenType = loginType;
+        }
+        if (agentStatus === '0') {
+            m7$("#IdleDisable").css("color", "#53d466")
+            m7$("#IdleDisable").find("span").css("background-color", "#53d466")
+            m7$("#BusyDisable").css("color", "#8a8a8a")
+            m7$("#BusyDisable").find("span").css("background-color", "#8a8a8a")
+            m7$('.peerTimeState').css("color", "#53d466")
+        } else {
+            m7$("#IdleDisable").css("color", "#8a8a8a")
+            m7$("#IdleDisable").find("span").css("background-color", "#8a8a8a")
+            m7$("#BusyDisable").css("color", "#ff7a72")
+            m7$("#BusyDisable").find("span").css("background-color", "#ff7a72")
+            m7$('.peerTimeState').css("color", "#ff7a72")
+        }
+        var pwd = md5(password)
+        var loginData = {
+           username: loginName,
+           pwd: pwd
+        }
+        moorCall.moortools.m7BeginLogon(loginName, password, extenType, agentStatus);
+        window.webPhone = new initM7WebPhone(loginData)
+        console.log(window.webPhone.isSecretBrowse(), 'isSecretBrowse')
+        webPhone.networkMonitoring(function(msg){
+            let imgsrc = ''
+            if (msg === 'error') {
+                imgsrc = '../imgs/xh/5.png'
+            } else {
+                if (msg < 50) {
+                    imgsrc = '../imgs/xh/1.png'
+                } else if (msg >= 50 || msg <100) {
+                    imgsrc = '../imgs/xh/2.png'
+                } else if (msg >= 100 || msg <250) {
+                    imgsrc = '../imgs/xh/3.png'
+                } else if (msg >= 250) {
+                    imgsrc = '../imgs/xh/4.png'
+                }
+            }
+            m7$("#signalImg").attr("src", imgsrc)
+        })
+        let isDTMF = false
+        window.webPhone.onMessage(function(msg){
+          if (msg === 'incomingcall' || msg === 'Outbound') {
+            m7$('#toggleMute').show() //显示静音按钮  
+            isDTMF = true
+          }
+          if (msg === 'registered') {
+            m7$('#Reconnect').hide()
+            m7$('#webrtc_status').css({color:'#53d466'}).text('连接成功')
+           } else if (msg === 'incomingcall') {
+            // 是否自动接听
+            if (m7$('#autoAnswer').is(':checked')) {
+                webPhone.Outbound()
+           } else {
+                m7$('#incomingcall').show()
+            }
+          } else if (msg === 'hangup') {  
+            m7$('#incomingcall').hide()
+            m7$('#toggleMute').hide()
+            isDTMF = false
+            var hangupMusic = document.getElementById('hangup-music')
+            if(hangupMusic){
+             hangupMusic.play()
+             setTimeout(function(){
+                hangupMusic.pause()
+             }, 2000)
+            }
+          } else if (msg === 'kicked') {
+              // window.location = './login.html';
+              webPhone.destroy()
+          }
+        })
+        window.webPhone.onError(function(error){
+            if (error && error.type !== 'socket') {
+                console.log('janusError:', error)
+                m7$('#webrtc_status').css({color:'red'}).text('连接失败')
+            }
+            if (error === 'JanusError: destroyed') {
+                m7$('#Reconnect').show()
+            }
+            if (error === 'JanusError:cookieDisable') {
+                // cookie被禁用
+            }
+        })
+
+        window.webPhone.onMediaState(function(mediaObj) {
+            webPhone.updateBitrate(60000)
+        })
+        // m7$('#DialEnable').click(function(){
+        //     let phone = m7$('#moorCall-dialout-input').val();
+        //     webPhone.dialout(phone)
+        // })
+        m7$('#incomingcall').click(function(){
+            // 接听
+            webPhone.Outbound()
+        })
+        m7$('#toggleMute').click(function(){
+            // 静音
+            webPhone.toggleMute()
+        })
+        m7$('#Reconnect').click(function(){
+            //重连
+            // moorCall.moortools.m7BeginLogon(loginName, password, extenType, agentStatus);
+            webPhone.init(loginData)
+        })
+
+        m7$('#getBitrate').click(function(){
+            webPhone.updateBitrate(1)
+        })
+        
+        m7$('#destroy').click(function(){
+            webPhone.destroy()
+        })
+        m7$('.numberButton').click(function (event) {
+            event.preventDefault();
+            var self = m7$(this)
+            webPhone.sendDTMF(self.attr('value'))
+            // if (isDTMF) {
+            //     cosnole.log('dtmf===')
+            //    webPhone.sendDTMF(self.attr('value'))
+            // } else {
+            //     var dialvalue = m7$('#moorCall-dialout-input').val() + self.attr('value')
+            //     m7$('#moorCall-dialout-input').val(dialvalue).focus()
+            // }
+        })
+        m7$('#janusHangup').click(function(){
+            console.log('挂机点击')
+            webPhone.hangup()
+        })
+        // let pass = pwd
+        // let exten = loginName.split('@')[0]
+        // let realTimeTransfer = new RealTimeTransfer({
+        //     password: pass, 
+        //     account: 'N00000003731', 
+        //     exten: exten,
+        //     segment: false,
+        //     message: function(data){
+        //       if (data.event && data.event === 'translationText') {
+        //         let text = m7$('<li></li>').text(data.text).addClass(data.flag)
+        //         m7$('.chat-thread').append(text)
+        //       }
+        //     },
+        //     error: function(error) {
+        //       if (error.message) {
+        //         m7$('.chat-thread .success').text(error.message)  
+        //       }
+        //     },
+        //     success: function() {
+        //       let text = m7$('<div></div>').text('连接成功，转写中....').addClass('success')
+        //       m7$('.chat-thread').append(text)
+        //     }
+        // })
+    });
+</script>
+</html>

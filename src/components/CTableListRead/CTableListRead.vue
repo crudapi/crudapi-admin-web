@@ -176,6 +176,17 @@
                   <a target="_blank" :href="value">查看</a>
                 </div>
 
+                <div v-else-if="isMobileTypeByKey(key, props.cols)">
+                  <q-btn
+                    unelevated
+                    @click="onMobileClickAction(value)"
+                    color="primary"
+                    :label="value | dataFormat(key, props.cols)"
+                    flat
+                    dense
+                  ></q-btn>
+                </div>
+
                 <div v-else>
                   {{ value | dataFormat(key, props.cols)}}
                 </div>
@@ -188,6 +199,29 @@
             <CPage v-model="pagination" @input="onRequestAction"></CPage>
           </div>
       </div>
+
+      <q-dialog v-model="showEdbDialog" full-width full-height  persistent>
+        <q-card class="q-dialog-plugin">
+          <div class="q-pa-md" style="height: 600px;">
+            <iframe
+              id="iframeEdb"
+              frameborder="0"
+              scrolling="no"
+              :src="edbUrl"
+              allowfullscreen="true" style="width: 100%;height: 100%;">
+              <p>您的浏览器不支持iframes，请使用chrome浏览器.</p >
+            </iframe>
+          </div>
+
+          <q-card-actions align="center">
+            <q-btn class="q-mx-lg" color="primary" label="回到登录页面" unelevated no-caps
+             @click="onLoginEdbDialogClickAction" />
+
+            <q-btn class="q-mx-lg" color="negative" label="关闭" unelevated no-caps
+             @click="onHideEdbDialogClickAction" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
 </template>
 
@@ -206,6 +240,7 @@ import { date } from "../../utils";
 import { extend } from "quasar";
 import CDownloadDialog from '../CDownload/CDownloadDialog'
 import CTableListReadDialog from '../../components/CTableListRead/CTableListReadDialog'
+import CEdbDialog from '../CEdb/CEdbDialog'
 
 export default {
   name: "CTableListRead",
@@ -251,7 +286,10 @@ export default {
       ],
       columns: [
       ],
-      relationMap: {}
+      relationMap: {},
+      showEdbDialog: false,
+      mobile:'',
+      edbUrl: ''
     }
   },
   async created() {
@@ -395,6 +433,21 @@ export default {
       return false;
     },
 
+    isMobileTypeByKey: function(key, cols) {
+      const find = cols.find(t => t.name === key);
+      if (find) {
+        if (find.name === "mobile"
+          || find.name === "tel"
+          || find.name === "phone"
+          || find.label === "手机"
+          || find.label === "电话"
+          || find.label === "联系电话") {
+          return true
+        }
+      }
+      return false;
+    },
+
     async onRefresh() {
       this.selected =[];
       await this.fetchFromServer();
@@ -471,6 +524,54 @@ export default {
       console.log(recId);
 
       this.$router.push("/dataSource/" + this.dataSource + "/business/" + this.tableName + "/" + recId);
+    },
+
+    onMobileClickAction(mobile) {
+      this.mobile = mobile;
+      if (this.showEdbDialog) {
+        this.setEdbDialogMobile(mobile);
+        this.setEdbDialogVisible();
+      } else {
+        this.edbLogin();
+        this.showEdbDialog = true;
+      }
+    },
+
+    onHideEdbDialogClickAction() {
+      this.setEdbDialogHidden();
+    },
+
+    onLoginEdbDialogClickAction () {
+      this.edbLogin();
+    },
+
+    edbLogin () {
+      this.edbUrl = "/edb/html/login.html?mobile=" + this.mobile + "&t=" + (new Date()).getTime();
+    },
+
+    setEdbDialogMobile(mobile) {
+      try {
+        var iframeEdbDocument = window.frames["iframeEdb"].contentDocument || window.frames["iframeEdb"].contentWindow.document;
+        iframeEdbDocument.getElementById("moorCall-dialout-input").value = mobile;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    setEdbDialogVisible() {
+      try {
+        document.getElementsByClassName("q-dialog--modal")[0].style.visibility = 'visible';
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    setEdbDialogHidden() {
+      try {
+        document.getElementsByClassName("q-dialog--modal")[0].style.visibility = 'hidden';
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     onImportClickAction() {
@@ -618,7 +719,7 @@ export default {
         let query = this.getQuery();
 
         const url = await tableService.export(this.dataSource, this.tableName, this.search, query, null);
-        
+
         //this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
         this.$q.dialog({
@@ -639,7 +740,6 @@ export default {
           data: {}
           // ...more.props...
         }).onOk((data) => {
-          item.value = data;
         }).onCancel(() => {
           console.log('Cancel')
         }).onDismiss(() => {

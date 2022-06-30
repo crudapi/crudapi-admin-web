@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>cti</title>
+	<script type="text/javascript" src="./../js/jq/jquery.js"></script>
+	<link rel="stylesheet" href="../css/cti.css">
+	<script type="text/javascript">
+        var m7$=$.noConflict()
+        function logon() {
+            var loginName = m7$("#icc-login-loginName").val();
+            var password = m7$("#icc-login-password").val();
+            var loginType = m7$("#icc-login-loginType").val();
+            var agentStatusFlag = m7$('#agentStatus').prop('checked')
+            var agentStatus
+            if (!agentStatusFlag) {
+                agentStatus = '0'
+            } else {
+                agentStatus = '1'
+			}
+
+			var URLParams = new Array();
+            var urls = decodeURI(document.location.search.substr(1, document.location.search.length));
+            //console.dir(urls);
+            var aParams = urls.split('&');
+            for(var i = 0; i < aParams.length; i++) {
+	            var aParam = aParams[i].split('=');
+	            //alert(aParam[0]);
+	            URLParams[aParam[0]] = aParam[1];
+	        }
+            //获取传过来的name参数：
+            // var  name=URLParams["user_name"];
+            var mobile = URLParams["mobile"];
+            //console.dir(mobile);
+
+			if (loginType === 'webrtc') {
+				window.location.href = "webmain.html?loginName=" + loginName + "&password=" + encodeURIComponent(password) + "&loginType=sip"  + '&agentStatus=' + agentStatus + '&mobile=' + mobile;
+			} else {
+				window.location.href = "main.html?loginName=" + loginName + "&password=" + encodeURIComponent(password) + "&loginType=" + loginType + '&agentStatus=' + agentStatus + '&mobile=' + mobile;
+			}		
+		}
+        function changeAgentStatus() {
+            var agentStatusFlag = m7$('#agentStatus').prop('checked')
+            if (!agentStatusFlag) {
+                m7$('#statusSpan').html('空闲').css({
+                    "color": "#4DB690",
+                    "margin-left": "3px"
+                })
+            } else {
+                m7$('#statusSpan').html('忙碌').css({
+                    "color": "#FF7A90",
+                    "margin-left": "3px"
+                })
+            }
+        }
+        function changeLoginType(node){
+			if (node.value == 'webrtc') {
+               alert('请注意，WEBRTC必须在https环境下才能加载!')
+			}
+		}
+	</script>
+</head>
+<body>
+<div class="backGround">
+	<div class="logo">
+		<img src="../imgs/logo.png" alt="">
+	</div>
+	<div class="content">
+		<div class="username"></div>
+		<input type="text" value="" id="icc-login-loginName" placeholder="请输入用户名" />
+		<div class="password"></div>
+		<input type="password" value="" id="icc-login-password" placeholder="请输入密码" />
+		<div class="loginTap">
+			<div class="loginTapContent">
+				<label class="conLabelLogin">登录方式:</label>
+				<select id="icc-login-loginType" onchange="changeLoginType(this)">
+					<option value="Local">直线</option>
+					<option value="gateway">网关</option>
+					<option value="sip">软电话</option>
+					<option value="webrtc">WEBRTC</option>
+				</select>
+			</div>
+			<div class="statusBtn">
+				<input type="checkbox" name="status" id="agentStatus" class="chooseStatusBtn" value="off" onchange="changeAgentStatus()"/>
+				<label for="agentStatus" class="chooseStatusBtnLabel"></label>
+				<span style="color:#4DB690;margin-left: 3px" id="statusSpan">空闲</span>
+			</div>
+		</div>
+		<a href="javascript:logon();" class="login">登录</a>
+	</div> 
+</div>
+
+</body>
+</html>

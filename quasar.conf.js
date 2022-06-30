@@ -94,7 +94,15 @@ module.exports = function ( ctx ) {
       proxy: {
         //crudapi demo env
         "/api/*": {
-          target: "https://demo.crudapi.cn",
+          target: "http://127.0.0.1:8888",
+          changeOrigin: true
+        },
+        "/download/*": {
+          target: "http://127.0.0.1:8888",
+          changeOrigin: true
+        },
+        "/edb/*": {
+          target: "http://127.0.0.1:8888",
           changeOrigin: true
         },
         "/download/*": {

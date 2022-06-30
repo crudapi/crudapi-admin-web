@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./../jq/jquery.js"></script>
+    <script src="./md5.min.js"></script>
+    <script src="./adapter.min.js"></script>
+    <script src="janus.js"></script>
+    <script src="webPhoneSdk.js"></script>
+</head>
+<body>
+<div>
+    <input type="text" placeholder="工号@账号" id="account">
+    <input type="password" placeholder="密码" id="password">
+    <button class="login_btn" id="btn_login">登录</button>
+    <button id="answer_call">接听</button>
+</div>
+<script type="text/javascript">
+    if(!Janus.isWebrtcSupported()) {
+        alert("您的浏览器不支持 WebRTC, 请使用谷歌浏览器!");
+    }
+    var janusHanlder
+    $('#btn_login').click(function () {
+        var pwd = md5($('#password').val())
+        var loginData = {
+            username: $('#account').val(),
+            pwd: pwd
+        }
+        initM7WebPhone(loginData, onMessage, function (hanlder) {
+            janusHanlder = hanlder
+        })
+    })
+    $('#answer_call').click(function () {
+        m7WebPhone.AnswerCall()
+    })
+    function onMessage(data) {
+        console.log(data)
+    }
+</script>
+</body>
+</html>
