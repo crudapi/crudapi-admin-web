@@ -52,10 +52,12 @@ const table = {
     );
   },
   listAllByIds: function(dataSource, tableName, ids) {
-    return axiosInstance.post("/api/business/" + tableName + "/all",
-      ids,
+    let idStr = ids.join(",");
+    return axiosInstance.get("/api/business/" + tableName + "/all",
       {
-        params: {},
+        params: {
+          ids: idStr
+        },
         dataSource: dataSource
       }
     );
