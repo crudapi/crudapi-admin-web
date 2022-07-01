@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md home">
-    <div class="q-pt-md">
+    <div v-if="isSuperadmin" class="q-pt-md">
       <q-banner inline-actions class="text-black bg-listcolor">
           <span class="title">元数据</span>
           <template v-slot:action>
@@ -59,7 +59,7 @@
       </q-banner>
 
       <div v-show="businessExpand">
-        <div v-show="metadataExpand" class="q-py-md q-pl-md row items-start q-gutter-md">
+        <div v-if="isSuperadmin" v-show="metadataExpand" class="q-py-md q-pl-md row items-start q-gutter-md">
           <q-card clickable v-ripple flat bordered class="my-card click-card col"
               @click="onMultiImportClick()" >
             <q-card-section class="bg-purple text-white">
@@ -72,7 +72,7 @@
           <q-banner clickable inline-actions class="text-black bg-listcolor">
               <span class="title">{{item.name}}</span>
               <template v-slot:action>
-                <q-btn
+                <q-btn v-if="isSuperadmin"
                   dense
                   flat
                   unelevated
@@ -127,6 +127,7 @@
 
 <script>
 import { tableService } from "../service";
+import { permissionService } from "../service";
 
 export default {
   name: "PageHome",
@@ -136,7 +137,8 @@ export default {
       businessExpand: true,
       modules:[],
       active: true,
-      dataSource: "primary"
+      dataSource: "primary",
+      isSuperadmin: false
     }
   },
 
@@ -173,6 +175,11 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
+
+      if (permissionService.check("ROLE_SUPER_ADMIN")) {
+        this.isSuperadmin = true;
+      }
+
       this.dataSource = dataSource || this.$route.params.dataSource || "primary";
       await this.loadData();
     },

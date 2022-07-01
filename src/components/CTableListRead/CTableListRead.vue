@@ -83,7 +83,7 @@
       </div>
 
       <div class="bg-table-list">
-        <q-banner v-if="!readOnly && !table.readOnly" inline-actions class="text-black bg-listcolor">
+        <q-banner v-if="canExportAndImport && !readOnly && !table.readOnly" inline-actions class="text-black bg-listcolor">
             <template v-slot:action>
               <q-btn
                 unelevated
@@ -141,7 +141,7 @@
               <q-td :key="index" v-for="(value, key, index) in props.row">
                 <div v-if="key.indexOf('dataClickAction') >= 0">
                   <q-btn
-                    v-if="!readOnly && !table.readOnly"
+                    v-if="canExportAndImport && !readOnly && !table.readOnly"
                     unelevated
                     @click="onEditClickAction(props.row)"
                     color="primary"
@@ -151,7 +151,7 @@
                   ></q-btn>
 
                   <q-btn
-                    v-if="!readOnly && !table.readOnly"
+                    v-if="canExportAndImport && !readOnly && !table.readOnly"
                     unelevated
                     @click="onSoftDeleteClickAction(props.row)"
                     color="warning"
@@ -162,7 +162,7 @@
 
 
                   <q-btn
-                    v-if="!readOnly && !table.readOnly"
+                    v-if="canExportAndImport && !readOnly && !table.readOnly"
                     unelevated
                     @click="onDeleteClickAction(props.row)"
                     color="negative"
@@ -236,6 +236,7 @@
 import { tableService } from "../../service";
 import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
+import { permissionService } from "../../service";
 import { date } from "../../utils";
 import { extend } from "quasar";
 import CDownloadDialog from '../CDownload/CDownloadDialog'
@@ -287,6 +288,8 @@ export default {
       columns: [
       ],
       relationMap: {},
+      canExportAndImport: false,
+      hiddenTelAndName: false,
       showEdbDialog: false,
       mobile:'',
       edbUrl: ''
@@ -850,6 +853,16 @@ export default {
         "config/updateIsAllowBack",
         this.$route.meta.isAllowBack
       );
+
+      if (permissionService.check("ROLE_SUPER_ADMIN")
+        || permissionService.check("ROLE_ADMIN")) {
+        this.canExportAndImport = true;
+      }
+
+
+      if (permissionService.check("ROLE_LIMITED")) {
+        this.hiddenTelAndName = true;
+      }
 
       this.selection = this.selectionProp || 'multiple';
 

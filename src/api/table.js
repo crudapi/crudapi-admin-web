@@ -152,7 +152,7 @@ const table = {
       let filterStr = JSON.stringify(filter);
       filterStrEncode = encodeURIComponent(filterStr);
     }
-    return axiosInstance.get("/api/business/" + tableName + "/export",
+    return axiosInstance.post("/api/business/" + tableName + "/export",
       {
         params: {
           search: search,

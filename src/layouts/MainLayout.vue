@@ -203,6 +203,7 @@ a
 <script>
 import { metadataTableService, metadataSequenceService } from "../service";
 import { userService } from "../service";
+import { permissionService } from "../service";
 
 export default {
   name: 'MainLayout',
@@ -299,7 +300,8 @@ export default {
 
         this.allMenu.push(this.systemMenu);
 
-        this.$refs.qTreeProxy.setExpanded("system", true);
+        this.$refs.qTreeProxy.expandAll();
+        //this.$refs.qTreeProxy.setExpanded("system", true);
       } catch (error) {
         console.error(error);
       }
@@ -380,8 +382,14 @@ export default {
         }
 
         dataSourceMenu.children.push(businessMenu);
-        dataSourceMenu.children.push(systemBusinessMenu);
-        dataSourceMenu.children.push(metadataMenu);
+
+        if (permissionService.check("ROLE_SUPER_ADMIN")) {
+          dataSourceMenu.children.push(systemBusinessMenu);
+        }
+
+        if (permissionService.check("ROLE_SUPER_ADMIN")) {
+          dataSourceMenu.children.push(metadataMenu);
+        }
 
         dataSourceMenus.push(dataSourceMenu);
       }
