@@ -104,20 +104,7 @@ module.exports = function ( ctx ) {
         "/edb/*": {
           target: "http://127.0.0.1:8888",
           changeOrigin: true
-        },
-        "/download/*": {
-          target: "https://demo.crudapi.cn",
-          changeOrigin: true
         }
-        //local env
-        // "/api/*": {
-        //   target: "http://127.0.0.1:8888",
-        //   changeOrigin: true
-        // },
-        // "/download/*": {
-        //   target: "http://127.0.0.1:8888",
-        //   changeOrigin: true
-        // }
       }
     },
 
