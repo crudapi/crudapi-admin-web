@@ -74,14 +74,22 @@
               unelevated
               @click="onExportClickAction()"
               color="positive"
-              label="批量导出"
+              label="批量导出元数据"
+            />
+            <p class="q-px-sm"/>
+            <q-btn
+              :disable="selected.length == 0"
+              unelevated
+              @click="onExportBussinessClickAction()"
+              color="positive"
+              label="导出业务数据"
             />
             <p class="q-px-sm"/>
             <q-btn
                 unelevated
                 @click="onImportClickAction()"
                 color="purple"
-                label="批量导入"
+                label="导入元数据"
             />
             <p class="q-px-sm"/>
             <q-btn
@@ -97,6 +105,7 @@
               color="primary"
               label="添加"
             />
+            <p class="q-px-sm"/>
           </template>
 
       </q-banner>
@@ -177,6 +186,7 @@
 
 <script>
 import { metadataTableService } from "../../../service";
+import { tableService } from "../../../service";
 import { date } from "../../../utils";
 
 export default {
@@ -405,6 +415,29 @@ export default {
       try {
         const fileName = await metadataTableService.export(this.dataSource, ids);
         this.$q.notify("元数据表生成成功，请等待下载完成后查看！");
+
+        window.open("/api/file/" + fileName + "?dataSource=" + this.dataSource, "_blank");
+
+        this.$q.loading.hide();
+      } catch (error) {
+        this.$q.loading.hide();
+        console.error(error);
+      }
+    },
+    async onExportBussinessClickAction(id) {
+      let ids = [];
+      this.selected.forEach(function(val){
+          ids.push(val.id);
+      });
+      console.info("list->onExportBussinessClickAction");
+
+      this.$q.loading.show({
+        message: "导出中"
+      });
+
+      try {
+        const fileName = await tableService.multiExport(this.dataSource, ids);
+        this.$q.notify("业务数据JSON生成成功，请等待下载完成后查看！");
 
         window.open("/api/file/" + fileName + "?dataSource=" + this.dataSource, "_blank");
 
