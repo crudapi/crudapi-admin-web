@@ -452,6 +452,7 @@ export default {
       try {
         this.fileInfo = await metadataTableService.import(this.dataSource, this.metadata);
         this.$q.notify("导入成功");
+        this.$root.$emit("updateMenuTree");
         this.$router.go(-1);
         this.$q.loading.hide();
       } catch (error) {
