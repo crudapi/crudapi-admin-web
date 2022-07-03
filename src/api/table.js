@@ -123,6 +123,14 @@ const table = {
         dataSource: dataSource
     });
   },
+  multiExport: function(dataSource, ids) {
+    return axiosInstance.post("/api/business/export",
+      ids,
+      {
+        dataSource: dataSource
+      }
+    );
+  },
   multiImport: async function(dataSource, data, progressCallback) {
     console.log("table->import")
     console.log(data)

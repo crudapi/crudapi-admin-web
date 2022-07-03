@@ -45,6 +45,10 @@ const tableService = {
       return res.data;
     })
   },
+  multiExport: async function(dataSource, ids) {
+    var res = await table.multiExport(dataSource, ids);
+    return res.data;
+  },
   getImportTemplate: async function(dataSource, tableName) {
     var res = await table.getImportTemplate(dataSource, tableName);
     return res.data;
