@@ -24,6 +24,7 @@ module.exports = function ( ctx ) {
       'axios',
       'cpage',
       'cfile',
+      'csqleditor',
       'ctablenew',
       'ctablelist',
       'ctableedit',

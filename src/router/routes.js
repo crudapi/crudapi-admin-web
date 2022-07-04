@@ -52,6 +52,12 @@ const routes = [
         component: () => import("pages/metadata/sequence/edit.vue")
       },
       {
+        name: "sqlNew",
+        path: "dataSource/:dataSource/metadata/sqls/new",
+        meta: { isAllowBack: true },
+        component: () => import("pages/metadata/sql/new.vue")
+      },
+      {
         name: "tables",
         path: "dataSource/:dataSource/metadata/tables",
         meta: { isAllowBack: true },
