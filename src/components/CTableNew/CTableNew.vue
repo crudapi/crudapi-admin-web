@@ -156,7 +156,15 @@
                 <q-btn round dense flat icon="zoom_in" @click="openDialogClickAction(item)" />
               </div>
             </div>
-           
+
+            <div class="sql-box" v-else-if="isSqlType(item)">
+              <CSqlEditor
+                ref="sqleditor"
+                :value="item.value"
+                @changeTextarea="changeTextarea($event, item)">
+              </CSqlEditor>
+            </div>
+
             <q-input v-else-if="isDateTimeType(item.dataType)"
                 v-model="item.value">
               <template v-slot:prepend>
@@ -268,6 +276,18 @@
 .required:before
   content: "* ";
   color: red;
+
+.CodeMirror
+  color: black;
+  /* direction: ltr; */
+  line-height: 22px;
+
+.CodeMirror-hints
+  z-index: 9999 !important;
+
+.sql-box
+  border: 1px solid #ddd;
+
 </style>
 
 <script>
@@ -276,6 +296,7 @@ import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
 import { extend } from 'quasar'
 import CTableListReadDialog from '../../components/CTableListRead/CTableListReadDialog'
+import { format } from 'sql-formatter';
 
 export default {
   name: "CTableNew",
@@ -375,6 +396,18 @@ export default {
       this.insertColumns = [];
 
       await this.loadMeta();
+    },
+
+    changeTextarea(val, item) {
+      this.$set(item, "value", val);
+    },
+
+    isSqlType: function(item) {
+      if (item.name.toUpperCase().indexOf("SQL") >= 0) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     isTextType: function(dataType) {
