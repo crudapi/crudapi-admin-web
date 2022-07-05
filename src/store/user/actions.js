@@ -4,22 +4,22 @@ import { permissionService } from "../../service";
 export const login = ({ commit }, userInfo) => {
   return new Promise((resolve, reject) => {
     userService
-      .login(userInfo)
+      .loginByJWT(userInfo)
       .then(data => {
-          //session方式登录，其实不需要token，这里为了JWT登录预留，用username代替。
-          //通过Token是否为空判断本地有没有登录过，方便后续处理。
-          commit("updateToken", data.principal.username);
+          //console.dir(data);
+          const user = data.user;
+          commit("updateToken", data.token);
 
           const newUserInfo = {
-            username: data.principal.username,
-            realname: data.principal.realname || data.principal.username,
+            username: user.principal.username,
+            realname: user.principal.realname || user.principal.username,
             avatar: "",
-            authorities: data.principal.authorities || [],
-            roles: data.principal.roles || []
+            authorities: user.principal.authorities || [],
+            roles: user.principal.roles || []
           };
           commit("updateUserInfo", newUserInfo);
 
-          let permissions = data.authorities || [];
+          let permissions = user.authorities || [];
           let isSuperAdmin = false;
           if (permissions.findIndex(t => t.authority === "ROLE_SUPER_ADMIN") >= 0) {
             isSuperAdmin = true;

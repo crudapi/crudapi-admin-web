@@ -4,6 +4,7 @@ import { Notify } from "quasar";
 import qs from "qs";
 import Router from "../router/index";
 import { permissionService } from "../service";
+import { authService } from "../service";
 
 Vue.prototype.$axios = axios
 
@@ -45,6 +46,11 @@ axiosInstance.interceptors.request.use(
     if (config.dataSource) {
       console.log("config.dataSource = " + config.dataSource);
       config.headers["dataSource"] = config.dataSource;
+    }
+
+    const token = authService.getToken();
+    if (token) {
+      config.headers["Authorization"] = token;
     }
 
     return config;

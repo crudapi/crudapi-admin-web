@@ -6,6 +6,13 @@ const userService = {
     var res = await user.login(data);
     return res.data;
   },
+  loginByJWT: async function(data) {
+    var res = await user.loginByJWT(data);
+    return {
+      token: res.headers.token,
+      user: res.data
+    };
+  },
   logout: async function() {
     var res = await user.logout();
     return res.data;

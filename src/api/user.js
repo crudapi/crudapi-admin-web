@@ -13,6 +13,14 @@ const user = {
       }
     );
   },
+  loginByJWT: function(data) {
+    return axiosInstance.post("/api/auth/jwt/login",
+      data,
+      {
+        headers: HEADERS
+      }
+    );
+  },
   logout: function() {
     return axiosInstance.get("/api/auth/logout",
       {
