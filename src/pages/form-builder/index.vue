@@ -540,7 +540,16 @@ export default {
           }
         });
       } else {
-        selectedList = JSON.parse(formBuilder.body);
+        const rowSelectedList = JSON.parse(formBuilder.body);
+        console.dir(rowSelectedList);
+
+        rowSelectedList.forEach((formElement) => {
+          if (columns.find(t => t.id === formElement.columnId)) {
+            selectedList.push(formElement);
+          }
+        });
+        console.dir(selectedList);
+
         selectedList.forEach((formElement) => {
           formElement.column = columns.find(t => t.id === formElement.columnId);
         });
@@ -550,7 +559,16 @@ export default {
             columnId: column.id,
             column: column,
             width: 12
+          };
+
+          if (column.dataType === 'PASSWORD') {
+            formElement.isText = false;
+            formElement.isPwd = true;
+          } else {
+            formElement.isText = true;
+            formElement.isPwd = false;
           }
+
           if (selectedList.findIndex(t => t.columnId === formElement.columnId) < 0) {
             unselectedList.push(formElement);
           }
