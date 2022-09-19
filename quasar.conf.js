@@ -31,7 +31,8 @@ module.exports = function ( ctx ) {
       'ctablelistedit',
       'cindexlist',
       'ctablelistread',
-      'crawDisplayer'
+      'crawDisplayer',
+      'cvaluedialog'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css

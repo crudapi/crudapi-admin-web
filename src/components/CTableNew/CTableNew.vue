@@ -37,6 +37,18 @@
               </div>
             </div>
 
+             <div class="row items-baseline content-center"
+              style="border-bottom: 1px solid rgba(0,0,0,0.12)"
+              v-else-if="formElement.column.columnExtProperty">
+              <div class="col-9">
+                <span>{{ formElement.column.value }}</span>
+              </div>
+              <div class="col-3">
+                <q-btn class="q-mb-sm" color="primary" unelevated no-caps
+                :label="formElement.column.columnExtProperty.name" @click="openValueDialogClickAction(formElement.column)" />
+              </div>
+            </div>
+
             <q-input v-else-if="isStringType(formElement.column.dataType)"
               v-model="formElement.column.value"
               :placeholder="formElement.column.description"
@@ -154,6 +166,17 @@
               </div>
               <div class="col-1">
                 <q-btn round dense flat icon="zoom_in" @click="openDialogClickAction(item)" />
+              </div>
+            </div>
+
+            <div class="row items-baseline content-center"
+              style="border-bottom: 1px solid rgba(0,0,0,0.12)"
+              v-else-if="item.columnExtProperty">
+              <div class="col-9">
+                <span>{{ item.value }}</span>
+              </div>
+              <div class="col-3">
+                <q-btn class="q-mb-sm" color="primary" unelevated no-caps :label="item.columnExtProperty.name" @click="openValueDialogClickAction(item)" />
               </div>
             </div>
 
@@ -296,6 +319,7 @@ import { metadataTableService } from "../../service";
 import { metadataRelationService } from "../../service";
 import { extend } from 'quasar'
 import CTableListReadDialog from '../../components/CTableListRead/CTableListReadDialog'
+import CValueDialog from '../../components/CValueDialog/CValueDialog'
 import { format } from 'sql-formatter';
 
 export default {
@@ -562,6 +586,34 @@ export default {
       });
     },
 
+    openValueDialogClickAction(item) {
+      console.dir(item);
+      this.$q.dialog({
+        component: CValueDialog,
+
+        // optional if you want to have access to
+        // Router, Vuex store, and so on, in your
+        // custom component:
+        parent: this, // becomes child of this Vue node
+                      // ("this" points to your Vue component)
+                      // (prop was called "root" in < 1.1.0 and
+                      // still works, but recommending to switch
+                      // to data: the more appropriate "parent" name)
+
+        // props forwarded to component
+        // (everything except "component" and "parent" props above):
+        columnExtProperty: item.columnExtProperty,
+        data: item.value,
+        dataSource: this.dataSource
+      }).onOk((data) => {
+        item.value = data;
+      }).onCancel(() => {
+        console.log('Cancel')
+      }).onDismiss(() => {
+        console.log('Called on OK or Cancel')
+      });
+    },
+
     async loadMeta() {
       const that = this;
       this.loading = true;
@@ -570,6 +622,8 @@ export default {
         this.tableCaption = table.caption;
 
         const tableRelations = await metadataRelationService.getByName(this.dataSource, this.tableName);
+
+        const columnExtProperties = await this.getColumnExtProperties(table.id);
 
         /* 关联表元数据 */
         let relationMetadataMap = {};
@@ -641,6 +695,9 @@ export default {
               }
             }
 
+
+            this.setColumnExtProperty(columnExtProperties, column);
+
             const relation = this.relationMap[columnName];
             if (relation) {
               column.relationTableName = relation.toTable.name;
@@ -668,6 +725,7 @@ export default {
           selectedList = JSON.parse(formBuilder.body);
           selectedList.forEach((formElement) => {
             formElement.column = table.columns.find(t => t.id === formElement.columnId);
+            that.setColumnExtProperty(columnExtProperties, formElement.column);
           });
         }
 
@@ -676,6 +734,33 @@ export default {
         this.loading = false;
       } catch (error) {
         this.loading = false;
+        console.error(error);
+      }
+    },
+
+    async getColumnExtProperties(tableId) {
+      let columnExtProperties = [];
+      try {
+        columnExtProperties = await tableService.list(this.dataSource, "columnExtProperty",
+                                  null, null, null, {
+                                    tableId: tableId,
+                                    key: "valueDialog"
+                                  }, null);
+      } catch(error) {
+        console.warn(error);
+      }
+
+      return columnExtProperties;
+    },
+
+    setColumnExtProperty(columnExtProperties, column) {
+      try {
+        const columnExtProperty = columnExtProperties.find(t => t.columnId === column.id);
+        console.dir(columnExtProperty);
+        if (columnExtProperty) {
+          column.columnExtProperty = JSON.parse(columnExtProperty.value);
+        }
+      } catch (error) {
         console.error(error);
       }
     },

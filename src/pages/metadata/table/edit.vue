@@ -161,6 +161,16 @@
                 dense
               ></q-btn>
             </q-td>
+             <q-td key="columnExtPropertyClickAction" :props="props">
+              <q-btn
+                unelevated
+                @click="onSetColumnExtPropertyClickAction(props.row)"
+                color="primary"
+                label="设置"
+                flat
+                dense
+              ></q-btn>
+            </q-td>
              <q-td key="displayOrder" :props="props">
                <q-btn @click="onTopClick(props.row)" round size="sm" color="primary" icon="vertical_align_top" flat dense />
               <q-btn @click="onUpClick(props.row)" round size="sm" color="primary" icon="north" flat dense />
@@ -307,6 +317,38 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="showColumnExtPropertiesDialog" persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">{{ row.caption }}扩展属性</div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section>
+          <q-input style="width:500px;"
+            placeholder="扩展属性key"
+            filled
+            readonly
+            v-model="columnExtProperty.key" />
+        </q-card-section>
+
+        <q-card-section>
+          <q-input  style="width:500px;"
+            v-model="columnExtProperty.value"
+            filled
+            type="textarea"
+            label="扩展属性value: JSON格式"
+          />
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn label="取消" unelevated color="negative" v-close-popup />
+          <q-btn @click="onConfirmColumnExtPropertyClick" label="确定" unelevated color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -318,9 +360,9 @@
 </style>
 
 <script>
-import { metadataTableService, metadataSequenceService } from "../../../service";
+import { metadataTableService, metadataSequenceService, tableService } from "../../../service";
 import { date } from "../../../utils";
-import { extend } from 'quasar'
+import { extend } from 'quasar';
 
 export default {
   data () {
@@ -338,6 +380,12 @@ export default {
           align: "center",
           label: "操作",
           field: "dataClickAction",
+          sortable: false
+        },{
+          name: "columnExtPropertyClickAction",
+          align: "left",
+          label: "扩展属性",
+          field: "columnExtPropertyClickAction",
           sortable: false
         },
         {
@@ -606,6 +654,12 @@ export default {
       sequenceLongOptions: [],
       sequenceStringOptions: [],
       showBatchDialog: false,
+      showColumnExtPropertiesDialog: false,
+      row: {},
+      columnExtProperty: {
+        key: "valueDialog",
+        value: "{}"
+      },
       columnNames: ""
     }
   },
@@ -755,6 +809,32 @@ export default {
       } else {
         this.batchRemoveRow(ids);
         this.selected = [];
+      }
+    },
+
+    async onSetColumnExtPropertyClickAction(row) {
+      console.log(this.$route.params.id + "," + row.id);
+      this.row = row;
+      this.showColumnExtPropertiesDialog = true;
+
+      let columnExtPropertyDatas = await tableService.list(this.dataSource, "columnExtProperty",
+        null,
+        null,
+        null,
+        {
+          tableId: this.$route.params.id,
+          columnId: this.row.id,
+          key: "valueDialog"
+        },
+        null);
+
+      if (columnExtPropertyDatas.length > 0) {
+        this.columnExtProperty = columnExtPropertyDatas[0];
+      } else {
+        this.columnExtProperty = {
+          key: "valueDialog",
+          value: "{}"
+        };
       }
     },
 
@@ -923,6 +1003,27 @@ export default {
             caption: t.trim()
           })
         });
+      }
+    },
+    onConfirmColumnExtPropertyClick: async function() {
+      console.log("onConfirmColumnExtPropertyClick" + this.table.id + "," + this.row.id);
+      this.$q.loading.show({
+        message: "提交中"
+      });
+      try {
+        if (this.columnExtProperty.id) {
+          await tableService.update(this.dataSource, "columnExtProperty", this.columnExtProperty.id, this.columnExtProperty);
+        } else {
+           const newColumnExtProperty = extend(true, {}, this.columnExtProperty);
+           newColumnExtProperty.tableId = this.table.id;
+           newColumnExtProperty.columnId = this.row.id;
+           await tableService.create(this.dataSource, "columnExtProperty", newColumnExtProperty);
+        }
+        this.$q.loading.hide();
+        this.$q.notify("修改成功");
+      } catch (error) {
+        this.$q.loading.hide();
+        console.error(error);
       }
     }
   }

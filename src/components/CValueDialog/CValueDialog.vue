@@ -1,0 +1,108 @@
+<template>
+  <q-dialog  full-width full-height
+    ref="dialog" @hide="onDialogHide" persistent>
+    <q-card class="q-dialog-plugin" style="height: 600px;">
+      <iframe
+        id="extIframe"
+        ref="extIframe"
+        frameborder="0"
+        scrolling="no"
+        :src="columnExtProperty.url"
+        allowfullscreen="true" style="width: 100%;height: 100%;">
+        <p>您的浏览器不支持iframes，请使用chrome浏览器.</p >
+      </iframe>
+      <q-card-actions align="center">
+        <q-btn color="primary" label="确定" unelevated no-caps @click="onOKClick" />
+        <q-btn color="negative" label="取消" unelevated no-caps @click="onCancelClick" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script>
+export default {
+  props: {
+    columnExtProperty: {
+      required: true
+    },
+    data: {
+      required: true
+    }
+  },
+
+  data () {
+    return {
+      small: false,
+      medium: false,
+      fullWidth: true,
+      fullHeight: false
+    }
+  },
+
+  methods: {
+    // following method is REQUIRED
+    // (don't change its name --> "show")
+    show () {
+      console.log(this.url);
+      console.log(this.size);
+      console.log(this.data);
+      this.$refs.dialog.show();
+    },
+
+    // following method is REQUIRED
+    // (don't change its name --> "hide")
+    hide () {
+      this.$refs.dialog.hide();
+    },
+
+    onDialogHide () {
+      // required to be emitted
+      // when QDialog emits "hide" event
+      this.$emit('hide');
+    },
+
+    onOKClick () {
+      // on OK, it is REQUIRED to
+      // emit "ok" event (with optional payload)
+      // before hiding the QDialog
+      this.$emit('ok', this.getIframeValue());
+      // or with payload: this.$emit('ok', { ... })
+
+      // then hiding dialog
+      this.hide();
+    },
+
+    onCancelClick () {
+      // we just need to hide dialog
+      this.hide();
+    },
+
+    getIframeValue() {
+      try {
+        const extIframeDocument = window.frames["extIframe"].contentDocument || window.frames["extIframe"].contentWindow.document;
+        const crudapiAdminWebVersionElement = extIframeDocument.getElementById("crudapi-admin-web-version");
+        if (crudapiAdminWebVersionElement != null) {
+          return crudapiAdminWebVersionElement.innerHTML;
+        } else {
+          return null;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    setIframeValue(value) {
+      try {
+        const extIframeDocument = window.frames["extIframe"].contentDocument || window.frames["extIframe"].contentWindow.document;
+        const crudapiAdminWebVersionElement = extIframeDocument.getElementById("crudapi-admin-web-version");
+        if (crudapiAdminWebVersionElement != null) {
+          crudapiAdminWebVersionElement.innerHTML = "crudapi-admin-web v1.6.0" + new Date();
+        } else {
+          return null;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+}
+</script>
