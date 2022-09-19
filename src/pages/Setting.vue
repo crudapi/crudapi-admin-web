@@ -35,6 +35,18 @@ export default {
     init() {
       console.info("setting->init");
       this.$store.commit("config/updateIsAllowBack", this.$route.meta.isAllowBack);
+
+      if (!window.crudapi) {
+        window.crudapi = {}
+      };
+
+      window.crudapi.getIframeValue = function() {
+        console.info("window.crudapi.getIframeValue");
+        return (new Date()).getTime();
+      };
+
+      const value = window.parent.crudapi.getParentValue();
+      console.info("window.parent.crudapi.getParentValue: " + value);
     },
 
     resetAction() {

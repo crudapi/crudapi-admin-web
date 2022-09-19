@@ -43,9 +43,15 @@ export default {
     // following method is REQUIRED
     // (don't change its name --> "show")
     show () {
-      console.log(this.url);
-      console.log(this.size);
-      console.log(this.data);
+      console.dir(this.columnExtProperty);
+      if (!window.crudapi) {
+        window.crudapi = {}
+      };
+
+      const that = this;
+      window.crudapi.getParentValue = function() {
+        return that.getParentValue();
+      };
       this.$refs.dialog.show();
     },
 
@@ -79,29 +85,19 @@ export default {
 
     getIframeValue() {
       try {
-        const extIframeDocument = window.frames["extIframe"].contentDocument || window.frames["extIframe"].contentWindow.document;
-        const crudapiAdminWebVersionElement = extIframeDocument.getElementById("crudapi-admin-web-version");
-        if (crudapiAdminWebVersionElement != null) {
-          return crudapiAdminWebVersionElement.innerHTML;
-        } else {
-          return null;
+        if (window.frames["extIframe"]) {
+          const extIframeWindow = window.frames["extIframe"].contentWindow;
+          if (extIframeWindow.crudapi.getIframeValue) {
+            return extIframeWindow.crudapi.getIframeValue();
+          }
         }
       } catch (error) {
         console.error(error);
       }
     },
-    setIframeValue(value) {
-      try {
-        const extIframeDocument = window.frames["extIframe"].contentDocument || window.frames["extIframe"].contentWindow.document;
-        const crudapiAdminWebVersionElement = extIframeDocument.getElementById("crudapi-admin-web-version");
-        if (crudapiAdminWebVersionElement != null) {
-          crudapiAdminWebVersionElement.innerHTML = "crudapi-admin-web v1.6.0" + new Date();
-        } else {
-          return null;
-        }
-      } catch (error) {
-        console.error(error);
-      }
+    getParentValue() {
+      console.info("getParentValue:" + this.data);
+      return this.data;
     }
   }
 }
