@@ -161,6 +161,7 @@ const table = {
       filterStrEncode = encodeURIComponent(filterStr);
     }
     return axiosInstance.post("/api/business/" + tableName + "/export",
+      {},
       {
         params: {
           search: search,
