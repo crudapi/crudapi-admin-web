@@ -51,19 +51,21 @@
           字段: {{currentElement.column.caption + ', ' + currentElement.column.name}}
         </div>
 
-        <div class="q-pa-md"> 
-          栅格宽度:
-        </div>
-        <div class="q-pa-md"> 
-          <q-slider
-            v-model="currentElement.width"
-            color="primary"
-            :min="1"
-            :step="1"
-            :max="12"
-            label
-            label-always
-          />
+        <div v-show="type != 'list'">
+          <div class="q-pa-md">
+            栅格宽度:
+          </div>
+          <div class="q-pa-md">
+            <q-slider
+              v-model="currentElement.width"
+              color="primary"
+              :min="1"
+              :step="1"
+              :max="12"
+              label
+              label-always
+            />
+          </div>
         </div>
         <!-- <div class="col-3">
           <pre>{{ currentElement | jsonFormat }}</pre>
@@ -74,7 +76,7 @@
     <q-page-container>
       <div class="q-pa-md form-build-body" 
           :class="device">
-        <div class="q-pb-md row   justify-right">
+        <div class="q-pb-md row justify-right">
           <div class="q-px-md">
             <q-radio @input="deviceChange" v-model="device" val="pc" label="电脑" />
             <q-radio @input="deviceChange" v-model="device" val="pad" label="平板" />
@@ -84,6 +86,7 @@
           <div class="q-px-md">
             <q-radio @input="typeChange" v-model="type" val="create" label="创建" />
             <q-radio @input="typeChange" v-model="type" val="update" label="编辑" />
+            <q-radio @input="typeChange" v-model="type" val="list" label="列表" />
           </div>
 
           <div class="q-px-md">

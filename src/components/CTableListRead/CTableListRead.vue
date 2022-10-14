@@ -251,7 +251,8 @@ export default {
       ],
       columns: [
       ],
-      relationMap: {}
+      relationMap: {},
+      selectNames: []
     }
   },
   async created() {
@@ -658,6 +659,9 @@ export default {
       this.data = [];
       try {
         let query = this.getQuery();
+
+        const select = this.selectNames.join(",");
+
         this.pagination.count = await tableService.count(this.dataSource, this.tableName, this.search, query, null);
 
         let data = await tableService.list(this.dataSource, this.tableName,
@@ -665,7 +669,8 @@ export default {
           this.pagination.rowsPerPage,
           this.search,
           query,
-          null);
+          null,
+          select);
         let newData = [];
         const relationMap = this.relationMap;
 
@@ -800,6 +805,30 @@ export default {
         }));
         this.relationMap = relationMap;
 
+        //formBuilder
+        let query = {
+          tableId:table.id
+        };
+        const formBuilders = await tableService.list(this.dataSource, "tableFormBuilder", 0, 999, null, query, null);
+        let formBuilder = formBuilders.find(t => t.device === 'pc'
+          && t.type === 'list');
+
+        let selectNames = [];
+        let listColumns = table.columns;
+        if (formBuilder != null) {
+          let selectedList = JSON.parse(formBuilder.body);
+          let tempListColumns = [];
+          selectedList.forEach((formElement) => {
+            const tempListColumn = table.columns.find(t => t.id === formElement.columnId);
+            if (tempListColumn != null) {
+              tempListColumns.push(tempListColumn);
+              selectNames.push(tempListColumn.name);
+            }
+          });
+          listColumns = tempListColumns;
+          this.selectNames = selectNames;
+        }
+
         let columns = [{
           name: "dataClickAction",
           align: "center",
@@ -809,8 +838,8 @@ export default {
         }];
         let visibleColumns = [];
         let queryColumns = [];
-        for (let i = 0; i < table.columns.length; i++) {
-          const column = table.columns[i];
+        for (let i = 0; i < listColumns.length; i++) {
+          const column = listColumns[i];
           const columnName = column.name;
           if (column.indexType !== "FULLTEXT"
             && column.dataType !== "PASSWORD") {

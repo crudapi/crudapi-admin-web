@@ -13,8 +13,8 @@ const tableService = {
     var res = await table.count(dataSource, tableName, search, query, filter);
     return res.data;
   },
-  list: async function(dataSource, tableName, page, rowsPerPage, search, query, filter) {
-    var res = await table.list(dataSource, tableName, page, rowsPerPage, search, query, filter);
+  list: async function(dataSource, tableName, page, rowsPerPage, search, query, filter, select) {
+    var res = await table.list(dataSource, tableName, page, rowsPerPage, search, query, filter, select);
     return res.data;
   },
   listByIds: async function(dataSource, tableName, ids) {

@@ -23,7 +23,7 @@ const table = {
        }
     );
   },
-  list: function(dataSource, tableName, page, rowsPerPage, search, query, filter) {
+  list: function(dataSource, tableName, page, rowsPerPage, search, query, filter, select) {
     if (!page) {
       page = 1
     }
@@ -45,7 +45,8 @@ const table = {
           limit: rowsPerPage,
           search: search,
           ...query,
-          filter: filterStrEncode
+          filter: filterStrEncode,
+          select: select
         },
         dataSource: dataSource
       }
