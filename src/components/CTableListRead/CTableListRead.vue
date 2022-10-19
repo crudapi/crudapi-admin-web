@@ -103,7 +103,14 @@
                 unelevated
                 @click="onExportClickAction()"
                 color="positive"
-                label="导出全部"
+                label="导出EXCEL"
+              />
+              <p class="q-px-sm"/>
+              <q-btn
+                unelevated
+                @click="onExportXmlClickAction()"
+                color="indigo"
+                label="导出XML"
               />
               <p class="q-px-sm"/>
               <q-btn
@@ -618,8 +625,54 @@ export default {
       try {
         let query = this.getQuery();
 
-        const url = await tableService.export(this.dataSource, this.tableName, this.search, query, null);
+        const select = this.selectNames.join(",");
+        const url = await tableService.export(this.dataSource, this.tableName, select, this.search, query, null);
         
+        //this.$q.notify("数据导出成功，请等待下载完成后查看！");
+
+        this.$q.dialog({
+          component: CDownloadDialog,
+
+          // optional if you want to have access to
+          // Router, Vuex store, and so on, in your
+          // custom component:
+          parent: this, // becomes child of this Vue node
+                        // ("this" points to your Vue component)
+                      // (prop was called "root" in < 1.1.0 and
+                      // still works, but recommending to switch
+                      // to data: the more appropriate "parent" name)
+
+          // props forwarded to component
+          // (everything except "component" and "parent" props above):
+          url: url,
+          data: {}
+          // ...more.props...
+        }).onOk((data) => {
+          item.value = data;
+        }).onCancel(() => {
+          console.log('Cancel')
+        }).onDismiss(() => {
+          console.log('Called on OK or Cancel')
+        });
+
+        this.$q.loading.hide();
+      } catch (error) {
+        this.$q.loading.hide();
+        console.error(error);
+      }
+    },
+
+    async onExportXmlClickAction() {
+      this.$q.loading.show({
+        message: "生成中"
+      });
+
+      try {
+        let query = this.getQuery();
+
+        const select = this.selectNames.join(",");
+        const url = await tableService.exportXml(this.dataSource, this.tableName, select, this.search, query, null, true);
+
         //this.$q.notify("数据导出成功，请等待下载完成后查看！");
 
         this.$q.dialog({

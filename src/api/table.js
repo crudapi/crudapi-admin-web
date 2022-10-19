@@ -155,7 +155,7 @@ const table = {
       }
     );
   },
-  export: function(dataSource, tableName, search, query, filter) {
+  export: function(dataSource, tableName, select, search, query, filter) {
     let filterStrEncode;
     if (filter) {
       let filterStr = JSON.stringify(filter);
@@ -165,9 +165,30 @@ const table = {
       {},
       {
         params: {
+          select: select,
           search: search,
           ...query,
           filter: filterStrEncode
+        },
+        dataSource: dataSource
+      }
+    );
+  },
+  exportXml: function(dataSource, tableName, select, search, query, filter, isDisplayCaption) {
+    let filterStrEncode;
+    if (filter) {
+      let filterStr = JSON.stringify(filter);
+      filterStrEncode = encodeURIComponent(filterStr);
+    }
+    return axiosInstance.post("/api/business/" + tableName + "/export/xml",
+      {},
+      {
+        params: {
+          select: select,
+          search: search,
+          ...query,
+          filter: filterStrEncode,
+          isDisplayCaption: isDisplayCaption
         },
         dataSource: dataSource
       }
