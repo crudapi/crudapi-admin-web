@@ -150,6 +150,14 @@
                 flat
                 dense
               ></q-btn>
+              <q-btn
+                unelevated
+                @click="onTablePermissionClickAction(props.row.id)"
+                color="primary"
+                label="权限设置"
+                flat
+                dense
+              ></q-btn>
             </q-td>
             <q-td key="id" :props="props">{{ props.row.id }}</q-td>
             <q-td key="name" :props="props">
@@ -401,6 +409,11 @@ export default {
     onFormBuilderClickAction(id) {
        this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/" +  id +   "/formBuilder");
     },
+
+    onTablePermissionClickAction(id) {
+       this.$router.push("/dataSource/" + this.dataSource +  "/metadata/tables/" +  id +   "/tablePermission");
+    },
+
     async onExportClickAction(id) {
       let ids = [];
       this.selected.forEach(function(val){

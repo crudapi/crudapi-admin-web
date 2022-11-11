@@ -34,6 +34,12 @@ const routes = [
         component: () => import("pages/form-builder/index.vue")
       },
       {
+        name: "tablePermission",
+        path: "dataSource/:dataSource/metadata/tables/:id/tablePermission",
+        meta: { isAllowBack: true },
+        component: () => import("pages/tablePermission/index.vue")
+      },
+      {
         name: "sequenceList",
         path: "dataSource/:dataSource/metadata/sequences",
         meta: { isAllowBack: true },
