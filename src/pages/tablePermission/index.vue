@@ -95,7 +95,7 @@
 
           <div class="q-px-md">
             <q-btn class="q-mx-md" unelevated @click="onSubmitClick" color="primary" label="保存" />
-            <q-btn  unelevated @click="onDeleteClick" color="negative" label="删除" />
+            <q-btn v-show="tablePermissionId > 0"  unelevated @click="onDeleteClick" color="negative" label="删除" />
           </div>
         </div>
         
@@ -288,7 +288,7 @@ export default {
       tablePermissionName: '新建权限',
       tablePermissionOptions: [],
       table: {},
-      formBuilders: [],
+      tablePermissions: [],
       currentElement: {},
       textValue: "",
       fileValue: ""
@@ -493,16 +493,16 @@ export default {
         let query = {
           tableId:tableId
         };
-        this.formBuilders = await tableService.list(this.dataSource, "tablePermission", null, null, null, query, null);
+        this.tablePermissions = await tableService.list(this.dataSource, "tablePermission", null, null, null, query, null);
         const tablePermissionOptions = [{
           id: -1,
           name: '创建'
-        }].concat(this.formBuilders);
+        }].concat(this.tablePermissions);
 
         this.tablePermissionId = -1;
         this.tablePermissionOptions = tablePermissionOptions;
 
-        this.setFormBuilder();
+        this.setTablePermission();
 
         this.loading = false;
         this.$q.loading.hide();
@@ -516,15 +516,15 @@ export default {
     tablePermissionChange(value, evt) {
       console.log(value);
       this.currentElement =  {};
-      this.setFormBuilder();
+      this.setTablePermission();
     },
-    setFormBuilder() {
+    setTablePermission() {
       const columns = this.table.columns;
-      let formBuilder = this.formBuilders.find(t => t.id === this.tablePermissionId);
+      let tablePermission = this.tablePermissions.find(t => t.id === this.tablePermissionId);
 
       let unselectedList = [];
       let selectedList = [];
-      if (!formBuilder) {
+      if (!tablePermission) {
         this.tablePermissionName = '新建权限';
 
         columns.forEach((column) => {
@@ -557,8 +557,8 @@ export default {
           }
         });
       } else {
-        this.tablePermissionName = formBuilder.name;
-        const rowSelectedList = JSON.parse(formBuilder.value);
+        this.tablePermissionName = tablePermission.name;
+        const rowSelectedList = JSON.parse(tablePermission.value);
         console.dir(rowSelectedList);
 
         rowSelectedList.forEach((formElement) => {
@@ -612,11 +612,11 @@ export default {
           tableId: this.table.id
         };
 
-        let formBuilder = this.formBuilders.find(t => t.id === this.tablePermissionId);
-        if (!formBuilder) {
+        let tablePermission = this.tablePermissions.find(t => t.id === this.tablePermissionId);
+        if (!tablePermission) {
           await tableService.create(this.dataSource, "tablePermission", data);
         } else {
-          await tableService.update(this.dataSource, "tablePermission", formBuilder.id, data);
+          await tableService.update(this.dataSource, "tablePermission", tablePermission.id, data);
         }
 
         this.$q.loading.hide();
@@ -632,9 +632,9 @@ export default {
         message: "提交中"
       });
       try {
-        let formBuilder = this.formBuilders.find(t => t.id === this.tablePermissionId);
-        if (formBuilder) {
-          await tableService.delete(this.dataSource, "tablePermission", formBuilder.id);
+        let tablePermission = this.tablePermissions.find(t => t.id === this.tablePermissionId);
+        if (tablePermission) {
+          await tableService.delete(this.dataSource, "tablePermission", tablePermission.id);
           this.$q.loading.hide();
           this.$q.notify("删除成功");
           await this.loadData(this.table.id);

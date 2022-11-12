@@ -91,6 +91,7 @@ export default {
         this.$route.meta.isAllowBack
       );
       this.dataSource = this.$route.params.dataSource;
+      this.dataSourceUrl = "/dataSource/" + this.dataSource;
       await this.loadData(id);
     },
 
