@@ -542,19 +542,7 @@ export default {
             formElement.isPwd = false;
           }
 
-          if (column.name === 'createdDate' 
-            || column.name === 'lastModifiedDate'
-            || column.name === 'fullTextBody'
-            //|| column.name === 'id'
-            || column.name === 'createById'
-            || column.name === 'updateById'
-            || column.name === 'ownerId'
-            || column.name === 'isDeleted'
-            ) {
-            unselectedList.push(formElement);
-          } else {
-            selectedList.push(formElement);
-          }
+          selectedList.push(formElement);
         });
       } else {
         this.tablePermissionName = tablePermission.name;
