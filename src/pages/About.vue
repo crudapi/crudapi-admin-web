@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md bg-page">
     <div class="text-h6">简介</div>
-    <div class="q-pa-md">crudapi是crud+api组合，表示增删改查接口，是一款零代码可配置的产品。使用crudapi可以告别枯燥无味的增删改查代码，让您更加专注业务，节约大量成本，从而提高工作效率。crudapi的目标是让处理数据变得更简单，所有人都可以免费使用！无需编程，通过配置自动生成crud增删改查RESTful API，提供后台Web管理UI。基于主流的开源框架，前端采用Vue + Quasar，后端采用Spring Boot + Jdbc， 数据库支持MySQL、PostgreSQL、SQL Server和Oracle，支持二次开发，包括API和SDK两种方式。</div>
+    <div class="q-pa-md">crudapi是crud+api组合，表示增删改查接口，是一款零代码可配置的产品。使用crudapi可以告别枯燥无味的增删改查代码，让您更加专注业务，节约大量成本，从而提高工作效率。crudapi的目标是让处理数据变得更简单，所有人都可以使用！无需编程，通过配置自动生成crud增删改查RESTful API，提供后台Web管理UI。基于主流的开源框架，前端采用Vue + Quasar，后端采用Spring Boot + Jdbc， 数据库支持MySQL、PostgreSQL、SQL Server和Oracle，支持二次开发，包括API和SDK两种方式。</div>
 
     <div class="text-h6">Web管理UI</div>
     <div class="q-pa-md">
