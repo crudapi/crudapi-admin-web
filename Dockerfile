@@ -1,4 +1,4 @@
-FROM node:lts-alpine as builder
+FROM node:14-alpine as builder
 
 RUN apk add jq
 
