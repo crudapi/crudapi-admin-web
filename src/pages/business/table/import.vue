@@ -37,6 +37,7 @@ import FormData from 'form-data';
 import { fileService } from "../../../service";
 import { metadataTableService } from "../../../service";
 import { tableService } from "../../../service";
+import CDownloadDialog from '../../../components/CDownload/CDownloadDialog'
 
 export default {
   data() {
@@ -133,10 +134,18 @@ export default {
         form.append('file', this.localFile);
 
         const url = await tableService.getImportTemplate(this.dataSource, this.tableName);
-        this.$q.notify("模板生成成功，请等待下载完成后查看！");
-
-        window.open(url, "_blank");
-
+        this.$q.dialog({
+          component: CDownloadDialog,
+          parent: this,
+          url: url,
+          data: {}
+        }).onOk((data) => {
+          console.log('Ok')
+        }).onCancel(() => {
+          console.log('Cancel')
+        }).onDismiss(() => {
+          console.log('Called on OK or Cancel')
+        });
         this.$q.loading.hide();
       } catch (error) {
         this.$q.loading.hide();

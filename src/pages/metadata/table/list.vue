@@ -196,6 +196,7 @@
 import { metadataTableService } from "../../../service";
 import { tableService } from "../../../service";
 import { date } from "../../../utils";
+import CDownloadDialog from '../../../components/CDownload/CDownloadDialog'
 
 export default {
   data () {
@@ -426,10 +427,19 @@ export default {
       });
 
       try {
-        const fileName = await metadataTableService.export(this.dataSource, ids);
-        this.$q.notify("元数据表生成成功，请等待下载完成后查看！");
-
-        window.open("/api/file/" + fileName + "?dataSource=" + this.dataSource, "_blank");
+        const url = await metadataTableService.export(this.dataSource, ids);
+        this.$q.dialog({
+          component: CDownloadDialog,
+          parent: this,
+          url: url,
+          data: {}
+        }).onOk((data) => {
+          console.log('Ok')
+        }).onCancel(() => {
+          console.log('Cancel')
+        }).onDismiss(() => {
+          console.log('Called on OK or Cancel')
+        });
 
         this.$q.loading.hide();
       } catch (error) {
@@ -449,11 +459,19 @@ export default {
       });
 
       try {
-        const fileName = await tableService.multiExport(this.dataSource, ids);
-        this.$q.notify("业务数据JSON生成成功，请等待下载完成后查看！");
-
-        window.open("/api/file/" + fileName + "?dataSource=" + this.dataSource, "_blank");
-
+        const url = await tableService.multiExport(this.dataSource, ids);
+        this.$q.dialog({
+          component: CDownloadDialog,
+          parent: this,
+          url: url,
+          data: {}
+        }).onOk((data) => {
+          console.log('Ok')
+        }).onCancel(() => {
+          console.log('Cancel')
+        }).onDismiss(() => {
+          console.log('Called on OK or Cancel')
+        });
         this.$q.loading.hide();
       } catch (error) {
         this.$q.loading.hide();
