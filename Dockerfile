@@ -1,4 +1,5 @@
-FROM node:14-alpine as builder
+#FROM node:14-alpine as builder
+FROM registry.cn-qingdao.aliyuncs.com/dh-mirror/node:14-alpine as builder
 
 RUN apk add jq
 
@@ -20,7 +21,8 @@ RUN npm run build && \
     cp ./crudapi-admin-web-$version.tar.gz /crudapi/dist/crudapi-admin-web/$version && \
     rm -rf crudapi-admin-web-$version.tar.gz
 
-FROM nginx:latest
+#FROM nginx:latest
+FROM registry.cn-qingdao.aliyuncs.com/dh-mirror/nginx:latest as builder
 
 WORKDIR /crudapi-admin-web
 
