@@ -22,7 +22,7 @@ RUN npm run build && \
     rm -rf crudapi-admin-web-$version.tar.gz
 
 #FROM nginx:latest
-FROM registry.cn-qingdao.aliyuncs.com/dh-mirror/nginx:latest as builder
+FROM registry.cn-qingdao.aliyuncs.com/dh-mirror/nginx:latest
 
 WORKDIR /crudapi-admin-web
 
