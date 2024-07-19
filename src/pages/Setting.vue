@@ -47,6 +47,10 @@ export default {
 
       const value = window.parent.crudapi.getParentValue();
       console.info("window.parent.crudapi.getParentValue: " + value);
+
+      const json = window.parent.crudapi.getParentJson();
+      console.info("window.parent.crudapi.getParentJson: ");
+      console.dir(json);
     },
 
     resetAction() {

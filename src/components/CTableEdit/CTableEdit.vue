@@ -695,6 +695,7 @@ export default {
         // (everything except "component" and "parent" props above):
         columnExtProperty: item.columnExtProperty,
         data: item.value,
+        json: this.getData(),
         dataSource: this.dataSource
       }).onOk((data) => {
         item.value = data;

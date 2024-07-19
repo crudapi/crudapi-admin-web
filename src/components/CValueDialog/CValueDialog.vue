@@ -2,6 +2,10 @@
   <q-dialog  full-width full-height
     ref="dialog" @hide="onDialogHide" persistent>
     <q-card class="q-dialog-plugin" style="height: 600px;">
+      <q-card-actions align="center">
+        <q-btn color="primary" label="确定" unelevated no-caps @click="onOKClick" />
+        <q-btn color="negative" label="取消" unelevated no-caps @click="onCancelClick" />
+      </q-card-actions>
       <iframe
         id="extIframe"
         ref="extIframe"
@@ -11,10 +15,6 @@
         allowfullscreen="true" style="width: 100%;height: 100%;">
         <p>您的浏览器不支持iframes，请使用chrome浏览器.</p >
       </iframe>
-      <q-card-actions align="center">
-        <q-btn color="primary" label="确定" unelevated no-caps @click="onOKClick" />
-        <q-btn color="negative" label="取消" unelevated no-caps @click="onCancelClick" />
-      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
@@ -27,6 +27,9 @@ export default {
     },
     data: {
       required: true
+    },
+    json: {
+      required: false
     }
   },
 
@@ -51,6 +54,9 @@ export default {
       const that = this;
       window.crudapi.getParentValue = function() {
         return that.getParentValue();
+      };
+      window.crudapi.getParentJson = function() {
+        return that.getParentJson();
       };
       this.$refs.dialog.show();
     },
@@ -98,6 +104,10 @@ export default {
     getParentValue() {
       console.info("getParentValue:" + this.data);
       return this.data;
+    },
+    getParentJson() {
+      console.info("getParentJson:" + this.json);
+      return this.json;
     }
   }
 }
