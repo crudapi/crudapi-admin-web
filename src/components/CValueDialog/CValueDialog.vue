@@ -1,20 +1,23 @@
 <template>
   <q-dialog  full-width full-height
     ref="dialog" @hide="onDialogHide" persistent>
-    <q-card class="q-dialog-plugin" style="height: 600px;">
-      <q-card-actions align="center">
+    <q-card class="q-dialog-plugin" >
+      <q-card-section style="height: 90%">
+        <iframe
+          id="extIframe"
+          ref="extIframe"
+          frameborder="0"
+          scrolling="no"
+          :src="columnExtProperty.url"
+          allowfullscreen="true" style="width: 100%;height: 100%;">
+          <p>您的浏览器不支持iframes，请使用chrome浏览器.</p >
+        </iframe>
+      </q-card-section>
+
+      <q-card-actions align="center" style="height: 10%">
         <q-btn color="primary" label="确定" unelevated no-caps @click="onOKClick" />
         <q-btn color="negative" label="取消" unelevated no-caps @click="onCancelClick" />
       </q-card-actions>
-      <iframe
-        id="extIframe"
-        ref="extIframe"
-        frameborder="0"
-        scrolling="no"
-        :src="columnExtProperty.url"
-        allowfullscreen="true" style="width: 100%;height: 100%;">
-        <p>您的浏览器不支持iframes，请使用chrome浏览器.</p >
-      </iframe>
     </q-card>
   </q-dialog>
 </template>
