@@ -387,7 +387,11 @@ export default {
           } else {
             return "否"
           }
-        } 
+        } else if (find.dataType === "TEXT" || find.dataType === "LONGTEXT" ) {
+          if (value) {
+            return value.length > 100 ? value.substr(0, 100) + "...": value;
+          }
+        }
       }
       return value;
     }

@@ -40,9 +40,17 @@
              <div class="row items-baseline content-center"
               style="border-bottom: 1px solid rgba(0,0,0,0.12)"
               v-else-if="formElement.column.columnExtProperty">
-              <div class="col-9">
+
+              <div v-if="isTextType(formElement.column.dataType)" class="col-9">
+                <textarea v-model="formElement.column.value" readonly rows="10" class="auto-width-textarea">
+                </textarea>
+              </div>
+
+              <div v-else class="col-9">
                 <span>{{ formElement.column.value }}</span>
               </div>
+
+
               <div class="col-3">
                 <q-btn class="q-mb-sm" color="primary" unelevated no-caps
                 :label="formElement.column.columnExtProperty.name" @click="openValueDialogClickAction(formElement.column)" />
@@ -172,7 +180,12 @@
             <div class="row items-baseline content-center"
               style="border-bottom: 1px solid rgba(0,0,0,0.12)"
               v-else-if="item.columnExtProperty">
-              <div class="col-9">
+            
+              <div v-if="isTextType(item.dataType)" class="col-9">
+                <textarea  v-model="item.value" readonly rows="10" class="auto-width-textarea">
+                </textarea>
+              </div>
+              <div v-else class="col-9">
                 <span>{{ item.value }}</span>
               </div>
               <div class="col-3">
@@ -310,6 +323,9 @@
 
 .sql-box
   border: 1px solid #ddd;
+
+.auto-width-textarea
+  width: 90%;
 
 </style>
 
