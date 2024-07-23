@@ -152,7 +152,7 @@
           style="height: 50px;border: 1px #25272A solid;cursor:pointer"
         >
         <div class="text-center logo">
-          <div class="text-center">crudapi</div>
+          <div class="text-center">{{ appName }}</div>
         </div>
       </div>
       <q-tree
@@ -203,6 +203,7 @@ a
 <script>
 import { metadataTableService, metadataSequenceService } from "../service";
 import { userService } from "../service";
+import { tableService } from "../service";
 
 export default {
   name: 'MainLayout',
@@ -225,6 +226,7 @@ export default {
 
       selected: null,
 
+      appName: "crudapi",
       systemMenu: {
         label: "系统",
         labelKey: "system",
@@ -310,6 +312,25 @@ export default {
       for (let i = 0; i < dataSources.length; i++) {
         const dataSource = dataSources[i];
         const dataSourceName = dataSource.name;
+
+        const config = {};
+        try {
+          const configs = await tableService.list(dataSourceName, "config", null, null, null, null, null, "id,name,key,value");
+          configs.forEach((t) => {
+            config[t.key] = t.value;
+          }); 
+
+        } catch (error) {
+          console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+        }  
+
+        if (config.appName)  {
+			this.appName = config.appName;
+			document.title = this.appName;
+		}
+		
+        console.dir(config);
+
         const dataSourceMenu = {
           label: dataSource.caption,
           labelKey: "/dataSource/" + dataSourceName,
@@ -317,9 +338,10 @@ export default {
           children: []
         };
 
+        const businessName = "业务数据";
         const businessMenu = {
-          label: "业务数据",
-          labelKey: "business_"+ dataSourceName,
+          label: config.businessName ? config.businessName: businessName,
+          labelKey: "business_" + dataSourceName,
           icon: "business",
           children: [
           ]
