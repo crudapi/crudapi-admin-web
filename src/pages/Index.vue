@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md home">
     <div class="q-pt-md">
-      <q-banner inline-actions class="text-black bg-listcolor">
+      <q-banner v-show="displayMetadata" inline-actions class="text-black bg-listcolor">
           <span class="title">元数据</span>
           <template v-slot:action>
             <q-btn
@@ -15,7 +15,7 @@
             />
           </template>
       </q-banner>
-      <div v-show="metadataExpand" class="q-py-md q-pl-md row items-start q-gutter-md">
+      <div v-show="displayMetadata && metadataExpand" class="q-py-md q-pl-md row items-start q-gutter-md">
           <q-card clickable v-ripple flat bordered class="my-card click-card col"
               @click="onMetadataSeqClick()" >
             <q-card-section class="bg-primary text-white">
@@ -127,6 +127,8 @@
 
 <script>
 import { tableService } from "../service";
+import { userService } from "../service";
+import { permissionService } from "../service";
 
 export default {
   name: "PageHome",
@@ -136,7 +138,8 @@ export default {
       businessExpand: true,
       modules:[],
       active: true,
-      dataSource: "primary"
+      dataSource: "primary",
+      displayMetadata: false
     }
   },
 
@@ -186,9 +189,29 @@ export default {
         }
 
         this.modules = modules;
+  
       } catch (error) {
         console.error(error);
       }
+
+      await this.loadMenu();
+    },
+
+    async loadMenu() {
+      const menu = {};
+      try {
+        const menus = await userService.menu(dataSourceName);
+        menus.forEach((t) => {
+          menu[t.code] = t.name;
+        }); 
+
+      } catch (error) {
+        console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+      }
+
+      const isSuperAdmin = permissionService.isSuperAdmin();
+  
+      this.displayMetadata = (isSuperAdmin || menu["metadata"]);
     },
     onConfigClick(module) {
        this.$router.push("/dataSource/" + this.dataSource + "/business/module/" + module.id);
