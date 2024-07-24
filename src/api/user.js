@@ -19,6 +19,14 @@ const user = {
         headers: HEADERS
       }
     );
+  },
+  menu: function(dataSource) {
+    return axiosInstance.get("/api/users/me/menu",
+      {
+        params: {},
+        dataSource: dataSource
+      }
+    );
   }
 };
 

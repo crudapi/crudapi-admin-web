@@ -9,6 +9,10 @@ const userService = {
   logout: async function() {
     var res = await user.logout();
     return res.data;
+  }, 
+  menu: async function(dataSource) {
+    var res = await user.menu(dataSource);
+    return res.data;
   },
   getUserInfo: async function() {
     return LocalStorage.getItem("userInfo") || {};

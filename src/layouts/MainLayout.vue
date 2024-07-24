@@ -204,6 +204,7 @@ a
 import { metadataTableService, metadataSequenceService } from "../service";
 import { userService } from "../service";
 import { tableService } from "../service";
+import { permissionService } from "../service";
 
 export default {
   name: 'MainLayout',
@@ -329,8 +330,17 @@ export default {
 			document.title = this.appName;
 		}
 		
-        console.dir(config);
+		const menu = {};
+		try {
+          const menus = await userService.menu(dataSourceName);
+          menus.forEach((t) => {
+            menu[t.code] = t.name;
+          }); 
 
+        } catch (error) {
+          console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+        }  
+		
         const dataSourceMenu = {
           label: dataSource.caption,
           labelKey: "/dataSource/" + dataSourceName,
@@ -401,9 +411,12 @@ export default {
           }
         }
 
-        dataSourceMenu.children.push(businessMenu);
-        dataSourceMenu.children.push(systemBusinessMenu);
-        dataSourceMenu.children.push(metadataMenu);
+	
+		const isSuperAdmin = permissionService.isSuperAdmin();
+	
+        (isSuperAdmin || menu["business"]) && dataSourceMenu.children.push(businessMenu);
+        (isSuperAdmin || menu["systemBusiness"]) && dataSourceMenu.children.push(systemBusinessMenu);
+        (isSuperAdmin || menu["metadata"]) && dataSourceMenu.children.push(metadataMenu);
 
         dataSourceMenus.push(dataSourceMenu);
       }

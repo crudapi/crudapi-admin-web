@@ -7,6 +7,14 @@ const permissionService = {
   set: function(data) {
     LocalStorage.set("permission", data);
   },
+  isSuperAdmin: function() {
+    let data = this.get();
+    if (!data) {
+      return false;
+    }
+
+    return data.isSuperAdmin;
+  },
   check: function(needPermissions) {
     if (needPermissions && needPermissions.length > 0) {
       let data = this.get();
