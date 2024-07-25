@@ -33,12 +33,12 @@
         </q-btn>
 
         <q-space />
-          <div v-show="!config.toolBarHiddenOfficialWebsite" class="q-px-md">
+          <div v-if="!config.toolBarHiddenOfficialWebsite" class="q-px-md">
             <a class="text-white" target="_blank"  href="https://crudapi.cn">
               官网
             </a>
           </div>
-          <q-btn v-show="!config.toolBarHiddenHelp"
+          <q-btn v-if="!config.toolBarHiddenHelp"
             unelevated
             label="帮助"
             flat
@@ -83,7 +83,7 @@
           </q-btn>
 
           <q-btn
-            v-show="!config.toolBariddenCode"
+            v-if="!config.toolBarHiddenCode"
             unelevated
             label="源码"
             flat
@@ -319,19 +319,26 @@ export default {
         try {
           const configs = await tableService.list(dataSourceName, "config", null, null, null, null, null, "id,name,key,value");
           configs.forEach((t) => {
-            config[t.key] = t.value;
+            if (t.key.startsWith("toolBarHidden")) {
+              //console.dir(t.value);
+              config[t.key] = (t.value === "true") ? true: false;
+            } else {
+              config[t.key] = t.value;
+            }
           }); 
 
         } catch (error) {
           console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
         }  
 
-        this.config = config;
-        if (config.appName)  {
-          this.appName = config.appName;
-          document.title = this.appName;
+        if (dataSourceName === "primary") {
+          this.config = config;
+          if (config.appName)  {
+            this.appName = config.appName;
+            document.title = this.appName;
+          }
         }
-      
+       
         const menu = {};
         try {
           const menus = await userService.menu(dataSourceName);
