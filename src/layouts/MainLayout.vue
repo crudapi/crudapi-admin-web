@@ -33,12 +33,12 @@
         </q-btn>
 
         <q-space />
-          <div class="q-px-md">
+          <div v-show="!config.toolBarHiddenOfficialWebsite" class="q-px-md">
             <a class="text-white" target="_blank"  href="https://crudapi.cn">
               官网
             </a>
           </div>
-          <q-btn
+          <q-btn v-show="!config.toolBarHiddenHelp"
             unelevated
             label="帮助"
             flat
@@ -83,6 +83,7 @@
           </q-btn>
 
           <q-btn
+            v-show="!config.toolBariddenCode"
             unelevated
             label="源码"
             flat
@@ -226,7 +227,7 @@ export default {
       leftDrawerOpen: true,
 
       selected: null,
-
+      config: {},
       appName: "crudapi",
       systemMenu: {
         label: "系统",
@@ -325,13 +326,14 @@ export default {
           console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
         }  
 
+        this.config = config;
         if (config.appName)  {
-			this.appName = config.appName;
-			document.title = this.appName;
-		}
-		
-		const menu = {};
-		try {
+          this.appName = config.appName;
+          document.title = this.appName;
+        }
+      
+        const menu = {};
+        try {
           const menus = await userService.menu(dataSourceName);
           menus.forEach((t) => {
             menu[t.code] = t.name;
@@ -340,7 +342,7 @@ export default {
         } catch (error) {
           console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
         }  
-		
+    
         const dataSourceMenu = {
           label: dataSource.caption,
           labelKey: "/dataSource/" + dataSourceName,
@@ -411,9 +413,8 @@ export default {
           }
         }
 
-	
-		const isSuperAdmin = permissionService.isSuperAdmin();
-	
+        const isSuperAdmin = permissionService.isSuperAdmin();
+  
         (isSuperAdmin || menu["business"]) && dataSourceMenu.children.push(businessMenu);
         (isSuperAdmin || menu["systemBusiness"]) && dataSourceMenu.children.push(systemBusinessMenu);
         (isSuperAdmin || menu["metadata"]) && dataSourceMenu.children.push(metadataMenu);
