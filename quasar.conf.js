@@ -8,6 +8,8 @@
 /* eslint-env node */
 
 module.exports = function ( ctx ) {
+  const publicPath = process.env.QUASAR_PUBLIC_PATH || "crudapi";
+
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -84,8 +86,8 @@ module.exports = function ( ctx ) {
           exclude: /node_modules/
         })
       },
-      publicPath: '/crudapi/',
-      distDir: `dist/${ctx.modeName}/crudapi`
+      publicPath: `${publicPath}`,
+      distDir: `dist/${ctx.modeName}/${publicPath}`
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
