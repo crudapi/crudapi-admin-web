@@ -8,7 +8,7 @@
       </div>
       <div class="col-10">
         <div  style="height: 100%;" class="row justify-start items-center content-center">
-          <div class="welcome q-ml-sm">欢迎使用crudapi增删改查接口零代码开发平台</div>
+          <div class="welcome q-ml-sm">欢迎使用{{ config.appName }}</div>
         </div>
       </div>
     </div>
@@ -62,7 +62,7 @@
         </div>
     </div> 
 
-    <div class="row text-center justify-center copyright">
+    <div v-if="!config.loginHiddenCrudapi" class="row text-center justify-center copyright">
       Copyright © 2020-present crudapi &nbsp;<a target="_blank" href="http://beian.miit.gov.cn/">苏ICP备15043861号-2</a> &nbsp; All Rights Reserved 版权所有
       &nbsp;&nbsp;<a target="_blank" href="https://crudapi.cn">首页</a>
       &nbsp;&nbsp;<a target="_blank" href="https://help.crudapi.cn">帮助</a>
@@ -139,12 +139,16 @@
 </style>
 
 <script>
-import { userService } from "../service";
+import { userService,tableService } from "../service";
 
 export default {
   name: "Login",
   data() {
     return {
+      config: {
+        loginHiddenCrudapi: true,
+        appName: ""
+      },
       username: "superadmin",
       isPwd: true,
       password: "1234567890"
@@ -158,8 +162,28 @@ export default {
   },
 
   methods: {
-    init() {
+    async init() {
       console.info("login->init");
+      const config = {};
+      try {
+        const configs = await tableService.list("primary", "config", null, null, null, null, null, "id,name,key,value");
+        configs.forEach((t) => {
+          if (t.key.startsWith("loginHiddenCrudapi")) {
+            //console.dir(t.value);
+            config[t.key] = (t.value === "true") ? true: false;
+          } else {
+            config[t.key] = t.value;
+          }
+        }); 
+
+        this.config = config;
+
+        if (config.appName)  {
+          document.title = config.appName;
+        }
+      } catch (error) {
+        console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+      }
     },
 
     submit() {

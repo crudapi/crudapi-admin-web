@@ -227,7 +227,12 @@ export default {
       leftDrawerOpen: true,
 
       selected: null,
-      config: {},
+      config: {
+        toolBarHiddenOfficialWebsite: true,
+        toolBarHiddenHelp: true,
+        toolBarHiddenCode: true
+      },
+      menu: {},
       appName: "crudapi",
       systemMenu: {
         label: "系统",
@@ -301,7 +306,7 @@ export default {
           this.allMenu.push(dataSourceMenus[i]);
         }
 
-        this.allMenu.push(this.systemMenu);
+        (menu["system"]) && this.allMenu.push(this.systemMenu);
 
         this.$refs.qTreeProxy.setExpanded("system", true);
       } catch (error) {
@@ -349,7 +354,11 @@ export default {
         } catch (error) {
           console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
         }  
-    
+        if (dataSourceName === "primary") {
+          this.menu = menu;
+        }
+       
+
         const dataSourceMenu = {
           label: dataSource.caption,
           labelKey: "/dataSource/" + dataSourceName,
