@@ -200,13 +200,14 @@ export default {
     async loadMenu() {
       const menu = {};
       try {
-        const menus = await userService.menu(dataSourceName);
+        const menus = await userService.menu("primary");
         menus.forEach((t) => {
           menu[t.code] = t.name;
         }); 
 
       } catch (error) {
-        console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+        console.error(error);
+        console.warn("3 Please upgrade the back-end version, otherwise it may not be compatible!");
       }
 
       const isSuperAdmin = permissionService.isSuperAdmin();

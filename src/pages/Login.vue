@@ -182,7 +182,7 @@ export default {
           document.title = config.appName;
         }
       } catch (error) {
-        console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+        console.warn("4 Please upgrade the back-end version, otherwise it may not be compatible!");
       }
     },
 

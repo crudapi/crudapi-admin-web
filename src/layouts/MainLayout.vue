@@ -306,9 +306,11 @@ export default {
           this.allMenu.push(dataSourceMenus[i]);
         }
 
-        (menu["system"]) && this.allMenu.push(this.systemMenu);
 
-        this.$refs.qTreeProxy.setExpanded("system", true);
+        if (this.menu["system"]) {
+          this.allMenu.push(this.systemMenu);
+          this.$refs.qTreeProxy.setExpanded("system", true);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -333,7 +335,7 @@ export default {
           }); 
 
         } catch (error) {
-          console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+          console.warn("1 Please upgrade the back-end version, otherwise it may not be compatible!");
         }  
 
         if (dataSourceName === "primary") {
@@ -352,7 +354,7 @@ export default {
           }); 
 
         } catch (error) {
-          console.warn("Please upgrade the back-end version, otherwise it may not be compatible!");
+          console.warn("2 Please upgrade the back-end version, otherwise it may not be compatible!");
         }  
         if (dataSourceName === "primary") {
           this.menu = menu;
