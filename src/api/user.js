@@ -27,6 +27,14 @@ const user = {
         dataSource: dataSource
       }
     );
+  },
+  table: function(dataSource) {
+    return axiosInstance.get("/api/users/me/table",
+      {
+        params: {},
+        dataSource: dataSource
+      }
+    );
   }
 };
 

@@ -413,7 +413,7 @@ export default {
           ]
         };
 
-        const tables = await metadataTableService.list(dataSourceName, 1,99999);
+        const tables = await userService.table(dataSourceName);
         for (let i = 0; i < tables.length; i++) {
           let table = tables[i];
           if (table.systemable) {

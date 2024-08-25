@@ -14,6 +14,10 @@ const userService = {
     var res = await user.menu(dataSource);
     return res.data;
   },
+  table: async function(dataSource) {
+    var res = await user.table(dataSource);
+    return res.data;
+  },
   getUserInfo: async function() {
     return LocalStorage.getItem("userInfo") || {};
   },
