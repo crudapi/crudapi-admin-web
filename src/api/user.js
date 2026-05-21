@@ -14,7 +14,8 @@ const user = {
     );
   },
   logout: function() {
-    return axiosInstance.get("/api/auth/logout",
+    return axiosInstance.post("/api/auth/logout",
+      {},
       {
         headers: HEADERS
       }
