@@ -11,7 +11,9 @@ Vue.prototype.$axios = axios
 // Note that if we wouldn't set any config here we do not need
 // a named export, as we could just `import axios from 'axios'`
 const axiosInstance = axios.create({
-  baseURL: process.env.API
+  baseURL: process.env.API,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN'
 });
 
 axiosInstance.defaults.transformRequest = [
